@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<Data>
+		<Elements>
+			<StraightConductors>
+				<StraightConductor number="1" status="disabled">
+					<CoordinatesPoint1>
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>0</x>
+						<y>0</y>
+						<z>10</z>
+					</CoordinatesPoint2>
+					<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+				</StraightConductor>
+				<StraightConductor number="2" status="disabled">
+					<CoordinatesPoint1>
+						<x>100</x>
+						<y>100</y>
+						<z>0</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</CoordinatesPoint2>
+					<Current>0</Current>
+				</StraightConductor>
+			</StraightConductors>
+			<StraightConductorCollections>
+				<StraightConductorCollection number="1" amount="5" status="disabled">
+					<CoordinatesPoint1>
+						<x>-10</x>
+						<y>-10</y>
+						<z>0</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>10</x>
+						<y>-10</y>
+						<z>0</z>
+					</CoordinatesPoint2>
+					<CoordinatesPoint3>
+						<x>-10</x>
+						<y>10</y>
+						<z>0</z>
+					</CoordinatesPoint3>
+					<CoordinatesPoint4>
+						<x>10</x>
+						<y>10</y>
+						<z>0</z>
+					</CoordinatesPoint4>
+					<CoordinatesPoint5>
+						<x>-10</x>
+						<y>-10</y>
+						<z>0</z>
+					</CoordinatesPoint5>
+					<Current>0</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+				</StraightConductorCollection>
+				<StraightConductorCollection number="2" amount="2" status="disabled">
+					<CoordinatesPoint1>
+						<x>0</x>
+						<y>0</y>
+						<z>-20</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>0</x>
+						<y>0</y>
+						<z>20</z>
+					</CoordinatesPoint2>
+					<Current>0</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+				</StraightConductorCollection>
+			</StraightConductorCollections>
+			<RectangularCoils>
+				<RectangularCoil number="1" status="disabled">
+					<Width>5</Width>
+					<Length>5</Length>
+					<Heigth>10</Heigth>
+					<Windings>20</Windings>
+					<StartingPoint>
+						<x>-2.5</x>
+						<y>-2.5</y>
+						<z>-5</z>
+					</StartingPoint>
+					<Phi>0</Phi>
+					<Theta>0</Theta>
+					<Psi>0</Psi>
+					<Current>0</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+					<begin>"l"</begin>
+				</RectangularCoil>
+				<RectangularCoil number="2" status="disabled">
+					<Width>8</Width>
+					<Length>7</Length>
+					<Heigth>1</Heigth>
+					<Windings>2</Windings>
+					<StartingPoint>
+						<x>-1.5</x>
+						<y>6</y>
+						<z>5</z>
+					</StartingPoint>
+					<Phi>4</Phi>
+					<Theta>65</Theta>
+					<Psi>7</Psi>
+					<Current>0</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+					<begin>"w"</begin>
+				</RectangularCoil>
+			</RectangularCoils>
+			<CircularConductors>
+				<CircularConductor number="1" status="disabled">
+					<CoordinatesCentre>
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</CoordinatesCentre>
+					<Radius>7</Radius>
+					<Orientation>
+						<Phi>0</Phi>
+						<Theta>0</Theta>
+					</Orientation>
+					<Current>1</Current>
+				</CircularConductor>
+				<CircularConductor number="2" status="disabled">
+					<CoordinatesCentre>
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</CoordinatesCentre>
+					<Radius>1</Radius>
+					<Orientation>
+						<Phi>0</Phi>
+						<Theta>0</Theta>
+					</Orientation>
+					<Current>0</Current>
+				</CircularConductor>
+			</CircularConductors>
+			<BentConductors>
+				<BentConductor number="1" status="disabled">
+					<CoordinatesCentre>
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</CoordinatesCentre>
+					<Radius>7</Radius>
+					<Orientation>
+						<Phi>0</Phi>
+						<Theta>0</Theta>
+					</Orientation>
+					<Interval>
+						<from>0</from>				<!-- hoek begint te tellen van een loodrechte vector op de richtingsvector evenwijdig met het xy-vlak (kloksgewijs) -->
+						<to>180</to>
+					</Interval>
+					<Current>1</Current>
+				</BentConductor>
+				<BentConductor number="2" status="disabled">
+					<CoordinatesCentre>
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</CoordinatesCentre>
+					<Radius>7</Radius>
+					<Orientation>
+						<Phi>0</Phi>
+						<Theta>0</Theta>
+					</Orientation>
+					<Interval>
+						<from>0</from>
+						<to>180</to>
+					</Interval>
+					<Current>0</Current>
+				</BentConductor>
+			</BentConductors>
+			<CircularCoils>
+				<CircularCoil number="1" status="diabled">
+					<Heigth>4</Heigth>
+					<Windings>30</Windings>
+					<CoordinatesCentre>
+						<x>0</x>
+						<y>0</y>
+						<z>-5</z>
+					</CoordinatesCentre>
+					<Radius>5</Radius>
+					<Phi>0</Phi>
+					<Theta>0</Theta>
+					<begin>20</begin>
+					<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+				</CircularCoil>
+				<CircularCoil number="2" status="disabled">
+					<Heigth>4</Heigth>
+					<Windings>1</Windings>
+					<CoordinatesCentre>
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Phi>45</Phi>
+					<Theta>45</Theta>
+					<begin>20</begin>
+					<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+				</CircularCoil>
+			</CircularCoils>
+			<Spheres>
+				<Sphere number="1" status="disabled">
+					<CoordinatesCentre>
+						<x>1</x>
+						<y>1</y>
+						<z>1</z>
+					</CoordinatesCentre>
+					<Radius>2</Radius>
+					<Charge>10**(-18)</Charge>
+				</Sphere>
+			</Spheres>
+			<Spheres2>
+				<Sphere2 number="1" status="disabled">
+					<CoordinatesCentre>
+						<x>10</x>
+						<y>10</y>
+						<z>-10</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Potential>5</Potential>
+				</Sphere2>
+				<Sphere2 number="2" status="disabled">
+					<CoordinatesCentre>
+						<x>-10</x>
+						<y>10</y>
+						<z>-10</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Potential>5</Potential>
+				</Sphere2>
+				<Sphere2 number="3" status="disabled">
+					<CoordinatesCentre>
+						<x>-10</x>
+						<y>-10</y>
+						<z>-10</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Potential>5</Potential>
+				</Sphere2>
+				<Sphere2 number="4" status="disabled">
+					<CoordinatesCentre>
+						<x>10</x>
+						<y>-10</y>
+						<z>-10</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Potential>5</Potential>
+				</Sphere2>
+				<Sphere2 number="5" status="disabled">
+					<CoordinatesCentre>
+						<x>10</x>
+						<y>10</y>
+						<z>10</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Potential>5</Potential>
+				</Sphere2>
+				<Sphere2 number="6" status="disabled">
+					<CoordinatesCentre>
+						<x>-10</x>
+						<y>10</y>
+						<z>10</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Potential>5</Potential>
+				</Sphere2>
+				<Sphere2 number="7" status="disabled">
+					<CoordinatesCentre>
+						<x>-10</x>
+						<y>-10</y>
+						<z>10</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Potential>5</Potential>
+				</Sphere2>
+				<Sphere2 number="8" status="disabled">
+					<CoordinatesCentre>
+						<x>10</x>
+						<y>-10</y>
+						<z>10</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Potential>5</Potential>
+				</Sphere2>
+			</Spheres2>
+			<Cylinders>
+				<Cylinder number="1" status="enabled">
+					<CoordinatesPoint1>
+						<x>1.25</x>
+						<y>1.25</y>
+						<z>0.3</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>1.25</x>
+						<y>1.25</y>
+						<z>1.3</z>
+					</CoordinatesPoint2>
+					<Radius>0.5</Radius>
+					<Potential>0</Potential>
+				</Cylinder>
+				<Cylinder number="2" status="enabled">
+					<CoordinatesPoint1>
+						<x>1.25</x>
+						<y>1.25</y>
+						<z>0.3</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>1.25</x>
+						<y>1.25</y>
+						<z>1.3</z>
+					</CoordinatesPoint2>
+					<Radius>0.8</Radius>
+					<Potential>0</Potential>
+				</Cylinder>
+				<Cylinder number="3" status="enabled">
+					<CoordinatesPoint1>
+						<x>-1.25</x>
+						<y>-1.25</y>
+						<z>0.3</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>-1.25</x>
+						<y>-1.25</y>
+						<z>1.3</z>
+					</CoordinatesPoint2>
+					<Radius>0.5</Radius>
+					<Potential>0.5</Potential>
+				</Cylinder>
+				<Cylinder number="4" status="enabled">
+					<CoordinatesPoint1>
+						<x>-1.25</x>
+						<y>-1.25</y>
+						<z>0.3</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>-1.25</x>
+						<y>-1.25</y>
+						<z>1.3</z>
+					</CoordinatesPoint2>
+					<Radius>0.8</Radius>
+					<Potential>0.5</Potential>
+				</Cylinder>
+				<Cylinder number="5" status="enabled">
+					<CoordinatesPoint1>
+						<x>-1.25</x>
+						<y>1.25</y>
+						<z>0.3</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>-1.25</x>
+						<y>1.25</y>
+						<z>1.3</z>
+					</CoordinatesPoint2>
+					<Radius>0.5</Radius>
+					<Potential>0.5</Potential>
+				</Cylinder>
+				<Cylinder number="6" status="enabled">
+					<CoordinatesPoint1>
+						<x>-1.25</x>
+						<y>1.25</y>
+						<z>0.3</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>-1.25</x>
+						<y>1.25</y>
+						<z>1.3</z>
+					</CoordinatesPoint2>
+					<Radius>0.8</Radius>
+					<Potential>0.5</Potential>
+				</Cylinder>
+				<Cylinder number="7" status="enabled">
+					<CoordinatesPoint1>
+						<x>1.25</x>
+						<y>-1.25</y>
+						<z>0.3</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>1.25</x>
+						<y>-1.25</y>
+						<z>1.3</z>
+					</CoordinatesPoint2>
+					<Radius>0.5</Radius>
+					<Potential>0.5</Potential>
+				</Cylinder>
+				<Cylinder number="8" status="enabled">
+					<CoordinatesPoint1>
+						<x>1.25</x>
+						<y>-1.25</y>
+						<z>0.3</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>1.25</x>
+						<y>-1.25</y>
+						<z>1.3</z>
+					</CoordinatesPoint2>
+					<Radius>0.8</Radius>
+					<Potential>0.5</Potential>
+				</Cylinder>
+			</Cylinders>
+			<CircularDiscs>
+				<CircularDisc number="1" status="disabled">
+					<CoordinatesCentre>
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</CoordinatesCentre>
+					<Radius>4</Radius>
+					<Orientation>
+						<Phi>0</Phi>
+						<Theta>0</Theta>
+					</Orientation>
+					<Potential>5</Potential>
+				</CircularDisc>
+			</CircularDiscs>
+			<CircularDiscs4Holes>
+				<CircularDisc4Holes number="1" status="enabled">
+					<CoordinatesCentre>
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</CoordinatesCentre>
+					<Radius>3000</Radius>
+					<Orientation>
+						<x>0</x>
+						<y>0</y>
+						<z>1</z>
+					</Orientation>
+					<Potential>0</Potential>
+					<Holes>
+						<CoordinatesCentre1>
+							<x>1.25</x>
+							<y>1.25</y>
+							<z>0</z>
+						</CoordinatesCentre1>
+						<Radius1>0.8</Radius1>
+						<CoordinatesCentre2>
+							<x>-1.25</x>
+							<y>-1.25</y>
+							<z>0</z>
+						</CoordinatesCentre2>
+						<Radius2>0.8</Radius2>
+						<CoordinatesCentre3>
+							<x>-1.25</x>
+							<y>1.25</y>
+							<z>0</z>
+						</CoordinatesCentre3>
+						<Radius3>0.8</Radius3>
+						<CoordinatesCentre4>
+							<x>1.25</x>
+							<y>-1.25</y>
+							<z>0</z>
+						</CoordinatesCentre4>
+						<Radius4>0.8</Radius4>
+					</Holes>
+				</CircularDisc4Holes>
+			</CircularDiscs4Holes>
+			<Surfaces>
+				<Surface number="1" status="disabled">
+					<Equation>x**2+y**2</Equation>
+					<Potential>5</Potential>
+				</Surface>
+			</Surfaces>
+			<Lines>
+				<Line number="1" status="disabled">
+					<CoordinatesPoint1>
+						<x>0</x>
+						<y>0</y>
+						<z>-1000</z>
+					</CoordinatesPoint1>
+					<CoordinatesPoint2>
+						<x>0</x>
+						<y>0</y>
+						<z>1000</z>
+					</CoordinatesPoint2>
+					<Charge>10**(-18)</Charge>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+				</Line>
+			</Lines>
+		</Elements>
+		<Particle>
+			<Type>proton</Type>							<!-- custom, electron or proton (if custom we need mass, charge) -->
+			<Velocity>100</Velocity>					<!-- in m/s -->
+			<Phi1>45</Phi1>								<!-- angle of direction of movement measured from x-axis (anti-clockwise) (horizontally) (0-360 degree) -->
+			<Theta1>45</Theta1>							<!-- angle of direction of movement measured from z-axis (clockwise) (horizontally) (0-360 degree) -->
+			<Acceleration>0</Acceleration>				<!-- in m/s² -->
+			<Phi2>20</Phi2>								<!-- angle of direction of movement measured from x-axis (anti-clockwise) (horizontally) (0-360 degree) -->
+			<Theta2>20</Theta2>							<!-- angle of direction of movement measured from z-axis (clockwise) (horizontally) (0-360 degree) -->
+			<Position>
+				<x>8</x>
+				<y>2</y>								<!-- starting position particle -->
+				<z>2</z>
+			</Position>
+			<Mass>9.10938356*(10**(-31))</Mass>  		<!-- in kilograms -->
+			<Charge>-1.6021766208*(10**(-19))</Charge>	<!-- in coulombs -->
+		</Particle>
+		<Setup>
+			<Trajectory>
+				<TrajectoryBoundaries>
+					<xmin>-20</xmin>
+					<xmax>20</xmax>
+					<ymin>-20</ymin>
+					<ymax>20</ymax>
+					<zmin>-20</zmin>
+					<zmax>20</zmax>
+				</TrajectoryBoundaries>
+				<TimeSteps>0.0005</TimeSteps>
+				<TimeLimit>1</TimeLimit>
+			</Trajectory>
+			<Output>
+				<TrajectoryPlot execute="yes"></TrajectoryPlot>
+				<MagneticFieldPlot execute="yes" normalize="True">
+					<MagneticFieldBoundaries>
+						<xmin>-20</xmin>
+						<xmax>20</xmax>
+						<ymin>-20</ymin>
+						<ymax>20</ymax>
+						<zmin>-20</zmin>
+						<zmax>20</zmax>
+					</MagneticFieldBoundaries>
+				</MagneticFieldPlot>
+				<ElectricFieldPlot execute="yes" normalize="True">
+					<ElectricFieldBoundaries>
+						<xmin>-20</xmin>
+						<xmax>20</xmax>
+						<ymin>-20</ymin>
+						<ymax>20</ymax>
+						<zmin>-20</zmin>
+						<zmax>20</zmax>
+					</ElectricFieldBoundaries>
+				</ElectricFieldPlot>
+				<WriteDataToFile execute="yes">Data.txt</WriteDataToFile>
+			</Output>
+		</Setup>		
+	</Data>
+	
