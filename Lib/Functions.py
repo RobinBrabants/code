@@ -13,6 +13,7 @@ from multiprocessing import pool
 
 
 def ConvertAnglesToVector(Phi, Theta):
+    print("test")
     pi = math.pi
     a = math.tan(Theta)/math.sqrt(1 + math.tan(Theta)**2)
 
