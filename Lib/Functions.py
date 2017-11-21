@@ -10,10 +10,10 @@ from random import random
 from operator import itemgetter
 import multiprocessing as mp
 from multiprocessing import pool
+import time
 
 
 def ConvertAnglesToVector(Phi, Theta):
-    print("test")
     pi = math.pi
     a = math.tan(Theta)/math.sqrt(1 + math.tan(Theta)**2)
 
@@ -124,6 +124,199 @@ def EvaluateField(B, S):
     return Beval
 
 
+def Get_Data_EWOS(EWOS):
+    # function to get the data (surfaces and their potentials) for the main function
+    functions = []
+    potentials = []
+    i = 0
+
+    if EWOS.find("EvalWalkOnSpheres") != -1:
+        while EWOS.find("EvalWalkOnSpheres") != -1:
+            end = EWOS.find(")")+1
+
+            functions.append(EWOS[EWOS.find("function")+11:EWOS.find(", potential")])
+            potentials.append(EWOS[EWOS.find("potential")+12:EWOS.find(")")])
+
+
+            if functions[i].find("sphere") != -1:
+                functions[i] = functions[i]
+                potentials[i] = eval(potentials[i])
+            elif functions[i].find("cylinder") != -1:
+                functions[i] = functions[i]
+                potentials[i] = eval(potentials[i])
+            elif functions[i].find("circulardisk") != -1:
+                functions[i] = functions[i]
+                potentials[i] = eval(potentials[i])
+            elif functions[i].find("circdisk4holes") != -1:
+                functions[i] = functions[i]
+                potentials[i] = eval(potentials[i])
+            else:
+                functions[i] = eval(functions[i])
+                potentials[i] = eval(potentials[i])
+
+            EWOS = EWOS[end:]
+
+            i+=1
+
+
+    return functions, potentials
+
+
+
+def WOS_Distance(P, functions, potentials):
+
+    max_i = len(functions)
+
+    dist = []
+    #bepalen van de afstand vanuit P tot aan alle oppervlakken
+    for i in range(0, max_i):
+        if functions[i].find("sphere") != -1:
+            M = eval(functions[i][functions[i].find("["):functions[i].find("]") + 1])
+            R = eval(functions[i][functions[i].find(";") + 2:])
+            dist.append(dist_sphere(P, M, R))
+
+
+        elif functions[i].find("cylinder") != -1:
+            P1 = eval(functions[i][functions[i].find("["):functions[i].find("]") + 1])
+            Q = eval(functions[i][functions[i].find(";") + 2:functions[i].find(", radius")])
+            R = eval(functions[i][functions[i].find("radius") + 9:])
+
+            dist.append(dist_cylinder(P, P1, Q, R))
+
+        elif functions[i].find("circulardisk") != -1:
+            M = eval(functions[i][functions[i].find("["):functions[i].find("]") + 1])
+            R = eval(functions[i][functions[i].find(";") + 2:functions[i].find(", orientation")])
+            Phi = eval(functions[i][functions[i].find("phi") + 4:functions[i].find(", theta")])
+            Theta = eval(functions[i][functions[i].find("theta") + 6:])
+
+            dist.append(dist_circdisc(P, M, R, Phi, Theta))
+
+        elif functions[i].find("circdisk4holes") != -1:
+            M = eval(functions[i][functions[i].find("["):functions[i].find("]") + 1])
+            R = eval(functions[i][functions[i].find(";") + 2:functions[i].find(", orientation")])
+            N = eval(functions[i][functions[i].find("orientation") + 14:functions[i].find(", holes")])
+            M1 = eval(functions[i][functions[i].find("M1") + 3:functions[i].find(", R1")])
+            R1 = eval(functions[i][functions[i].find("R1") + 3:functions[i].find("; M2")])
+            M2 = eval(functions[i][functions[i].find("M2") + 3:functions[i].find(", R2")])
+            R2 = eval(functions[i][functions[i].find("R2") + 3:functions[i].find("; M3")])
+            M3 = eval(functions[i][functions[i].find("M3") + 3:functions[i].find(", R3")])
+            R3 = eval(functions[i][functions[i].find("R3") + 3:functions[i].find("; M4")])
+            M4 = eval(functions[i][functions[i].find("M4") + 3:functions[i].find(", R4")])
+            R4 = eval(functions[i][functions[i].find("R4") + 3:])
+
+            dist.append(dist_circdisc_4holes(P, M, M1, M2, M3, M4, R, R1, R2, R3, R4, N))
+
+        else:
+            function = eval(functions[i])
+            dist.append(dist_surface(P, function))
+
+    index, radius = min(enumerate(dist), key=itemgetter(1))
+
+    return (radius, potentials[index])
+
+
+def WOS_DistanceGrid(P, EWOS, space, dim_x, dim_y, dim_z):
+
+    functions, potentials = Get_Data_EWOS(EWOS)
+
+    Dgrid = np.zeros(shape=(len(dim_x), len(dim_y), len(dim_z)))
+
+    factor = len(y)
+    number_iterations = len(y) * len(z)
+
+    # multi-processing of the different z arrays in Dgrid (determines automatically how many parallel processes it can run depending on the amount of CPU's in your computer)
+    pool = mp.Pool()
+    results = [pool.apply_async(WOS_Process, args=(z, functions, potentials, dim_x, dim_y)) for z in dim_z]
+    pool.close
+    pool.join
+
+    list = [p.get() for p in results]
+
+    # list has to be sorted cause processes don't finish in the correct order
+    list.sort()
+    list = [r[1] for r in list]
+
+    # assignment to the Vgrid
+    for k in range(0, len(z)):
+        for l in range(0, len(y)):
+            Vgrid[k, l] = list[l + factor * k]
+
+    print("WOS: completed")
+
+    np.set_printoptions(threshold=np.nan, linewidth=500)
+
+    print(Vgrid)
+
+
+    return Vgrid
+
+    return
+
+
+def WOS_Process(P, functions, potentials, dim_x, dim_y):
+
+    Grid = np.zeros(shape=(len(dim_x), len(dim_y)))
+
+    for k in range(0, len(dim_y)):
+        for l in range(0, len(dim_x)):
+            Grid[k, l] = WOS_Distance(P, functions, potentials)
+
+
+    return Grid
+
+
+def WalkOnSpheres_potential_slice(EWOS, x, y, z):
+
+    functions, potentials = Get_Data_EWOS(EWOS)
+
+    print(functions)
+
+    Vgrid = np.zeros(shape=(len(z), len(y)))
+
+    factor = len(y)
+    number_iterations = len(y) * len(z)
+
+    #multi-processing of the different points in Vgrid (determines automatically how many parallel processes it can run depending on the amount of CPU's in your computer)
+    pool = mp.Pool()
+    results = [pool.apply_async(MultiProcess_WOS, args=([x, j, i], z[::-1].index(i), y.index(j), functions, potentials, factor, number_iterations)) for i in z[::-1] for j in y]
+    pool.close
+    pool.join
+
+    list = [p.get() for p in results]
+
+    #list has to be sorted cause processes don't finish in the correct order
+    list.sort()
+    list = [r[1] for r in list]
+
+    #assignment to the Vgrid
+    for k in range(0,len(z)):
+        for l in range(0, len(y)):
+            Vgrid[k, l] = list[l+factor*k]
+
+    print("WOS: completed")
+
+    np.set_printoptions(threshold=np.nan, linewidth=500)
+
+    print(Vgrid)
+
+    #write to the file
+    f = open("Vgrid", "w+")
+
+    f.write("x\r\n")
+    f.write(str(x))
+    f.write("\r\n")
+    f.write("y\r\n")
+    f.write(str(y))
+    f.write("\r\n")
+    f.write("z\r\n")
+    f.write(str(z))
+    f.write("\r\n")
+    f.write("Vgrid\r\n")
+    f.write(str(Vgrid))
+
+    return Vgrid
+
+
 def WalkOnSpheres_potential_slice(EWOS, x, y, z):
 
     functions, potentials = Get_Data_EWOS(EWOS)
@@ -185,42 +378,6 @@ def MultiProcess_WOS(P, k, l, functions, potentials, factor, number_iteration):
     return (l + factor * k, potential)
 
 
-def Get_Data_EWOS(EWOS):
-    # function to get the data (surfaces and their potentials) for the main function
-    functions = []
-    potentials = []
-    i = 0
-
-    if EWOS.find("EvalWalkOnSpheres") != -1:
-        while EWOS.find("EvalWalkOnSpheres") != -1:
-            end = EWOS.find(")")+1
-
-            functions.append(EWOS[EWOS.find("function")+11:EWOS.find(", potential")])
-            potentials.append(EWOS[EWOS.find("potential")+12:EWOS.find(")")])
-
-
-            if functions[i].find("sphere") != -1:
-                functions[i] = functions[i]
-                potentials[i] = eval(potentials[i])
-            elif functions[i].find("cylinder") != -1:
-                functions[i] = functions[i]
-                potentials[i] = eval(potentials[i])
-            elif functions[i].find("circulardisk") != -1:
-                functions[i] = functions[i]
-                potentials[i] = eval(potentials[i])
-            elif functions[i].find("circdisk4holes") != -1:
-                functions[i] = functions[i]
-                potentials[i] = eval(potentials[i])
-            else:
-                functions[i] = eval(functions[i])
-                potentials[i] = eval(potentials[i])
-
-            EWOS = EWOS[end:]
-
-            i+=1
-
-
-    return functions, potentials
 
 
 def potential_EWOS(functions,potentials,P):
@@ -251,11 +408,11 @@ def potential_EWOS(functions,potentials,P):
 
 
                 elif functions[i].find("cylinder") != -1:
-                    P = eval(functions[i][functions[i].find("["):functions[i].find("]") + 1])
+                    P1 = eval(functions[i][functions[i].find("["):functions[i].find("]") + 1])
                     Q = eval(functions[i][functions[i].find(";") + 2:functions[i].find(", radius")])
                     R = eval(functions[i][functions[i].find("radius") + 9:])
 
-                    dist.append(dist_cylinder(P_var, P, Q, R))
+                    dist.append(dist_cylinder(P_var, P1, Q, R))
 
                 elif functions[i].find("circulardisk") != -1:
                     M = eval(functions[i][functions[i].find("["):functions[i].find("]") + 1])
@@ -280,10 +437,10 @@ def potential_EWOS(functions,potentials,P):
 
                     dist.append(dist_circdisc_4holes(P_var, M, M1, M2, M3, M4, R, R1, R2, R3, R4, N))
 
+
                 else:
                     function = eval(functions[i])
                     dist.append(dist_surface(P_var, function))
-
             #bol heeft als straal de kleinste afstand
             index, radius = min(enumerate(dist), key=itemgetter(1))
 
@@ -323,6 +480,7 @@ def potential_EWOS(functions,potentials,P):
 
 
             j += 1
+
 
         k += 1
 
@@ -596,7 +754,7 @@ def dist_cylinder(P, S, Q, R):
 
     if c != 0:
         if (1/c)*(a*x_1+b*y_1+c*z_1-a*x-b*y)<=z<=(1/c)*(a*x_2+b*y_2+c*z_2-a*x-b*y):
-            t = (a*x+b*y+c*z)/(c*(z_2-z_1)+a*(x_2-x_1)+b*(y_2-y_1))
+            t = (a*x+b*y+c*z-a*x_1-b*y_1-z_1)/(c*(z_2-z_1)+a*(x_2-x_1)+b*(y_2-y_1))
             x_c = x_1 + t*(x_2-x_1)
             y_c = y_1 + t * (y_2 - y_1)
             z_c = z_1 + t * (z_2 - z_1)
@@ -610,7 +768,7 @@ def dist_cylinder(P, S, Q, R):
     else:
         if b != 0:
             if (1/b)*(a*x_1+b*y_1+c*z_1-a*x-c*z)<=y<=(1/b)*(a*x_2+b*y_2+c*z_2-a*x-c*z):
-                t = (a * x + b * y + c * z) / (c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
+                t = (a * x + b * y + c * z - a * x_1 - b * y_1 - z_1) / (c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
                 x_c = x_1 + t * (x_2 - x_1)
                 y_c = y_1 + t * (y_2 - y_1)
                 z_c = z_1 + t * (z_2 - z_1)
@@ -623,7 +781,7 @@ def dist_cylinder(P, S, Q, R):
                 distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - R) ** 2)
         else:
             if (1/a)*(a*x_1+b*y_1+c*z_1-b*y-c*z)<=x<=(1/a)*(a*x_2+b*y_2+c*z_2-b*y-c*z):
-                t = (a * x + b * y + c * z) / (c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
+                t = (a * x + b * y + c * z - a * x_1 - b * y_1 - z_1) / (c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
                 x_c = x_1 + t * (x_2 - x_1)
                 y_c = y_1 + t * (y_2 - y_1)
                 z_c = z_1 + t * (z_2 - z_1)
