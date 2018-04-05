@@ -1,3 +1,5 @@
+# main function from which everything in the Lib will be called
+
 from Lib.ParticleMove import ParticleMove
 from Lib.RepresentData import *
 import numpy as np
@@ -5,70 +7,120 @@ from Lib.Functions import *
 import time
 from random import random
 import datetime
-
-d = ReadXml()
-
-
-#P_var reset niet
-
-"""print(d)
-
-P = [5, 6, 1]
-
-dist1 = dist_cylinder(P, [1.25, 1.25, 0.3], [1.25, 1.25, 1.3], 0.5)
-dist2 = dist_circdisc_4holes(P, [0, 0, 0], [1.25, 1.25, 0], [-1.25, -1.25, 0], [-1.25, 1.25, 0], [1.25, -1.25, 0], 3000, 0.8, 0.8, 0.8, 0.8, [0, 0, 1])
-
-print(dist1)
-print(dist2)"""
-
-E_listWOS = SetupElementsWOS(d)
-
-EWOS = ResultingString(E_listWOS)
+from Lib.Elements import *
+import xml.etree.ElementTree as ET
 
 
-print(np.zeros(shape=(5,5,5)))
+#d = ReadXml()
 
-space = 10 ** (-2)
-dim_y = np.arange(-10, 10.01, space).tolist()
-dim_y = np.arange(-10, 10.01, space).tolist()
-dim_z = np.arange(0, 5.01, space).tolist()
+electrodes = []
+
+tree = ET.parse("DataFile.xml")
+root = tree.getroot()
+
+d = {}
+
+
+class_names = [cls.__name__ for cls in vars()['Electrode'].__subclasses__()]
 
 
 
+for cls in class_names:
+    if root.find('.//' + cls):
+        print (cls)
+
+        for element in root.iter(cls):
+            if element.attrib["status"] == "enabled":
+                print("ok")
+                print(StraightConductor.__dict__.iteritems())
+
+
+"""
+for straightconductors in root.iter("StraightConductor"):
+    if straightconductors.attrib["status"] == "enabled":
+
+        CoordinatesPoint = straightconductors.find("CoordinatesPoint1")
+        CoordinatesPoint1 = [eval(CoordinatesPoint.find("x").text), eval(CoordinatesPoint.find("y").text),
+                            eval(CoordinatesPoint.find("z").text)]
+
+        CoordinatesPoint = straightconductors.find("CoordinatesPoint2")
+        CoordinatesPoint2 = [eval(CoordinatesPoint.find("x").text), eval(CoordinatesPoint.find("y").text),
+                            eval(CoordinatesPoint.find("z").text)]
+
+        Current = eval(straightconductors.find("Current").text)
+        Radius = eval(straightconductors.find("Radius").text)
+
+        print(CoordinatesPoint1, CoordinatesPoint2, Current, Radius)
+
+        Element = StraightConductor("StraightConductor_" + str(i), CoordinatesPoint1, CoordinatesPoint2, Current, Radius)
+        electrodes.append(Element)
+        i += 1
+
+for electrode in electrodes:
+    print(electrode.name)
+    print(electrode.GetClosestDistanceToPoint([0,0,11]))
+    print(electrode.Current)
+"""
+"""
+B_list = SetupElements(d)
+
+B = ResultingField(B_list)
+
+E_list = SetupElements2(d)
+
+E = ResultingField(E_list)
 
 
 
+#WalkOnSpheres(EWOS)
 
 
+data = ParticleMove(B, E, "EWOS", d)
 
+if d["WriteDataToFile"] == "yes":
+    WriteFile(B, data, d)
+
+if d["MagneticFieldPlot"] == "yes":
+    Plotfield(B, d)
+
+if d["ElectricFieldPlot"] == "yes":
+    Plotfield(E, d)
+
+if d["TrajectoryPlot"] == "yes":
+    PlotTrajectory(data)
 
 
 
 
 """
-#dimensions of grid where all the minimum distances will come in:
 
+
+
+
+"""
+WOS:
+
+
+d = ReadXml()
+
+print(datetime.datetime.now().time())
+x = 5  # ook bv x = 3*y
+y = np.arange(-4, 4, 2).tolist()
+z = np.arange(-4, 4, 2).tolist()
 
 
 t1 = time.time()
-print(datetime.datetime.now().time())
-x = 0  # ook bv x = 3*y
-y = np.arange(-3, 3.05, 0.4).tolist()
-z = np.arange(0, 2.05, 0.4).tolist()
+Vgrid = WalkOnSpheres_potential_slice(d,x,y,z)
 
-y = [1.4]
-z = [1.5]
-
-Vgrid = WalkOnSpheres_potential_slice(EWOS,x,y,z)
 t2 = time.time()
-print(t2-t1)"""
 
+print(t2-t1)
+"""
 
-
-
-
-#https://www.howtoforge.com/tutorial/install-git-and-github-on-ubuntu-14.04/
-#cd /home/robin/Documents/code
-#git add *
-#git commit -m "ee"
-#git push origin master
+"""
+https://www.howtoforge.com/tutorial/install-git-and-github-on-ubuntu-14.04/
+cd /home/robin/Documents/code
+git add *
+git commit -m "ee"
+git push origin master
+"""

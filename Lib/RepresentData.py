@@ -136,6 +136,7 @@ def Plotfield(B, d):
 
     plt.show(block="False")
 
+
 def WriteFile(B, data, d):
 
     print("WriteFile")

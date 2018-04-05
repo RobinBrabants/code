@@ -27,11 +27,14 @@ def ParticleMove(B, E, EWOS, d):
 
     while time <= d["maxtime"]:
 
-        B = EvaluateField(B, Coordinates)
-        E = EvaluateField(E, Coordinates)
+        B = EvaluateAnalyticField(B, Coordinates)
+        E_analytic = EvaluateAnalyticField(E, Coordinates)
+        #E_WOS =
+        E = E_analytic
 
 
-        #relativistische correctie
+
+        #relativistic correction
         c = 299792458
         gamma = 1/(1-Speed.magnitude()**2/c**2)
 

@@ -1,9 +1,9 @@
 import math
 import sympy as sy
 from math import sqrt, sin, cos, tan
-from Lib.Functions import *
 from sympy import solve_poly_system
 from sympy.vector import CoordSysCartesian
+from sympy.vector import CoordSysCartesian, Vector
 
 
 def StraightConductor(P, Q, I):
@@ -47,7 +47,9 @@ def StraightConductorCollection(I, *args):
 
 
 def Rectangularcoil(w, l, h, N, SP, Phi, Theta, Psi, I, begin):
+    from Lib.Functions import UpdateDictionary
     """width, length, heigth, number of windings, starting point of windings, angles of euler, begin is either width or length"""
+    #from .Functions import *
 
     Phi = math.radians(Phi)
     Theta = math.radians(Theta)
@@ -179,7 +181,7 @@ def CircularConductor(M, R, Phi, Theta, I):
     return B
 
 def CircularCoil(M, R, Phi, Theta, begin, h, N, I):
-
+    from Lib.Functions import UpdateDictionary, ConvertAnglesToVector, ConvertVectorToAngles
     Phi = math.radians(Phi)
     Theta = math.radians(Theta)
 
