@@ -12,6 +12,8 @@ import multiprocessing as mp
 from Lib.Elements import *
 from multiprocessing import pool
 import time
+import inspect
+import sys
 
 
 def ConvertAnglesToVector(Phi, Theta):
@@ -37,7 +39,7 @@ def ConvertAnglesToVector(Phi, Theta):
     else:
         ez = 1
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     return ex*L.i + ey*L.j + ez*L.k
 
@@ -54,7 +56,7 @@ def ConvertVectorToAngles(v):
     vcomponents = v.components
     UpdateDictionary(vcomponents)
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     ex = vcomponents[L.i]
     ey = vcomponents[L.j]
@@ -69,7 +71,7 @@ def ConvertVectorToAngles(v):
 
 def UpdateDictionary(Dict):
     # Function which adds missing elements to the Dictionary object
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
     if L.i not in Dict:
         Dict.setdefault(L.i, 0)
     if L.j not in Dict:
@@ -81,13 +83,13 @@ def UpdateDictionary(Dict):
 def EvaluateAnalyticField(F, S):
     # Functions which evaluates an analytical field
     x, y, z, Phi2, t = sy.symbols('x y z Phi2 t')
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     Fcomponents = F.components
     UpdateDictionary(Fcomponents)
 
     for basis in [L.i, L.j, L.k]:
-        # For loop which checks whether there are any integrals that need to be numerically evaluated
+        # For loop which checks whether there are any integrals which need to be numerically evaluated
 
         sum_integrals = 0
 
@@ -134,220 +136,64 @@ def EvaluateAnalyticField(F, S):
 
 
 def ReadXml():
-    #funtion which reads the XML file
-    tree = ET.parse("DataFile.xml")
+    # User needs to put a named xml file on the same level as the Main.py executable (so in the program folder)
+    # The name of the file needs to be passed when executing the program from the command window, e.g.: python Main.py Datafile.xml
+    # output is a list of objects which represent the electrodes(_WOS), a particle object and a dictionary holding information about the setup
+
+    # Check if the correct argument is given:
+    if len(sys.argv) == 1:
+        sys.exit("ERROR: User needs to give the xml-file holding the data as an argument")
+    elif len(sys.argv) > 2:
+        sys.exit("ERROR: Too many arguments given, please only give the data file as an argument")
+    else:
+        print("The data wil be read from: " + str(sys.argv[1]) + " ...")
+
+    tree = ET.parse(str(sys.argv[1]))  # Load the given xml-file passed as an argument
     root = tree.getroot()
 
-    d = {}
-    ParticleDictionary = {"electron": [9.10938356*(10**(-31)), -1.6021766208*(10**(-19))], "proton": [1.672621898*(10**(-27)), 1.6021766208*10**(-19)]}
-    i = 1
+    def GetObjects(class_names, root):
+        # function which will generate an object list from the enabled elements in the xml-file
 
-    """
-    # function to get the data (list of electrode classes) for the main function
-    electrodes = []
+        object_list = []
 
-    i = 1
-    while "Msphere2_" + str(i) in d:
-        electrodes.append(
-            Sphere("sphere_" + str(i), d["Msphere2_" + str(i)], d["Rsphere2_" + str(i)], d["Vsphere2_" + str(i)]))
-        i += 1
+        for cls in class_names:
+            if root.find(
+                    './/' + cls) is not None:  # checks if there are any elements in the xml-file which have the same name as the classes
+                input_parameters_names = list(inspect.signature(eval(
+                    cls)).parameters)  # the input parameters needed as input to generate an object from a specific class
+                input_parameters_names.remove('name')
 
-    i = 1
-    while "Pcylinder_" + str(i) in d:
-        electrodes.append(Cylinder(d["Pcylinder_" + str(i)], d["Qcylinder_" + str(i)], d["Rcylinder_" + str(i)],
-                                   d["Vcylinder_" + str(i)]))
-        i += 1
+                i = 1
+                for element in root.iter(
+                        cls):  # if there are multiple elements from the same type, there will be iterated over these elements
+                    if element.attrib[
+                        "status"] == "enabled":  # will only make an object if the status is enabled in the xml file
+                        input_parameters = [cls + str(i)]  # first input parameter is the object name
+                        for parameter in input_parameters_names:
+                            if element.find(
+                                    parameter) is None:  # error message to warn for misspelling or forgetting to specify certain input parameters
+                                sys.exit("ERROR: the input parameter " + str(parameter) + " for the element: " + str(
+                                    cls) + " has not been specified or has been misspelled in the xml-file, please correct this and execute the program again")
+                            input_parameters.append(eval(element.find(
+                                parameter).text))  # will find the other input parameters in the xml file and hold its values in a list
 
-    i = 1
-    while "Mcircdisc_" + str(i) in d:
-        electrodes.append(
-            CircularDisk(d["Mcircdisc_" + str(i)], d["Rcircdisc_" + str(i)], d["Phicircdisc_" + str(i)],
-                         d["Thetacircdisc_" + str(i)], d["Vcircdisc_" + str(i)]))
-        i += 1
+                        object_list.append(eval(cls)(
+                            *input_parameters))  # generates the correct class object with the extracted input parameters and appends it to the list
+                        i += 1
 
-    i = 1
-    while "Mcircdisc4h_" + str(i) in d:
-        electrodes.append(
-            CircularDisk4Holes(d["Mcircdisc4h_" + str(i)], d["Mcircdisc4h1_" + str(i)], d["Mcircdisc4h2_" + str(i)],
-                               d["Mcircdisc4h3_" + str(i)], d["Mcircdisc4h4_" + str(i)], d["Rcircdisc4h_" + str(i)],
-                               d["Rcircdisc4h1_" + str(i)], d["Rcircdisc4h2_" + str(i)],
-                               d["Rcircdisc4h3_" + str(i)], d["Rcircdisc4h4_" + str(i)], d["Ncircdisc4h_" + str(i)],
-                               d["Vcircdisc4h_" + str(i)]))
-        i += 1
-
-    """
+        return object_list
 
 
-    """
-    for StraightConductor in root.iter("StraightConductor"):
-        if StraightConductor.attrib["status"] == "enabled":
-            CoordinatesPoint1 = StraightConductor.find("CoordinatesPoint1")
-            d["P_" + str(i)] = [eval(CoordinatesPoint1.find("x").text), eval(CoordinatesPoint1.find("y").text), eval(CoordinatesPoint1.find("z").text)]
-            CoordinatesPoint2 = StraightConductor.find("CoordinatesPoint2")
-            d["Q_" + str(i)] = [eval(CoordinatesPoint2.find("x").text), eval(CoordinatesPoint2.find("y").text), eval(CoordinatesPoint2.find("z").text)]
-            d["I_" + str(i)] = eval(StraightConductor.find("Current").text)
-            i += 1
+    # ELECTRODES:
+    class_names = [cls.__name__ for cls in vars()["Electrode"].__subclasses__()]  # get the class names derived from the electrode base class
 
+    electrodes = GetObjects(class_names, root)  # list that holds all the specified electrodes as class objects
 
-    for StraightConductorCollection in root.iter("StraightConductorCollection"):
-        if StraightConductorCollection.attrib["status"] == "enabled":
-            amount = StraightConductorCollection.attrib["amount"]
-            for j in range(1, int(amount) + 1):
-                CoordinatesPoint = StraightConductorCollection.find("CoordinatesPoint" +str(j))
-                d[str(i) + "S_" + str(j)] = [eval(CoordinatesPoint.find("x").text), eval(CoordinatesPoint.find("y").text),
-                                eval(CoordinatesPoint.find("z").text)]
-            d["Icollection_" + str(i)] = eval(StraightConductorCollection.find("Current").text)
-            i += 1
+    # ELECTRODES_WOS (for the Walk on Spheres method)
 
+    electrodes_WOS = []
 
-    for RectangularCoil in root.iter("RectangularCoil"):
-        if RectangularCoil.attrib["status"] == "enabled":
-            StartingPoint = RectangularCoil.find("StartingPoint")
-            d["w_" + str(i)] = eval(RectangularCoil.find("Width").text)
-            d["l_" + str(i)] = eval(RectangularCoil.find("Length").text)
-            d["h_" + str(i)] = eval(RectangularCoil.find("Heigth").text)
-            d["N_" + str(i)] = eval(RectangularCoil.find("Windings").text)
-            d["SP_" + str(i)] = [eval(StartingPoint.find("x").text), eval(StartingPoint.find("y").text),
-                                 eval(StartingPoint.find("z").text)]
-            d["Phireccoil_" + str(i)] = eval(RectangularCoil.find("Phi").text)
-            d["Thetareccoil_" + str(i)] = eval(RectangularCoil.find("Theta").text)
-            d["Psireccoil_" + str(i)] = eval(RectangularCoil.find("Psi").text)
-            d["Ireccoil_" + str(i)] = eval(RectangularCoil.find("Current").text)
-            d["begin_" + str(i)] = eval(RectangularCoil.find("begin").text)
-            i += 1
-
-    for CircularConductor in root.iter("CircularConductor"):
-        if CircularConductor.attrib["status"] == "enabled":
-            CoordinatesCentre = CircularConductor.find("CoordinatesCentre")
-            d["M_" + str(i)] = [eval(CoordinatesCentre.find("x").text), eval(CoordinatesCentre.find("y").text), eval(CoordinatesCentre.find("z").text)]
-            d["R_" + str(i)] = eval(CircularConductor.find("Radius").text)
-            Orientation = CircularConductor.find("Orientation")
-            d["Phi_" + str(i)] = math.radians(eval(Orientation.find("Phi").text))
-            d["Theta_" + str(i)] = math.radians(eval(Orientation.find("Theta").text))
-            d["Icircle_" + str(i)] = eval(CircularConductor.find("Current").text)
-            i += 1
-
-
-
-    for BentConductor in root.iter("BentConductor"):
-        if BentConductor.attrib["status"] == "enabled":
-            CoordinatesCentre = BentConductor.find("CoordinatesCentre")
-            Interval = BentConductor.find("Interval")
-            d["Mbent_" + str(i)] = [eval(CoordinatesCentre.find("x").text), eval(CoordinatesCentre.find("y").text), eval(CoordinatesCentre.find("z").text)]
-            d["Rbent_" + str(i)] = eval(BentConductor.find("Radius").text)
-            Orientation = BentConductor.find("Orientation")
-            d["Phibent_" + str(i)] = math.radians(eval(Orientation.find("Phi").text))
-            d["Thetabent_" + str(i)] = math.radians(eval(Orientation.find("Theta").text))
-            d["Ibent_" + str(i)] = eval(BentConductor.find("Current").text)
-            d["Interval_" + str(i)] = [eval(Interval.find("from").text), eval(Interval.find("to").text)]
-            i += 1
-
-
-
-    for CircularCoil in root.iter("CircularCoil"):
-        if CircularCoil.attrib["status"] == "enabled":
-            CoordinatesCentreCoil = CircularCoil.find("CoordinatesCentre")
-            d["hcoil_" + str(i)] = eval(CircularCoil.find("Heigth").text)
-            d["Ncoil_" + str(i)] = eval(CircularCoil.find("Windings").text)
-            d["Mcoil_" + str(i)] = [eval(CoordinatesCentreCoil.find("x").text), eval(CoordinatesCentreCoil.find("y").text),
-                                 eval(CoordinatesCentreCoil.find("z").text)]
-            d["Rcoil_" + str(i)] = eval(CircularCoil.find("Radius").text)
-            d["Phicoil_" + str(i)] = eval(CircularCoil.find("Phi").text)
-            d["Thetacoil_" + str(i)] = eval(CircularCoil.find("Theta").text)
-            d["Icoil_" + str(i)] = eval(CircularCoil.find("Current").text)
-            d["begincoil_" + str(i)] = eval(CircularCoil.find("begin").text)
-            i += 1
-
-
-    for Sphere in root.iter("Sphere"):
-        if Sphere.attrib["status"] == "enabled":
-            CoordinatesCentre = Sphere.find("CoordinatesCentre")
-            d["Msphere_" + str(i)] = [eval(CoordinatesCentre.find("x").text), eval(CoordinatesCentre.find("y").text), eval(CoordinatesCentre.find("z").text)]
-            d["Rsphere_" + str(i)] = eval(Sphere.find("Radius").text)
-            d["Qsphere_" + str(i)] = eval(Sphere.find("Charge").text)
-            i += 1
-
-
-    for Sphere2 in root.iter("Sphere2"):
-        if Sphere2.attrib["status"] == "enabled":
-            CoordinatesCentre = Sphere2.find("CoordinatesCentre")
-            d["Msphere2_" + str(i)] = [eval(CoordinatesCentre.find("x").text), eval(CoordinatesCentre.find("y").text), eval(CoordinatesCentre.find("z").text)]
-            d["Rsphere2_" + str(i)] = eval(Sphere2.find("Radius").text)
-            d["Vsphere2_" + str(i)] = eval(Sphere2.find("Potential").text)
-
-            i += 1
-
-    for Cylinder in root.iter("Cylinder"):
-        if Cylinder.attrib["status"] == "enabled":
-            CoordinatesPoint1 = Cylinder.find("CoordinatesPoint1")
-            d["Pcylinder_" + str(i)] = [eval(CoordinatesPoint1.find("x").text), eval(CoordinatesPoint1.find("y").text), eval(CoordinatesPoint1.find("z").text)]
-            CoordinatesPoint2 = Cylinder.find("CoordinatesPoint2")
-            d["Qcylinder_" + str(i)] = [eval(CoordinatesPoint2.find("x").text), eval(CoordinatesPoint2.find("y").text), eval(CoordinatesPoint2.find("z").text)]
-            d["Rcylinder_" + str(i)] = eval(Cylinder.find("Radius").text)
-            d["Vcylinder_" + str(i)] = eval(Cylinder.find("Potential").text)
-            i += 1
-
-
-    for CircularDisc in root.iter("CircularDisc"):
-        if CircularDisc.attrib["status"] == "enabled":
-            CoordinatesCentre = CircularDisc.find("CoordinatesCentre")
-            d["Mcircdisc_" + str(i)] = [eval(CoordinatesCentre.find("x").text), eval(CoordinatesCentre.find("y").text), eval(CoordinatesCentre.find("z").text)]
-            d["Rcircdisc_" + str(i)] = eval(CircularDisc.find("Radius").text)
-            Orientation = CircularDisc.find("Orientation")
-            d["Phicircdisc_" + str(i)] = math.radians(eval(Orientation.find("Phi").text))
-            d["Thetacircdisc_" + str(i)] = math.radians(eval(Orientation.find("Theta").text))
-            d["Vcircdisc_" + str(i)] = eval(CircularDisc.find("Potential").text)
-
-            i += 1
-
-
-    for CircularDisc4Holes in root.iter("CircularDisc4Holes"):
-        if CircularDisc4Holes.attrib["status"] == "enabled":
-            CoordinatesCentre = CircularDisc4Holes.find("CoordinatesCentre")
-            d["Mcircdisc4h_" + str(i)] = [eval(CoordinatesCentre.find("x").text), eval(CoordinatesCentre.find("y").text), eval(CoordinatesCentre.find("z").text)]
-            d["Rcircdisc4h_" + str(i)] = eval(CircularDisc4Holes.find("Radius").text)
-            Orientation = CircularDisc4Holes.find("Orientation")
-            d["Ncircdisc4h_" + str(i)] = [eval(Orientation.find("x").text), eval(Orientation.find("y").text), eval(Orientation.find("z").text)]
-            d["Vcircdisc4h_" + str(i)] = eval(CircularDisc4Holes.find("Potential").text)
-            Holes = CircularDisc4Holes.find("Holes")
-            d["Rcircdisc4h1_" + str(i)] = eval(Holes.find("Radius1").text)
-            d["Rcircdisc4h2_" + str(i)] = eval(Holes.find("Radius2").text)
-            d["Rcircdisc4h3_" + str(i)] = eval(Holes.find("Radius3").text)
-            d["Rcircdisc4h4_" + str(i)] = eval(Holes.find("Radius4").text)
-            CoordinatesCentre1 = Holes.find("CoordinatesCentre1")
-            d["Mcircdisc4h1_" + str(i)] = [eval(CoordinatesCentre1.find("x").text),eval(CoordinatesCentre1.find("y").text),eval(CoordinatesCentre1.find("z").text)]
-            CoordinatesCentre2 = Holes.find("CoordinatesCentre2")
-            d["Mcircdisc4h2_" + str(i)] = [eval(CoordinatesCentre2.find("x").text),eval(CoordinatesCentre2.find("y").text),eval(CoordinatesCentre2.find("z").text)]
-            CoordinatesCentre3 = Holes.find("CoordinatesCentre3")
-            d["Mcircdisc4h3_" + str(i)] = [eval(CoordinatesCentre3.find("x").text),eval(CoordinatesCentre3.find("y").text),eval(CoordinatesCentre3.find("z").text)]
-            CoordinatesCentre4 = Holes.find("CoordinatesCentre4")
-            d["Mcircdisc4h4_" + str(i)] = [eval(CoordinatesCentre4.find("x").text),eval(CoordinatesCentre4.find("y").text),eval(CoordinatesCentre4.find("z").text)]
-
-            i += 1
-
-
-    for Surface in root.iter("Surface"):
-        if Surface.attrib["status"] == "enabled":
-            x, y = sy.symbols('x y')
-            d["SurfEq_" + str(i)] = eval(Surface.find("Equation").text)
-            d["Vsurface_" + str(i)] = eval(Surface.find("Potential").text)
-            i += 1
-
-
-    for Line in root.iter("Line"):
-        if Line.attrib["status"] == "enabled":
-            CoordinatesPoint1 = Line.find("CoordinatesPoint1")
-            d["Pline_" + str(i)] = [eval(CoordinatesPoint1.find("x").text), eval(CoordinatesPoint1.find("y").text),
-                                eval(CoordinatesPoint1.find("z").text)]
-            CoordinatesPoint2 = Line.find("CoordinatesPoint2")
-            d["Rline_" + str(i)] = [eval(CoordinatesPoint2.find("x").text), eval(CoordinatesPoint2.find("y").text),
-                                eval(CoordinatesPoint2.find("z").text)]
-            d["Qline_" + str(i)] = eval(Line.find("Charge").text)
-            i += 1
-
-    """
-
-
+    # PARTICLE:
     Particle = root.find("Particle")
     d["v"] = eval(Particle.find("Velocity").text)
     d["Theta1"] = eval(Particle.find("Theta1").text)
@@ -369,7 +215,10 @@ def ReadXml():
         else:
             print("Particle not found in dictionary")
 
-
+    # SETUP
+    # Trajectory
+    # Output (all classes)
+    d = {}
     Setup = root.find("Setup")
 
     Trajectory = Setup.find("Trajectory")
@@ -392,7 +241,7 @@ def ReadXml():
     d["WriteDataToFile"] = Output.find("WriteDataToFile").attrib["execute"]
 
     MagneticFieldPlot = Output.find("MagneticFieldPlot")
-    MagneticFieldBoundaries =  MagneticFieldPlot.find("MagneticFieldBoundaries")
+    MagneticFieldBoundaries = MagneticFieldPlot.find("MagneticFieldBoundaries")
     d["xmin1"] = eval(MagneticFieldBoundaries.find("xmin").text)
     d["xmax1"] = eval(MagneticFieldBoundaries.find("xmax").text)
     d["ymin1"] = eval(MagneticFieldBoundaries.find("ymin").text)
@@ -401,7 +250,7 @@ def ReadXml():
     d["zmax1"] = eval(MagneticFieldBoundaries.find("zmax").text)
 
     ElectricFieldPlot = Output.find("ElectricFieldPlot")
-    ElectricFieldBoundaries =  ElectricFieldPlot.find("ElectricFieldBoundaries")
+    ElectricFieldBoundaries = ElectricFieldPlot.find("ElectricFieldBoundaries")
     d["xmin2"] = eval(ElectricFieldBoundaries.find("xmin").text)
     d["xmax2"] = eval(ElectricFieldBoundaries.find("xmax").text)
     d["ymin2"] = eval(ElectricFieldBoundaries.find("ymin").text)
@@ -410,6 +259,12 @@ def ReadXml():
     d["zmax2"] = eval(ElectricFieldBoundaries.find("zmax").text)
 
     d["FileName"] = Output.find("WriteDataToFile").text
+
+    # ask if given setup is correct before proceding
+
+
+
+
 
 
     return d

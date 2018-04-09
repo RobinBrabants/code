@@ -1,6 +1,6 @@
 import math
 import sympy as sy
-from sympy.vector import CoordSysCartesian, Vector
+from sympy.vector import CoordSys3D, Vector
 from sympy import sqrt
 from Lib.Functions import *
 import numpy as np
@@ -13,7 +13,7 @@ def Sphere(M, R, Q):
     pi = math.pi
     e = 8.854187817*10**(-12)
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     x, y, z = sy.symbols('x y z')
 
@@ -62,7 +62,7 @@ def Line(S, T, Q):
     pi = math.pi
     e = 8.854187817*10**(-12)
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     x, y, z, t = sy.symbols('x y z t')
 

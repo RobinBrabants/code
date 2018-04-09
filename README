@@ -1,1 +1,14 @@
-CODE
+Program that will calculate electric and magnetic fields produced by elements specified in the xml file. It is important that the user utilizes the correct names (same names used in the classes from the code), see the example file: DataFile.xml for more info.
+
+The program will in most cases calculate analytical formulas for the fields depending on the 3D coordinates of a point in space and will output a visual representation of these fields. For some electrical field producing elements the Walk on Spheres method (WOS) will be used to calculate fields of non-analytical solvable problems to get a numerical approximation for the field.
+
+The program can be run in its folder from a terminal, e.g.:
+
+python Main.py Datafile.xml
+
+Main.py is the program file itself and DataFile.xml is the name of the file in which the information about the elements is stored.
+
+
+
+For more info: check the included pdf and the comments in the code itself
+

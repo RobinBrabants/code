@@ -1,5 +1,5 @@
 from Lib.Functions import *
-from sympy.vector import CoordSysCartesian, Vector
+from sympy.vector import CoordSys3D, Vector
 import sympy as sy
 
 
@@ -7,7 +7,7 @@ def ParticleMove(B, E, EWOS, d):
 
     print("ParticleMove")
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
     x, y, z = sy.symbols('x y z')
 
     Coordinates = d["Position"]

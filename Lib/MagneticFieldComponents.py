@@ -2,8 +2,7 @@ import math
 import sympy as sy
 from math import sqrt, sin, cos, tan
 from sympy import solve_poly_system
-from sympy.vector import CoordSysCartesian
-from sympy.vector import CoordSysCartesian, Vector
+from sympy.vector import CoordSys3D, Vector
 
 
 def StraightConductor(P, Q, I):
@@ -17,7 +16,7 @@ def StraightConductor(P, Q, I):
     pi = math.pi
     mu = 4 * pi * 10 ** (-7)
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     x, y, z = sy.symbols('x y z')
 
@@ -55,7 +54,7 @@ def Rectangularcoil(w, l, h, N, SP, Phi, Theta, Psi, I, begin):
     Theta = math.radians(Theta)
     Psi = math.radians(Psi)
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     e_1 = (cos(Phi)*cos(Psi) - sin(Phi)*sin(Psi)*cos(Theta))*L.i + (sin(Phi)*cos(Psi) + cos(Phi)*sin(Psi)*cos(Theta))*L.j + sin(Theta)*sin(Psi)*L.k
     e_2 = (-cos(Phi)*sin(Psi) - sin(Phi)*cos(Psi)*cos(Theta))*L.i + (-sin(Phi)*sin(Psi) + cos(Phi)*cos(Psi)*cos(Theta))*L.j + sin(Theta)*cos(Psi)*L.k
@@ -140,7 +139,7 @@ def BentConductor(M, R, Phi, Theta, interval, I):
     pi = math.pi
     mu = 4 * pi * 10 ** (-7)
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     x, y, z, Phi2 = sy.symbols('x y z Phi2')
 
@@ -166,7 +165,7 @@ def CircularConductor(M, R, Phi, Theta, I):
     pi = math.pi
     mu = 4 * pi * 10 ** (-7)
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     x, y, z, Phi2 = sy.symbols('x y z Phi2')
 
@@ -190,7 +189,7 @@ def CircularCoil(M, R, Phi, Theta, begin, h, N, I):
 
     h = 0.25*(h/N)
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     n = ConvertAnglesToVector(Phi, Theta)
 

@@ -3,10 +3,10 @@
 
 import math
 from abc import ABCMeta, abstractmethod
-from sympy.vector import CoordSysCartesian, Vector
+from sympy.vector import CoordSys3D, Vector
 import math
 import sympy as sy
-from sympy.vector import CoordSysCartesian, Vector
+from sympy.vector import CoordSys3D, Vector
 from sympy import sqrt
 from Lib.Functions import *
 import numpy as np
@@ -68,7 +68,7 @@ class StraightConductor(Electrode):
         pi = math.pi
         mu = 4 * pi * 10 ** (-7)
 
-        L = CoordSysCartesian('L')
+        L = CoordSys3D('L')
 
         x, y, z = sy.symbols('x y z')
 
@@ -115,7 +115,7 @@ class StraightConductor(Electrode):
         y_2 = self.CoordinatesPoint2[1]
         z_2 = self.CoordinatesPoint2[2]
 
-        L = CoordSysCartesian('L')
+        L = CoordSys3D('L')
 
         v = (x_2 - x_1) * L.i + (y_2 - y_1) * L.j + (z_2 - z_1) * L.k
         e_v = v.normalize()

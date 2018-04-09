@@ -3,30 +3,14 @@
 		<Elements>
 
 			<StraightConductor number="1" status="enabled">
-				<CoordinatesPoint1>
-					<x>0</x>
-					<y>0</y>
-					<z>0</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>0</x>
-					<y>0</y>
-					<z>10</z>
-				</CoordinatesPoint2>
+				<CoordinatesPoint1>[0,0,0]</CoordinatesPoint1>
+				<CoordinatesPoint2>[0,0,10]</CoordinatesPoint2>
 				<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
 				<Radius>4</Radius>
 			</StraightConductor>
-			<StraightConductor number="2" status="disabled">
-				<CoordinatesPoint1>
-					<x>100</x>
-					<y>100</y>
-					<z>0</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>0</x>
-					<y>0</y>
-					<z>0</z>
-				</CoordinatesPoint2>
+			<StraightConductor number="2" status="enabled">
+				<CoordinatesPoint1>[0,0,0]</CoordinatesPoint1>
+				<CoordinatesPoint2>[0,0,10]</CoordinatesPoint2>
 				<Current>0</Current>
 				<Radius>4</Radius>
 			</StraightConductor>

@@ -1,7 +1,7 @@
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
-from sympy.vector import CoordSysCartesian
+from sympy.vector import CoordSys3D
 from Lib.Functions import *
 import sympy as sy
 from numpy import sqrt
@@ -68,7 +68,7 @@ def Plotfield(B, d):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     x, y, z = np.meshgrid(np.arange(d["xmin1"], d["xmax1"], abs(d["xmax1"] - d["xmin1"]) / 10),
                           np.arange(d["ymin1"], d["ymax1"], abs(d["ymax1"] - d["ymin1"]) / 10),

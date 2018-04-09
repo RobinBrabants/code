@@ -188,7 +188,7 @@ def potential_EWOS(electrodes, P):
     y_1 = P[1]
     z_1 = P[2]
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
     pi = math.pi
     functions = []
     potentials = []
@@ -298,7 +298,7 @@ def WalkOnSpheres(EWOS, P):
     y_1 = P[1]
     z_1 = P[2]
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
     pi = math.pi
     functions = []
     potentials = []
@@ -444,7 +444,7 @@ def dist_cylinder(P, S, Q, R):
     y_2 = Q[1]
     z_2 = Q[2]
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     v = (x_2-x_1)*L.i + (y_2-y_1)*L.j + (z_2-z_1)*L.k
     e_v = v.normalize()
@@ -512,7 +512,7 @@ def dist_circdisc(P, M, R, Phi, Theta):
     y_1 = M[1]
     z_1 = M[2]
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     """a = (x-x_1)*L.i + (y-y_1)*L.j + (z-z_1)*L.k
     D = eval(str(sin(acos((n.dot(a))/a.magnitude()))*a.magnitude()))"""
@@ -541,7 +541,7 @@ def dist_circdisc(P, M, R, Phi, Theta):
 def dist_circdisc_4holes(P, M, M1, M2, M3, M4, R, R1, R2, R3, R4, n_vec):
     from math import sqrt
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
     n = n_vec[0]*L.i + n_vec[1]*L.j + n_vec[2]*L.k
 
     x = P[0]
@@ -564,7 +564,7 @@ def dist_circdisc_4holes(P, M, M1, M2, M3, M4, R, R1, R2, R3, R4, n_vec):
     y4 = M4[1]
     z4 = M4[2]
 
-    L = CoordSysCartesian('L')
+    L = CoordSys3D('L')
 
     a = n_vec[0]
     b = n_vec[1]

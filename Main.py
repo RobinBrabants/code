@@ -9,59 +9,18 @@ from random import random
 import datetime
 from Lib.Elements import *
 import xml.etree.ElementTree as ET
-
-
-#d = ReadXml()
-
-electrodes = []
-
-tree = ET.parse("DataFile.xml")
-root = tree.getroot()
-
-d = {}
-
-
-class_names = [cls.__name__ for cls in vars()['Electrode'].__subclasses__()]
+import inspect
+import sys
 
 
 
-for cls in class_names:
-    if root.find('.//' + cls):
-        print (cls)
-
-        for element in root.iter(cls):
-            if element.attrib["status"] == "enabled":
-                print("ok")
-                print(StraightConductor.__dict__.iteritems())
 
 
-"""
-for straightconductors in root.iter("StraightConductor"):
-    if straightconductors.attrib["status"] == "enabled":
+electrodes_WOS = []
 
-        CoordinatesPoint = straightconductors.find("CoordinatesPoint1")
-        CoordinatesPoint1 = [eval(CoordinatesPoint.find("x").text), eval(CoordinatesPoint.find("y").text),
-                            eval(CoordinatesPoint.find("z").text)]
 
-        CoordinatesPoint = straightconductors.find("CoordinatesPoint2")
-        CoordinatesPoint2 = [eval(CoordinatesPoint.find("x").text), eval(CoordinatesPoint.find("y").text),
-                            eval(CoordinatesPoint.find("z").text)]
 
-        Current = eval(straightconductors.find("Current").text)
-        Radius = eval(straightconductors.find("Radius").text)
 
-        print(CoordinatesPoint1, CoordinatesPoint2, Current, Radius)
-
-        Element = StraightConductor("StraightConductor_" + str(i), CoordinatesPoint1, CoordinatesPoint2, Current, Radius)
-        electrodes.append(Element)
-        i += 1
-
-for electrode in electrodes:
-    print(electrode.name)
-    print(electrode.GetClosestDistanceToPoint([0,0,11]))
-    print(electrode.Current)
-"""
-"""
 B_list = SetupElements(d)
 
 B = ResultingField(B_list)
@@ -92,8 +51,6 @@ if d["TrajectoryPlot"] == "yes":
 
 
 
-"""
-
 
 
 
@@ -117,10 +74,28 @@ t2 = time.time()
 print(t2-t1)
 """
 
+
+
+
+
 """
 https://www.howtoforge.com/tutorial/install-git-and-github-on-ubuntu-14.04/
 cd /home/robin/Documents/code
 git add *
 git commit -m "ee"
 git push origin master
+"""
+#username: RobinBrabants
+
+#http://chris35wills.github.io/conda_python_version/
+
+#https://pythonhosted.org/PyInstaller/usage.html
+
+
+#packages:
+"""
+python -m pip install scipy
+python -m pip install sympy
+python -m pip install matplotlib
+apt-get install python3-tk
 """
