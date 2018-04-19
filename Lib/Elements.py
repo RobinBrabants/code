@@ -43,17 +43,20 @@ class Electrode(object):
 
 
 #######################################################################################################################
-#  magnetic field producing elements:
+#  magnetic field producing elements (watch out: conventional current directions are used):
 
 class StraightConductor(Electrode):
     def __init__(self, name, CoordinatesPoint1, CoordinatesPoint2, Current, Radius):
         Electrode.__init__(self, name)
-        self.CoordinatesPoint1 = CoordinatesPoint1
-        self.CoordinatesPoint2 = CoordinatesPoint2
-        self.Current = Current
-        self.Radius = Radius
+        self.CoordinatesPoint1 = CoordinatesPoint1      # starting point straight conductor
+        self.CoordinatesPoint2 = CoordinatesPoint2      # ending point straight conductor
+        self.Current = Current                          # current
+        self.Radius = Radius                            # radius of the straightconductor (represented as a cylinder)
+
+        # Conventional current direction goes from point 1 to point 2, unless otherwise specified (see example xml-file)
 
     def GetField(self):
+        # see the documentation on how the field is calculated (Magnetisch veld eindige rechte geleider)
         P = self.CoordinatesPoint1
         Q = self.CoordinatesPoint2
         I = self.Current
@@ -72,28 +75,16 @@ class StraightConductor(Electrode):
 
         x, y, z = sy.symbols('x y z')
 
-        x3 = x1 + ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / (
-        (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) * (x2 - x1)
-        y3 = y1 + ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / (
-        (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) * (y2 - y1)
-        z3 = z1 + ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / (
-        (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) * (z2 - z1)
+        x3 = x1 + ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / ((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) * (x2 - x1)
+        y3 = y1 + ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / ((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) * (y2 - y1)
+        z3 = z1 + ((x2 - x1) * (x - x1) + (y2 - y1) * (y - y1) + (z2 - z1) * (z - z1)) / ((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) * (z2 - z1)
 
         M = sy.sqrt((x - x3) ** 2 + (y - y3) ** 2 + (z - z3) ** 2)
 
-        CosAlpha = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1) + (z - z1) * (z2 - z1)) / (
-        sy.sqrt((x - x1) ** 2 + (y - y1) ** 2 + (z - z1) ** 2) * sy.sqrt(
-            (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2))
+        CosAlpha = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1) + (z - z1) * (z2 - z1)) / (sy.sqrt((x - x1) ** 2 + (y - y1) ** 2 + (z - z1) ** 2) * sy.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2))
         CosBeta = ((x - x2) * (x2 - x1) + (y - y2) * (y2 - y1) + (z - z2) * (z2 - z1)) / (
-        sy.sqrt((x - x2) ** 2 + (y - y2) ** 2 + (z - z2) ** 2) * sy.sqrt(
-            (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2))
-        n = ((y2 - y1) * (z - z1) - (z2 - z1) * (y - y1)) * L.i + (
-                                                                  (z2 - z1) * (x - x1) - (x2 - x1) * (z - z1)) * L.j + (
-                                                                                                                       (
-                                                                                                                       x2 - x1) * (
-                                                                                                                       y - y1) - (
-                                                                                                                       y2 - y1) * (
-                                                                                                                       x - x1)) * L.k
+        sy.sqrt((x - x2) ** 2 + (y - y2) ** 2 + (z - z2) ** 2) * sy.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2))
+        n = ((y2 - y1) * (z - z1) - (z2 - z1) * (y - y1)) * L.i + ((z2 - z1) * (x - x1) - (x2 - x1) * (z - z1)) * L.j + ((x2 - x1) * (y - y1) - (y2 - y1) * (x - x1)) * L.k
 
         eB = n.normalize()
 
@@ -179,6 +170,10 @@ class StraightConductor(Electrode):
 
     def FieldType(self):
         return 'magnetic'
+
+
+#######################################################################################################################
+#  electric field producing elements:
 
 
 class Sphere(Electrode):

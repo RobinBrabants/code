@@ -157,39 +157,31 @@ def ReadXml():
         object_list = []
 
         for cls in class_names:
-            if root.find(
-                    './/' + cls) is not None:  # checks if there are any elements in the xml-file which have the same name as the classes
-                input_parameters_names = list(inspect.signature(eval(
-                    cls)).parameters)  # the input parameters needed as input to generate an object from a specific class
+            if root.find('.//' + cls) is not None:  # checks if there are any elements in the xml-file which have the same name as the classes
+                input_parameters_names = list(inspect.signature(eval(cls)).parameters)  # the input parameters needed as input to generate an object from a specific class
                 input_parameters_names.remove('name')
 
                 i = 1
-                for element in root.iter(
-                        cls):  # if there are multiple elements from the same type, there will be iterated over these elements
-                    if element.attrib[
-                        "status"] == "enabled":  # will only make an object if the status is enabled in the xml file
+                for element in root.iter(cls):  # if there are multiple elements from the same type, there will be iterated over these elements
+                    if element.attrib["status"] == "enabled":  # will only make an object if the status is enabled in the xml file
                         input_parameters = [cls + str(i)]  # first input parameter is the object name
                         for parameter in input_parameters_names:
-                            if element.find(
-                                    parameter) is None:  # error message to warn for misspelling or forgetting to specify certain input parameters
-                                sys.exit("ERROR: the input parameter " + str(parameter) + " for the element: " + str(
-                                    cls) + " has not been specified or has been misspelled in the xml-file, please correct this and execute the program again")
-                            input_parameters.append(eval(element.find(
-                                parameter).text))  # will find the other input parameters in the xml file and hold its values in a list
+                            if element.find(parameter) is None:  # error message to warn for misspelling or forgetting to specify certain input parameters
+                                sys.exit("ERROR: the input parameter " + str(parameter) + " for the element: " + str(cls) + " has not been specified or has been misspelled in the xml-file, please correct this and execute the program again")
+                            input_parameters.append(eval(element.find(parameter).text))  # will find the other input parameters in the xml file and hold its values in a list
 
-                        object_list.append(eval(cls)(
-                            *input_parameters))  # generates the correct class object with the extracted input parameters and appends it to the list
+                        object_list.append(eval(cls)(*input_parameters))  # generates the correct class object with the extracted input parameters and appends it to the list
                         i += 1
 
         return object_list
 
 
-    # ELECTRODES:
+    # ELECTRODES (electric and magnetic):
     class_names = [cls.__name__ for cls in vars()["Electrode"].__subclasses__()]  # get the class names derived from the electrode base class
 
     electrodes = GetObjects(class_names, root)  # list that holds all the specified electrodes as class objects
 
-    # ELECTRODES_WOS (for the Walk on Spheres method)
+    # ELECTRODES_WOS (for the Walk on Spheres method, electric)
 
     electrodes_WOS = []
 
@@ -267,7 +259,7 @@ def ReadXml():
 
 
 
-    return d
+    return electrodes, electrodes_WOS, d
 
 
 def SetupElements(d):
