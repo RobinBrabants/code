@@ -349,6 +349,7 @@
 				</TrajectoryBoundaries>
 				<TimeSteps>0.0005</TimeSteps>
 				<TimeLimit>1</TimeLimit>
+				<Interval>0.5</Interval>				<!-- IsPointInObject -->
 			</Trajectory>
 			<Output>
 				<TrajectoryPlot execute="yes"></TrajectoryPlot>

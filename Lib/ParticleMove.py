@@ -25,7 +25,7 @@ def ParticleMove(B, E, EWOS, d):
 
 
 
-    while time <= d["maxtime"]:
+    while time <= d["timelimit"]:
 
         B = EvaluateAnalyticField(B, Coordinates)
         E_analytic = EvaluateAnalyticField(E, Coordinates)
@@ -51,8 +51,8 @@ def ParticleMove(B, E, EWOS, d):
         UpdateDictionary(vComponents)
         UpdateDictionary(aComponents)
 
-        Coordinates = [Coordinates[0] + vComponents[L.i]*d["t"], Coordinates[1] + vComponents[L.j]*d["t"], Coordinates[2] + vComponents[L.k]*d["t"]]
-        Speed = (vComponents[L.i] + aComponents[L.i]*d["t"])*L.i + (vComponents[L.j] + aComponents[L.j]*d["t"])*L.j + (vComponents[L.k] + aComponents[L.k]*d["t"])*L.k
+        Coordinates = [Coordinates[0] + vComponents[L.i]*d["timesteps"], Coordinates[1] + vComponents[L.j]*d["timesteps"], Coordinates[2] + vComponents[L.k]*d["timesteps"]]
+        Speed = (vComponents[L.i] + aComponents[L.i]*d["timesteps"])*L.i + (vComponents[L.j] + aComponents[L.j]*d["timesteps"])*L.j + (vComponents[L.k] + aComponents[L.k]*d["timesteps"])*L.k
         time += d["t"]
 
         if Coordinates[0] < d["xmin"] or Coordinates[0] > d["xmax"] or Coordinates[1] < d["ymin"] or Coordinates[1] > d["ymax"] or Coordinates[2] < d["zmin"] or Coordinates[2] > d["zmax"]:

@@ -4,7 +4,8 @@
 # classes from Elements will only use the IsPointInObject function to determine in the ParticleMove function from the
 # Particle class whether a particle had a collision with an object.
 
-# The GetClosestDistanceToPoint function will be used for the Walk On Spheres method. This is explained in the functions_WOS file.
+# The GetClosestDistanceToPoint function will be used for the Walk On Spheres method. This is explained in the
+# functions_WOS file.
 
 
 import math
@@ -18,34 +19,51 @@ from Lib.Functions import *
 import numpy as np
 
 
-class object_3D(object):
+class Object_3D(object):
     # a class to represent all the objects from which to derive the actual shaped objects later
     def __init__(self, name):
         self.name = name                        # give up a name for the object
 
     @abstractmethod
-    def GetClosestDistanceToPoint(self, point): # get closest distance from a point to this object
+    def GetClosestDistanceToPoint(self, point): # get closest distance from a point to this object (negative distance
+                                                # means the point is inside the object), used in function IsPointInObject
         pass
 
-    @abstractmethod
-    def IsPointInObject(self, point):           # see whether a point is inside an object
-        pass
+    def IsPointInObject(self, point, interval): # see whether a point is inside an object and determines whether a given
+                                                # point in space is near enough to the surface of an object to be
+                                                # considered as colliding with the object
+
+        # 0 means particle is not near enough to object to be considered colliding with it and is not inside object
+        # 1 means particle is considered to be colliding with the object (near enough)
+        # 2 means particle is inside object
+
+        distance = self.GetClosestDistanceToPoint(self, point)
+
+        if distance > interval:
+            return 0
+        elif 0 <= distance <= interval:
+            return 1
+        else:
+            return 2
 
 
 
+# now instantiate specific classes and give them their specific functionality by overwriting the generic function:
 
-# now instantiate specific classes and give them their specific functionality by overwriting the generic function
+#####################################################################################################################
 
 
-class Sphere(object_3D):
+class Sphere(Object_3D):        # represents a 3D sphere surface
     def __init__(self, name, CoordinatesCenter, Radius, Potential):
-        Electrode.__init__(self, name)
+        Object_3D.__init__(self, name)
         self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of a sphere
         self.Radius = Radius                            # radius of the sphere
         self.Potential = Potential                      # potential on the surface of the sphere
 
 
     def GetClosestDistanceToPoint(self, point):
+        # self explanatory calculation of the minimal distance to a sphere
+        # determines distance between a given point in space and the center of the sphere and then substracts the radius
         from math import sqrt
 
         M = self.CoordinatesCenter
@@ -57,19 +75,15 @@ class Sphere(object_3D):
         y = point[1]
         z = point[2]
 
-        distance = sqrt((x_1 - x) ** 2 + (y_1 - y) ** 2 + (z_1 - z) ** 2) - R
+        distance = abs(sqrt((x_1 - x) ** 2 + (y_1 - y) ** 2 + (z_1 - z) ** 2) - self.Radius)
 
         return distance
 
-    def IsPointInObject(self, point):
-        return (self.center[0]-point[0])**2+(self.center[1]-point[1])**2+(self.center[2]-point[2])**2 <= self.radius**2
 
 
-
-
-class Cylinder(object_3D):
+class Cylinder(Object_3D):
     def __init__(self, name, CoordinatesPoint1, CoordinatesPoint2, Radius, Potential):
-        Electrode.__init__(self, name)
+        Object_3D.__init__(self, name)
         self.CoordinatesPoint1 = CoordinatesPoint1      # starting point cylinder
         self.CoordinatesPoint2 = CoordinatesPoint2      # ending point cylinder
         self.Radius = Radius                            # radius of the cylinder
@@ -154,6 +168,3 @@ class Cylinder(object_3D):
                     distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
 
         return distance
-
-    def IsPointInObject(self, point):
-        return (self.center[0]-point[0])**2+(self.center[1]-point[1])**2+(self.center[2]-point[2])**2 <= self.radius**2

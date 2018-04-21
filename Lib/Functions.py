@@ -10,6 +10,7 @@ from random import random
 from operator import itemgetter
 import multiprocessing as mp
 from Lib.Elements import *
+from Lib.Objects_3D import *
 from multiprocessing import pool
 import time
 import inspect
@@ -182,11 +183,14 @@ def ReadXml():
     electrodes = GetObjects(class_names, root)  # list that holds all the specified electrodes as class objects
 
     # ELECTRODES_WOS (for the Walk on Spheres method, electric)
+    class_names = [cls.__name__ + "_WOS" for cls in vars()["Object_3D"].__subclasses__()]  # get the class names derived from the Object_3D base class (and add _WOS)
 
-    electrodes_WOS = []
+    electrodes_WOS = GetObjects(class_names, root)  # list that holds all the specified electrodes_WOS as class objects
 
     # PARTICLE:
+    class_name = "Particle"
     particle = 0
+
     """
     Particle = root.find("Particle")
     d["v"] = eval(Particle.find("Velocity").text)
@@ -209,9 +213,8 @@ def ReadXml():
         else:
             print("Particle not found in dictionary")
     """
-    # SETUP
-    # Trajectory
-    # Output (all classes)
+
+    # SETUP (works with dictionary instead of class objects)
     d = {}
     Setup = root.find("Setup")
 
@@ -223,8 +226,9 @@ def ReadXml():
     d["ymax"] = eval(TrajectoryBoundaries.find("ymax").text)
     d["zmin"] = eval(TrajectoryBoundaries.find("zmin").text)
     d["zmax"] = eval(TrajectoryBoundaries.find("zmax").text)
-    d["t"] = eval(Trajectory.find("TimeSteps").text)
-    d["maxtime"] = eval(Trajectory.find("TimeLimit").text)
+    d["timesteps"] = eval(Trajectory.find("TimeSteps").text)
+    d["timelimit"] = eval(Trajectory.find("TimeLimit").text)
+    d["interval"] = eval(Trajectory.find("Interval").text)
 
     Output = Setup.find("Output")
     d["TrajectoryPlot"] = Output.find("TrajectoryPlot").attrib["execute"]
@@ -255,10 +259,6 @@ def ReadXml():
     d["FileName"] = Output.find("WriteDataToFile").text
 
     # ask if given setup is correct before proceding
-
-
-
-
 
 
     return electrodes, electrodes_WOS, particle, d
