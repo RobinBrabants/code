@@ -100,7 +100,7 @@ class StraightConductor(Electrode):
 
 class Sphere(Electrode):
     def __init__(self, name, CoordinatesCenter, Radius, Potential):
-        object_3D.__init__(self, name)
+        Electrode.__init__(self, name)
         self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of a sphere
         self.Radius = Radius                            # radius of the sphere
         self.Potential = Potential                      # potential on the surface of the sphere

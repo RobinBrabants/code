@@ -17,26 +17,27 @@ import inspect
 import sys
 
 
-def ConvertAnglesToVector(Phi, Theta):
-    # Function which converts given angles in radians into a normalised vector (see documentation for more info)
+def ConvertAnglesToVector(Theta, Phi):
+    # Function which converts given angles in radians into a normalised vector (see documentation for more info: Vector aanmaken a.d.h.v. 2 hoeken)
+
     pi = math.pi
-    a = math.tan(Theta)/math.sqrt(1 + math.tan(Theta)**2)
+    a = math.sqrt(1/(1 + math.tan(Phi)**2))
 
-    if 0 <= Phi <= pi / 2 or (3 / 2) * pi <= Phi < 2 * pi:
-        ex = abs(math.cos(Phi) * a)
+    if 0 <= Theta <= pi / 2 or (3 / 2) * pi <= Theta < 2 * pi:
+        ex = abs(math.cos(Theta) * a)
     else:
-        ex = -abs(math.cos(Phi) * a)
+        ex = -abs(math.cos(Theta) * a)
 
-    if 0 <= Phi <= pi:
-        ey = abs(math.sqrt(a**2-ex**2))
+    if 0 <= Theta <= pi:
+        ey = abs(math.sqrt(a**2 - ex**2))
     else:
-        ey = -abs(math.sqrt(a ** 2 - ex ** 2))
+        ey = -abs(math.sqrt(a**2 - ex**2))
 
-    if math.tan(Theta) != 0:
-        if 0 <= Theta <= pi/2:
-            ez = abs(a/math.tan(Theta))
+    if Phi != pi/2:
+        if 0 <= Phi <= pi:
+            ez = abs(a*math.tan(Phi))
         else:
-            ez = -abs(a / math.tan(Theta))
+            ez = -abs(a*math.tan(Phi))
     else:
         ez = 1
 
@@ -46,14 +47,16 @@ def ConvertAnglesToVector(Phi, Theta):
 
 
 def getvector(length, Theta, Phi):
-    # Function which converts given angles in radians into a vector with a certain length (see documentation for more info)
-    eI = ConvertAnglesToVector(math.radians(Phi), math.radians(Theta))
+    # Function which converts given angles in radians into a vector with a certain length
+
+    eI = ConvertAnglesToVector(math.radians(Theta), math.radians(Phi))
 
     return eI*length
 
 
 def ConvertVectorToAngles(v):
-    # Function which converts a vector into angles in degrees (see documentation for more info)
+    # Function which converts a vector into angles in degrees (see documentation for more info: Vector aanmaken a.d.h.v. 2 hoeken)
+
     vcomponents = v.components
     UpdateDictionary(vcomponents)
 
@@ -64,14 +67,15 @@ def ConvertVectorToAngles(v):
     ez = vcomponents[L.k]
 
     a = math.sqrt(ey**2 + ex**2)
-    Phi = math.degrees(math.acos(ex/a))
-    Theta = math.degrees(math.atan(a/ez))
+    Theta = math.degrees(math.acos(ex/a))
+    Phi = math.degrees(math.atan(ez/a))
 
-    return Phi, Theta
+    return Theta, Phi
 
 
 def UpdateDictionary(Dict):
     # Function which adds missing elements to the Dictionary object
+
     L = CoordSys3D('L')
     if L.i not in Dict:
         Dict.setdefault(L.i, 0)
@@ -81,8 +85,9 @@ def UpdateDictionary(Dict):
         Dict.setdefault(L.k, 0)
 
 
-def EvaluateAnalyticField(F, S):
-    # Functions which evaluates an analytical field
+def EvaluateAnalyticField(F, Coordinates):
+    # Functions which evaluates an analytical field (Field, Coordinates)
+
     x, y, z, Phi2, t = sy.symbols('x y z Phi2 t')
     L = CoordSys3D('L')
 
@@ -96,13 +101,13 @@ def EvaluateAnalyticField(F, S):
 
         if str(Fcomponents[basis]).find("Integral(") != -1:
             while str(str(Fcomponents[basis])).find("Integral(") != -1:
-                str(F)
-                # This somehow solved the problem that F would change throughout the process
+                str(F)   # This somehow solved the problem that F would change throughout the process
+
                 end1 = str(str(Fcomponents[basis])).find("Integral(")
 
                 integrand = str(Fcomponents[basis])[str(Fcomponents[basis]).find("Integral(") + 9:str(Fcomponents[basis]).find(", ")]
                 integrand = sy.sympify(integrand)
-                integrand = integrand.subs([(x, S[0]), (y, S[1]), (z, S[2])])
+                integrand = integrand.subs([(x, Coordinates[0]), (y, Coordinates[1]), (z, Coordinates[2])])
 
                 info1 = str(Fcomponents[basis])[str(Fcomponents[basis]).find(",") + 1:]
                 dx = info1[info1.find("(") + 1:info1.find(",")]
@@ -129,7 +134,7 @@ def EvaluateAnalyticField(F, S):
     Fdic = Fcomponents[L.i]*L.i + Fcomponents[L.j]*L.j + Fcomponents[L.k]*L.k
 
     if Fdic != Vector.zero:
-        Feval = Fdic.evalf(subs={x: S[0], y: S[1], z: S[2]})
+        Feval = Fdic.evalf(subs={x: Coordinates[0], y: Coordinates[1], z: Coordinates[2]})
     else:
         Feval = Vector.zero
 
@@ -182,37 +187,17 @@ def ReadXml():
 
     electrodes = GetObjects(class_names, root)  # list that holds all the specified electrodes as class objects
 
+
     # ELECTRODES_WOS (for the Walk on Spheres method, electric)
     class_names = [cls.__name__ + "_WOS" for cls in vars()["Object_3D"].__subclasses__()]  # get the class names derived from the Object_3D base class (and add _WOS)
 
     electrodes_WOS = GetObjects(class_names, root)  # list that holds all the specified electrodes_WOS as class objects
 
+
     # PARTICLE:
     class_name = "Particle"
-    particle = 0
+    particle = GetObjects(class_name, root)
 
-    """
-    Particle = root.find("Particle")
-    d["v"] = eval(Particle.find("Velocity").text)
-    d["Theta1"] = eval(Particle.find("Theta1").text)
-    d["Phi1"] = eval(Particle.find("Phi1").text)
-    d["a"] = eval(Particle.find("Acceleration").text)
-    d["Theta2"] = eval(Particle.find("Theta2").text)
-    d["Phi2"] = eval(Particle.find("Phi2").text)
-
-    Position = Particle.find("Position")
-    d["Position"] = [eval(Position.find("x").text), eval(Position.find("y").text), eval(Position.find("z").text)]
-
-    if Particle.find("Type").text == "custom":
-        d["Mass"] = eval(Particle.find("Mass").text)
-        d["Charge"] = eval(Particle.find("Charge").text)
-    else:
-        if Particle.find("Type").text in ParticleDictionary:
-            d["Mass"] = ParticleDictionary[Particle.find("Type").text][0]
-            d["Charge"] = ParticleDictionary[Particle.find("Type").text][1]
-        else:
-            print("Particle not found in dictionary")
-    """
 
     # SETUP (works with dictionary instead of class objects)
     d = {}          # empty dictionary to which names will be appended which will later be used in different classes/functions
@@ -265,7 +250,7 @@ def ReadXml():
 
 
 
-    # ask if given setup is correct before proceding
+    # ask if given setup is correct before proceding EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 
 
 

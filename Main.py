@@ -40,26 +40,6 @@ if d["TrajectoryPlot"] == "yes":
 
 
 
-"""
-WOS:
-
-
-d = ReadXml()
-
-print(datetime.datetime.now().time())
-x = 5  # ook bv x = 3*y
-y = np.arange(-4, 4, 2).tolist()
-z = np.arange(-4, 4, 2).tolist()
-
-
-t1 = time.time()
-Vgrid = WalkOnSpheres_potential_slice(d,x,y,z)
-
-t2 = time.time()
-
-print(t2-t1)
-"""
-
 
 
 
