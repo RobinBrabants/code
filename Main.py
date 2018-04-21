@@ -14,24 +14,10 @@ import sys
 
 
 
+electrodes, electrodes_WOS, particle, d = ReadXml()         # extract all the data from the xml file
 
-
-electrodes_WOS = []
-
-
-
-
-B_list = SetupElements(d)
-
-B = ResultingField(B_list)
-
-E_list = SetupElements2(d)
-
-E = ResultingField(E_list)
-
-
-
-#WalkOnSpheres(EWOS)
+B_analytic, E_analytic = ResultingField(electrodes)         # already calculates the analytical fields for those objects for which it is possible
+                                                            # (some electrical fields will be calculated by the WOS method in the particle class itself)
 
 
 data = ParticleMove(B, E, "EWOS", d)
@@ -40,10 +26,10 @@ if d["WriteDataToFile"] == "yes":
     WriteFile(B, data, d)
 
 if d["MagneticFieldPlot"] == "yes":
-    Plotfield(B, d)
+    Plotfield(B_analytic, d)
 
 if d["ElectricFieldPlot"] == "yes":
-    Plotfield(E, d)
+    Plotfield(E_analytic, d)
 
 if d["TrajectoryPlot"] == "yes":
     PlotTrajectory(data)

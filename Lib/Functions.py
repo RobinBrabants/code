@@ -215,7 +215,8 @@ def ReadXml():
     """
 
     # SETUP (works with dictionary instead of class objects)
-    d = {}
+    d = {}          # empty dictionary to which names will be appended which will later be used in different classes/functions
+
     Setup = root.find("Setup")
 
     Trajectory = Setup.find("Trajectory")
@@ -258,95 +259,35 @@ def ReadXml():
 
     d["FileName"] = Output.find("WriteDataToFile").text
 
+
+
+
+
+
+
     # ask if given setup is correct before proceding
+
+
+
+
+
 
 
     return electrodes, electrodes_WOS, particle, d
 
 
-def SetupElements(d):
-    i = 1
-    Blist = []
 
 
-    while "P_" + str(i) in d:
-        Blist.append(StraightConductor(d["P_" + str(i)], d["Q_" + str(i)], d["I_" + str(i)]))
-        i += 1
+def ResultingField(electrodes):
+    # function which iterates over the objects initialised by the ReadXml function in order to get an analytic expression for the magnetic and electric vectorfield
 
+    B = Vector.zero
+    E = Vector.zero
 
-    i = 1
-    j = 1
+    for electrode in electrodes:
+        if electrode.FieldType() =="magnetic":
+            B += electrode.GetField()
+        elif electrode.FieldType() =="electric":
+            E += electrode.GetField()
 
-    while str(j) + "S_" + str(i) in d:
-        list = ()
-        while str(j) + "S_" + str(i) in d:
-            list += (d[str(j) + "S_" + str(i)],)
-            i += 1
-        Blist.append(StraightConductorCollection(d["Icollection_" + str(j)], *list))
-        i = 1
-        j += 1
-
-
-    i = 1
-    while "SP_" + str(i) in d:
-        Blist.append(Rectangularcoil(d["w_" + str(i)], d["l_" + str(i)], d["h_" + str(i)], d["N_" + str(i)], d["SP_" + str(i)], d["Phireccoil_" + str(i)],  d["Thetareccoil_" + str(i)], d["Psireccoil_" + str(i)], d["Ireccoil_" + str(i)], d["begin_" + str(i)]))
-        i += 1
-
-    i = 1
-
-    while "M_" + str(i) in d:
-        Blist.append(CircularConductor(d["M_" + str(i)], d["R_" + str(i)], d["Phi_" + str(i)], d["Theta_" + str(i)], d["Icircle_" + str(i)]))
-        i += 1
-
-
-    i = 1
-
-    while "Mbent_" + str(i) in d:
-        Blist.append(BentConductor(d["Mbent_" + str(i)], d["Rbent_" + str(i)], d["Phibent_" + str(i)], d["Thetabent_" + str(i)], d["Interval_" + str(i)], d["Ibent_" + str(i)]))
-        i += 1
-
-
-    i = 1
-
-    while "Mcoil_" + str(i) in d:
-        Blist.append(CircularCoil(d["Mcoil_" + str(i)], d["Rcoil_" + str(i)], d["Phicoil_" + str(i)], d["Thetacoil_" + str(i)], d["begincoil_" + str(i)], d["hcoil_" + str(i)], d["Ncoil_" + str(i)],  d["Icoil_" + str(i)]))
-        i += 1
-
-
-    return Blist
-
-
-def SetupElements2(d):
-    i = 1
-    Elist = []
-
-
-    while "Msphere_" + str(i) in d:
-        Elist.append(Sphere(d["Msphere_" + str(i)], d["Rsphere_" + str(i)], d["Qsphere_" + str(i)]))
-        i += 1
-
-
-    i = 1
-    while "Pline_" + str(i) in d:
-        Elist.append(Line(d["Pline_" + str(i)], d["Rline_" + str(i)], d["Qline_" + str(i)]))
-        i += 1
-
-
-    return Elist
-
-
-def ResultingField(list):
-    F = Vector.zero
-
-    for value in list:
-       F += value
-
-    return F
-
-def ResultingString(list):
-    F = ""
-    if list != None:
-
-        for value in list:
-           F += value
-    return F
+    return B, E

@@ -2,6 +2,37 @@ from Lib.Functions import *
 from sympy.vector import CoordSys3D, Vector
 import sympy as sy
 
+class Particle():        # represents a 3D sphere surface
+    def __init__(self, name, CoordinatesCenter, Radius, Potential):
+        electrodes, electrodes_WOS, particle, d = ReadXml()  # extract all the data from the xml file
+
+        B_analytic, E_analytic = ResultingField(
+            electrodes)  # already calculates the analytical fields for those objects for which it is possible
+
+        self.name = name
+        self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of a sphere
+        self.Radius = Radius                            # radius of the sphere
+        self.Potential = Potential                      # potential on the surface of the sphere
+
+
+    def GetClosestDistanceToPoint(self, point):
+        # self explanatory calculation of the minimal distance to a sphere
+        # determines distance between a given point in space and the center of the sphere and then substracts the radius
+        from math import sqrt
+
+        M = self.CoordinatesCenter
+        x_1 = M[0]
+        y_1 = M[1]
+        z_1 = M[2]
+
+        x = point[0]
+        y = point[1]
+        z = point[2]
+
+        distance = abs(sqrt((x_1 - x) ** 2 + (y_1 - y) ** 2 + (z_1 - z) ** 2) - self.Radius)
+
+        return distance
+
 
 def ParticleMove(B, E, EWOS, d):
 
