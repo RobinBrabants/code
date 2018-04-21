@@ -186,6 +186,8 @@ def ReadXml():
     electrodes_WOS = []
 
     # PARTICLE:
+    particle = 0
+    """
     Particle = root.find("Particle")
     d["v"] = eval(Particle.find("Velocity").text)
     d["Theta1"] = eval(Particle.find("Theta1").text)
@@ -206,7 +208,7 @@ def ReadXml():
             d["Charge"] = ParticleDictionary[Particle.find("Type").text][1]
         else:
             print("Particle not found in dictionary")
-
+    """
     # SETUP
     # Trajectory
     # Output (all classes)
@@ -259,7 +261,7 @@ def ReadXml():
 
 
 
-    return electrodes, electrodes_WOS, d
+    return electrodes, electrodes_WOS, particle, d
 
 
 def SetupElements(d):

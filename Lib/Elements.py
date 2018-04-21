@@ -93,87 +93,17 @@ class StraightConductor(Electrode):
         return B
 
     def GetClosestDistanceToPoint(self, point):
-        from Lib.Functions import UpdateDictionary
-        from math import sqrt
-
-        x = point[0]
-        y = point[1]
-        z = point[2]
-        x_1 = self.CoordinatesPoint1[0]
-        y_1 = self.CoordinatesPoint1[1]
-        z_1 = self.CoordinatesPoint1[2]
-        x_2 = self.CoordinatesPoint2[0]
-        y_2 = self.CoordinatesPoint2[1]
-        z_2 = self.CoordinatesPoint2[2]
-
-        L = CoordSys3D('L')
-
-        v = (x_2 - x_1) * L.i + (y_2 - y_1) * L.j + (z_2 - z_1) * L.k
-        e_v = v.normalize()
-        e_v_c = e_v.components
-        UpdateDictionary(e_v_c)
-        a = e_v_c[L.i]
-        b = e_v_c[L.j]
-        c = e_v_c[L.k]
-
-        if c != 0:
-            if (1 / c) * (a * x_1 + b * y_1 + c * z_1 - a * x - b * y) <= z <= (1 / c) * (
-                                a * x_2 + b * y_2 + c * z_2 - a * x - b * y):
-                t = (a * x + b * y + c * z - a * x_1 - b * y_1 - z_1) / (
-                c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
-                x_c = x_1 + t * (x_2 - x_1)
-                y_c = y_1 + t * (y_2 - y_1)
-                z_c = z_1 + t * (z_2 - z_1)
-                distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2) - self.Radius)
-            elif z > (1 / c) * (a * x_2 + b * y_2 + c * z_2 - a * x - b * y):
-                delta = (x - x_2) * L.i + (y - y_2) * L.j + (z - z_2) * L.k
-                distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
-            else:
-                delta = (x - x_1) * L.i + (y - y_1) * L.j + (z - z_1) * L.k
-                distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
-        else:
-            if b != 0:
-                if (1 / b) * (a * x_1 + b * y_1 + c * z_1 - a * x - c * z) <= y <= (1 / b) * (
-                                    a * x_2 + b * y_2 + c * z_2 - a * x - c * z):
-                    t = (a * x + b * y + c * z - a * x_1 - b * y_1 - z_1) / (
-                    c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
-                    x_c = x_1 + t * (x_2 - x_1)
-                    y_c = y_1 + t * (y_2 - y_1)
-                    z_c = z_1 + t * (z_2 - z_1)
-                    distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2) - self.Radius)
-                elif y > (1 / b) * (a * x_2 + b * y_2 + c * z_2 - a * x - c * z):
-                    delta = (x - x_2) * L.i + (y - y_2) * L.j + (z - z_2) * L.k
-                    distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
-                else:
-                    delta = (x - x_1) * L.i + (y - y_1) * L.j + (z - z_1) * L.k
-                    distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
-            else:
-                if (1 / a) * (a * x_1 + b * y_1 + c * z_1 - b * y - c * z) <= x <= (1 / a) * (
-                                    a * x_2 + b * y_2 + c * z_2 - b * y - c * z):
-                    t = (a * x + b * y + c * z - a * x_1 - b * y_1 - z_1) / (
-                    c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
-                    x_c = x_1 + t * (x_2 - x_1)
-                    y_c = y_1 + t * (y_2 - y_1)
-                    z_c = z_1 + t * (z_2 - z_1)
-                    distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2) - self.Radius)
-                elif x > (1 / a) * (a * x_2 + b * y_2 + c * z_2 - b * y - c * z):
-                    delta = (x - x_2) * L.i + (y - y_2) * L.j + (z - z_2) * L.k
-                    distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
-                else:
-                    delta = (x - x_1) * L.i + (y - y_1) * L.j + (z - z_1) * L.k
-                    distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
-
-        return distance
+        return 0
 
     def IsPointInObject(self, point):
-        return (self.center[0]-point[0])**2+(self.center[1]-point[1])**2+(self.center[2]-point[2])**2 <= self.radius**2
+        return 0
 
     def FieldType(self):
         return 'magnetic'
 
 
 #######################################################################################################################
-#  electric field producing elements:
+#  electric field producing elements (potential on the surface us used):
 
 
 class Sphere(Electrode):

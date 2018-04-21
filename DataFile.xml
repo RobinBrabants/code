@@ -192,7 +192,10 @@
 				<Charge>10**(-18)</Charge>
 			</Sphere>
 
-			<Sphere2 number="1" status="nabled">
+		</Elements>
+		<Elements_WOS>
+
+			<Sphere_WOS number="1" status="nabled">
 				<CoordinatesCentre>
 					<x>0</x>
 					<y>0</y>
@@ -200,8 +203,8 @@
 				</CoordinatesCentre>
 				<Radius>4</Radius>
 				<Potential>5</Potential>
-			</Sphere2>
-			<Sphere2 number="2" status="abled">
+			</Sphere_WOS>
+			<Sphere_WOS number="2" status="abled">
 				<CoordinatesCentre>
 					<x>-10</x>
 					<y>10</y>
@@ -209,77 +212,24 @@
 				</CoordinatesCentre>
 				<Radius>4</Radius>
 				<Potential>5</Potential>
-			</Sphere2>
-			<Sphere2 number="3" status="disabled">
-				<CoordinatesCentre>
-					<x>-10</x>
-					<y>-10</y>
-					<z>-10</z>
-				</CoordinatesCentre>
-				<Radius>4</Radius>
-				<Potential>5</Potential>
-			</Sphere2>
-			<Sphere2 number="4" status="disabled">
-				<CoordinatesCentre>
-					<x>10</x>
-					<y>-10</y>
-					<z>-10</z>
-				</CoordinatesCentre>
-				<Radius>4</Radius>
-				<Potential>5</Potential>
-			</Sphere2>
-			<Sphere2 number="5" status="disabled">
-				<CoordinatesCentre>
-					<x>10</x>
-					<y>10</y>
-					<z>10</z>
-				</CoordinatesCentre>
-				<Radius>4</Radius>
-				<Potential>5</Potential>
-			</Sphere2>
-			<Sphere2 number="6" status="disabled">
-				<CoordinatesCentre>
-					<x>-10</x>
-					<y>10</y>
-					<z>10</z>
-				</CoordinatesCentre>
-				<Radius>4</Radius>
-				<Potential>5</Potential>
-			</Sphere2>
-			<Sphere2 number="7" status="disabled">
-				<CoordinatesCentre>
-					<x>-10</x>
-					<y>-10</y>
-					<z>10</z>
-				</CoordinatesCentre>
-				<Radius>4</Radius>
-				<Potential>5</Potential>
-			</Sphere2>
-			<Sphere2 number="8" status="disabled">
-				<CoordinatesCentre>
-					<x>10</x>
-					<y>-10</y>
-					<z>10</z>
-				</CoordinatesCentre>
-				<Radius>4</Radius>
-				<Potential>5</Potential>
-			</Sphere2>
+			</Sphere_WOS>
 
-			<Cylinder number="1" status="nabled">
+
+			<Cylinder_WOS number="1" status="enabled">
 				<CoordinatesPoint1>
-					<x>1.25</x>
-					<y>1.25</y>
-					<z>0.3</z>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
 				</CoordinatesPoint1>
 				<CoordinatesPoint2>
-					<x>1.25</x>
-					<y>1.25</y>
-					<z>1.3</z>
+					<x>0</x>
+					<y>0</y>
+					<z>5</z>
 				</CoordinatesPoint2>
 				<Radius>0.5</Radius>
-				<Potential>0</Potential>
-			</Cylinder>
-			<Cylinder number="2" status="nabled">
+				<Potential>5</Potential>
+			</Cylinder_WOS>
+			<Cylinder_WOS number="2" status="nabled">
 				<CoordinatesPoint1>
 					<x>1.25</x>
 					<y>1.25</y>
@@ -292,91 +242,7 @@
 				</CoordinatesPoint2>
 				<Radius>0.8</Radius>
 				<Potential>0</Potential>
-			</Cylinder>
-			<Cylinder number="3" status="nabled">
-				<CoordinatesPoint1>
-					<x>-1.25</x>
-					<y>-1.25</y>
-					<z>0.3</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>-1.25</x>
-					<y>-1.25</y>
-					<z>1.3</z>
-				</CoordinatesPoint2>
-				<Radius>0.5</Radius>
-				<Potential>0.5</Potential>
-			</Cylinder>
-			<Cylinder number="4" status="nabled">
-				<CoordinatesPoint1>
-					<x>-1.25</x>
-					<y>-1.25</y>
-					<z>0.3</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>-1.25</x>
-					<y>-1.25</y>
-					<z>1.3</z>
-				</CoordinatesPoint2>
-				<Radius>0.8</Radius>
-				<Potential>0.5</Potential>
-			</Cylinder>
-			<Cylinder number="5" status="nabled">
-				<CoordinatesPoint1>
-					<x>-1.25</x>
-					<y>1.25</y>
-					<z>0.3</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>-1.25</x>
-					<y>1.25</y>
-					<z>1.3</z>
-				</CoordinatesPoint2>
-				<Radius>0.5</Radius>
-				<Potential>0.5</Potential>
-			</Cylinder>
-			<Cylinder number="6" status="nabled">
-				<CoordinatesPoint1>
-					<x>-1.25</x>
-					<y>1.25</y>
-					<z>0.3</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>-1.25</x>
-					<y>1.25</y>
-					<z>1.3</z>
-				</CoordinatesPoint2>
-				<Radius>0.8</Radius>
-				<Potential>0.5</Potential>
-			</Cylinder>
-			<Cylinder number="7" status="nabled">
-				<CoordinatesPoint1>
-					<x>1.25</x>
-					<y>-1.25</y>
-					<z>0.3</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>1.25</x>
-					<y>-1.25</y>
-					<z>1.3</z>
-				</CoordinatesPoint2>
-				<Radius>0.5</Radius>
-				<Potential>0.5</Potential>
-			</Cylinder>
-			<Cylinder number="8" status="nabled">
-				<CoordinatesPoint1>
-					<x>1.25</x>
-					<y>-1.25</y>
-					<z>0.3</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>1.25</x>
-					<y>-1.25</y>
-					<z>1.3</z>
-				</CoordinatesPoint2>
-				<Radius>0.8</Radius>
-				<Potential>0.5</Potential>
-			</Cylinder>
+			</Cylinder_WOS>
 
 			<CircularDisc number="1" status="disabled">
 				<CoordinatesCentre>
@@ -451,7 +317,8 @@
 				</CoordinatesPoint2>
 				<Charge>10**(-18)</Charge>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
 			</Line>
-		</Elements>
+
+		</Elements_WOS>
 
 		<Particle>
 			<Type>proton</Type>							<!-- custom, electron or proton (if custom we need mass, charge) -->

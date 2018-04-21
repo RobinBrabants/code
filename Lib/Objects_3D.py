@@ -1,0 +1,159 @@
+# Here all the 3 dimensional objects which are being used will be stored as classes with the main goal of calculating
+# the minimal distances to these objects and to determine whether a point is inside an object
+
+# classes from Elements will only use the IsPointInObject function to determine in the ParticleMove function from the
+# Particle class whether a particle had a collision with an object.
+
+# The GetClosestDistanceToPoint function will be used for the Walk On Spheres method. This is explained in the functions_WOS file.
+
+
+import math
+from abc import ABCMeta, abstractmethod
+from sympy.vector import CoordSys3D, Vector
+import math
+import sympy as sy
+from sympy.vector import CoordSys3D, Vector
+from sympy import sqrt
+from Lib.Functions import *
+import numpy as np
+
+
+class object_3D(object):
+    # a class to represent all the objects from which to derive the actual shaped objects later
+    def __init__(self, name):
+        self.name = name                        # give up a name for the object
+
+    @abstractmethod
+    def GetClosestDistanceToPoint(self, point): # get closest distance from a point to this object
+        pass
+
+    @abstractmethod
+    def IsPointInObject(self, point):           # see whether a point is inside an object
+        pass
+
+
+
+
+# now instantiate specific classes and give them their specific functionality by overwriting the generic function
+
+
+class Sphere(object_3D):
+    def __init__(self, name, CoordinatesCenter, Radius, Potential):
+        Electrode.__init__(self, name)
+        self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of a sphere
+        self.Radius = Radius                            # radius of the sphere
+        self.Potential = Potential                      # potential on the surface of the sphere
+
+
+    def GetClosestDistanceToPoint(self, point):
+        from math import sqrt
+
+        M = self.CoordinatesCenter
+        x_1 = M[0]
+        y_1 = M[1]
+        z_1 = M[2]
+
+        x = point[0]
+        y = point[1]
+        z = point[2]
+
+        distance = sqrt((x_1 - x) ** 2 + (y_1 - y) ** 2 + (z_1 - z) ** 2) - R
+
+        return distance
+
+    def IsPointInObject(self, point):
+        return (self.center[0]-point[0])**2+(self.center[1]-point[1])**2+(self.center[2]-point[2])**2 <= self.radius**2
+
+
+
+
+class Cylinder(object_3D):
+    def __init__(self, name, CoordinatesPoint1, CoordinatesPoint2, Radius, Potential):
+        Electrode.__init__(self, name)
+        self.CoordinatesPoint1 = CoordinatesPoint1      # starting point cylinder
+        self.CoordinatesPoint2 = CoordinatesPoint2      # ending point cylinder
+        self.Radius = Radius                            # radius of the cylinder
+        self.Potential = Potential                      # potential on the surface of the cylinder
+
+
+    def GetClosestDistanceToPoint(self, point):
+        from Lib.Functions import UpdateDictionary
+        from math import sqrt
+
+        P = self.CoordinatesPoint1
+        Q = self.CoordinatesPoint2
+
+        x_1 = P[0]
+        y_1 = P[1]
+        z_1 = P[2]
+        x_2 = Q[0]
+        y_2 = Q[1]
+        z_2 = Q[2]
+
+        x = point[0]
+        y = point[1]
+        z = point[2]
+
+        L = CoordSys3D('L')
+
+        v = (x_2 - x_1) * L.i + (y_2 - y_1) * L.j + (z_2 - z_1) * L.k
+        e_v = v.normalize()
+        e_v_c = e_v.components
+        UpdateDictionary(e_v_c)
+        a = e_v_c[L.i]
+        b = e_v_c[L.j]
+        c = e_v_c[L.k]
+
+        if c != 0:
+            if z_1 > z_2:
+                z_1 = z_2
+                z_2 = z_1
+            if (1 / c) * (a * x_1 + b * y_1 + c * z_1 - a * x - b * y) <= z <= (1 / c) * (a * x_2 + b * y_2 + c * z_2 - a * x - b * y):
+                t = (a * x + b * y + c * z - a * x_1 - b * y_1 - z_1) / (
+                c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
+                x_c = x_1 + t * (x_2 - x_1)
+                y_c = y_1 + t * (y_2 - y_1)
+                z_c = z_1 + t * (z_2 - z_1)
+                distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2) - self.Radius)
+            elif z > (1 / c) * (a * x_2 + b * y_2 + c * z_2 - a * x - b * y):
+                delta = (x - x_2) * L.i + (y - y_2) * L.j + (z - z_2) * L.k
+                distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
+            else:
+                delta = (x - x_1) * L.i + (y - y_1) * L.j + (z - z_1) * L.k
+                distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
+        else:
+            if b != 0:
+                if (1 / b) * (a * x_1 + b * y_1 + c * z_1 - a * x - c * z) <= y <= (1 / b) * (
+                                    a * x_2 + b * y_2 + c * z_2 - a * x - c * z):
+                    t = (a * x + b * y + c * z - a * x_1 - b * y_1 - z_1) / (
+                    c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
+                    x_c = x_1 + t * (x_2 - x_1)
+                    y_c = y_1 + t * (y_2 - y_1)
+                    z_c = z_1 + t * (z_2 - z_1)
+                    distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2) - self.Radius)
+                elif y > (1 / b) * (a * x_2 + b * y_2 + c * z_2 - a * x - c * z):
+                    delta = (x - x_2) * L.i + (y - y_2) * L.j + (z - z_2) * L.k
+                    distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
+                else:
+                    delta = (x - x_1) * L.i + (y - y_1) * L.j + (z - z_1) * L.k
+                    distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
+            else:
+                if (1 / a) * (a * x_1 + b * y_1 + c * z_1 - b * y - c * z) <= x <= (1 / a) * (
+                                    a * x_2 + b * y_2 + c * z_2 - b * y - c * z):
+                    t = (a * x + b * y + c * z - a * x_1 - b * y_1 - z_1) / (
+                    c * (z_2 - z_1) + a * (x_2 - x_1) + b * (y_2 - y_1))
+                    x_c = x_1 + t * (x_2 - x_1)
+                    y_c = y_1 + t * (y_2 - y_1)
+                    z_c = z_1 + t * (z_2 - z_1)
+                    distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2) - self.Radius)
+                elif x > (1 / a) * (a * x_2 + b * y_2 + c * z_2 - b * y - c * z):
+                    delta = (x - x_2) * L.i + (y - y_2) * L.j + (z - z_2) * L.k
+                    distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
+                else:
+                    delta = (x - x_1) * L.i + (y - y_1) * L.j + (z - z_1) * L.k
+                    distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
+
+        return distance
+
+    def IsPointInObject(self, point):
+        return (self.center[0]-point[0])**2+(self.center[1]-point[1])**2+(self.center[2]-point[2])**2 <= self.radius**2
