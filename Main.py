@@ -1,6 +1,6 @@
-# main function from which everything in the Lib will be called
+# main function from which everything in the Lib will be called and the program will be executed
 
-from Lib.ParticleMove import ParticleMove
+from Lib.Particle import *
 from Lib.RepresentData import *
 import numpy as np
 from Lib.Functions import *
@@ -17,7 +17,8 @@ import sys
 electrodes, electrodes_WOS, particle, d = ReadXml()         # extract all the data from the xml file
 
 B_analytic, E_analytic = ResultingField(electrodes)         # already calculates the analytical fields for those objects for which it is possible
-                                                            # (some electrical fields will be calculated by the WOS method in the particle class itself)
+                                                            # (some electrical fields will be calculated by the WOS method (see functions_WOS) in the particle class itself)
+
 
 
 data = ParticleMove(B, E, "EWOS", d)

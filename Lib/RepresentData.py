@@ -10,51 +10,10 @@ from scipy.integrate import quad
 from sympy import sin, cos
 
 
-def PlotTrajectory(data):
-
-    print("PlotTrajectory")
-
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-
-    x = data["x"]
-    y = data["y"]
-    z = data["z"]
-    t = data["t"]
-
-    xs = np.array(x)
-    ys = np.array(y)
-    zs = np.array(z)
-    ts = np.array(t)
-
-    ax.plot(x, y, z)
-
-    len_t = len(t) - 1
-    ind_pos = []
-
-    for i in range(0,11):
-        ind_pos.append(0 + i*(int(len_t/10)))
-
-    xx = (xs[ind_pos])
-    yy = (ys[ind_pos])
-    zz = (zs[ind_pos])
-    tt = (ts[ind_pos])
-
-    for t, x, y, z in zip(tt, xx, yy, zz):
-        label = '%s' % t
-        ax.text(x, y, z, label)
-        ax.scatter(x, y, z, c="red")
-
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    fig.suptitle('trajectory of particle', fontsize=14, fontweight='bold')
-    ax.set_title('time in seconds', style='italic', fontsize=8, bbox={'facecolor':'red', 'alpha':0.2, 'pad':7})
-
-    plt.show(block="False")
-
-
 def Plotfield(B, d):
+    # funtion which plots the magnetic and electric fields which are able to be analytically evaluated
+
+    print("Plotting the trajectory of the particle")
 
     print("Plotfield")
 
@@ -136,33 +95,3 @@ def Plotfield(B, d):
 
     plt.show(block="False")
 
-
-def WriteFile(B, data, d):
-
-    print("WriteFile")
-
-    f = open(d["FileName"], "w+")
-
-    f.write("Analytic formula for the resulting magnetic field:\r\n%s\r\n\r\n" % str(B))
-    f.write("Data concerning the trajectory of the particle:\r\n")
-    f.write("x coordinates of the trajectory:\r\n")
-    for x in data["x"]:
-        f.write("%f\r\n" % x)
-    f.write("y coordinates of the trajectory:\r\n")
-    for y in data["y"]:
-        f.write("%f\r\n" % y)
-    f.write("z coordinates of the trajectory:\r\n")
-    for z in data["z"]:
-        f.write("%f\r\n" % z)
-    f.write("time particle is at a certain position (in sec):\r\n")
-    for t in data["t"]:
-        f.write("%f\r\n" % t)
-    f.write("|v| at a certain position:\r\n")
-    for v in data["|v|"]:
-        f.write("%f\r\n" % v)
-    f.write("|a| at a certain position:\r\n")
-    for a in data["|a|"]:
-        f.write("%f\r\n" % a)
-    f.write("End of file\r\n")
-
-    f.close()

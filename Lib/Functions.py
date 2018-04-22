@@ -1,3 +1,5 @@
+# various utility functions which will be called in different parts of the program itself
+
 from scipy.integrate import quad
 import xml.etree.ElementTree as ET
 from Lib.MagneticFieldComponents import *
@@ -46,7 +48,7 @@ def ConvertAnglesToVector(Theta, Phi):
     return ex*L.i + ey*L.j + ez*L.k
 
 
-def getvector(length, Theta, Phi):
+def GetVector(length, Theta, Phi):
     # Function which converts given angles in radians into a vector with a certain length
 
     eI = ConvertAnglesToVector(math.radians(Theta), math.radians(Phi))
@@ -141,6 +143,25 @@ def EvaluateAnalyticField(F, Coordinates):
     return Feval
 
 
+def GetFields(Coordinates, Speed, B_analytic, E_analytic, electrodes_WOS):
+    # evaluates and transforms the electric and magnetic fields to the reference frame of the particle (see documentation for more info: Beweging deeltje in magneetveld)
+
+    B = EvaluateAnalyticField(B_analytic, Coordinates)
+    E_analytic = EvaluateAnalyticField(E_analytic, Coordinates)
+
+    # E_WOS = electrodes_WOS
+    E = E_analytic
+
+    # relativistic correction:
+    c = 299792458
+    gamma = 1 / (1 - Speed.magnitude() ** 2 / c ** 2)
+
+    E_particle = gamma * (E + Speed.cross(B)) - (gamma - 1) * (E.dot(Speed.normalize())) * Speed.normalize()
+    B_particle = gamma * (B - (Speed.cross(E)) / c ** 2) - (gamma - 1) * (B.dot(Speed.normalize())) * Speed.normalize()
+
+    return E_particle, B_particle
+
+
 def ReadXml():
     # User needs to put a named xml file on the same level as the Main.py executable (so in the program folder)
     # The name of the file needs to be passed when executing the program from the command window, e.g.: python Main.py Datafile.xml
@@ -205,24 +226,29 @@ def ReadXml():
     Setup = root.find("Setup")
 
     Trajectory = Setup.find("Trajectory")
-    TrajectoryBoundaries = Trajectory.find("TrajectoryBoundaries")
+    TrajectoryBoundaries = Trajectory.find("TrajectoryBoundaries")          # determines the box in which the trajectory for the particle will be calculated (See Particle::ParticleMove)
     d["xmin"] = eval(TrajectoryBoundaries.find("xmin").text)
     d["xmax"] = eval(TrajectoryBoundaries.find("xmax").text)
     d["ymin"] = eval(TrajectoryBoundaries.find("ymin").text)
     d["ymax"] = eval(TrajectoryBoundaries.find("ymax").text)
     d["zmin"] = eval(TrajectoryBoundaries.find("zmin").text)
     d["zmax"] = eval(TrajectoryBoundaries.find("zmax").text)
-    d["timesteps"] = eval(Trajectory.find("TimeSteps").text)
-    d["timelimit"] = eval(Trajectory.find("TimeLimit").text)
-    d["interval"] = eval(Trajectory.find("Interval").text)
+    d["timesteps"] = eval(Trajectory.find("TimeSteps").text)                # determines the time steps used in Particle::ParticleMove
+    d["timelimit"] = eval(Trajectory.find("TimeLimit").text)                # determines the maximum execute time of Particle::ParticleMove
+    d["interval"] = eval(Trajectory.find("Interval").text)                  # used in Object_3D::IsPointInObject which is used in Particle::ParticleMove
 
     Output = Setup.find("Output")
-    d["TrajectoryPlot"] = Output.find("TrajectoryPlot").attrib["execute"]
+    d["WriteSetupToFile"] = Output.find("WriteSetupToFile").attrib["execute"]   # if execute = "yes" the file will be written with the name specified
+    d["FileNameSetup"] = Output.find("WriteSetupToFile").text
+    d["WriteDataToFile"] = Output.find("WriteDataToFile").attrib["execute"]     # if execute = "yes" the file will be written with the name specified
+    d["FileName"] = Output.find("WriteDataToFile").text
+
+    d["TrajectoryPlot"] = Output.find("TrajectoryPlot").attrib["execute"]       # if execute = "yes" the trajectory of the particle will be plotted
+
     d["MagneticFieldPlot"] = Output.find("MagneticFieldPlot").attrib["execute"]
     d["NormalizeMagneticFieldPlot"] = Output.find("MagneticFieldPlot").attrib["normalize"]
     d["ElectricFieldPlot"] = Output.find("ElectricFieldPlot").attrib["execute"]
     d["NormalizeElectricFieldPlot"] = Output.find("ElectricFieldPlot").attrib["normalize"]
-    d["WriteDataToFile"] = Output.find("WriteDataToFile").attrib["execute"]
 
     MagneticFieldPlot = Output.find("MagneticFieldPlot")
     MagneticFieldBoundaries = MagneticFieldPlot.find("MagneticFieldBoundaries")
@@ -242,7 +268,7 @@ def ReadXml():
     d["zmin2"] = eval(ElectricFieldBoundaries.find("zmin").text)
     d["zmax2"] = eval(ElectricFieldBoundaries.find("zmax").text)
 
-    d["FileName"] = Output.find("WriteDataToFile").text
+
 
 
 
@@ -270,9 +296,9 @@ def ResultingField(electrodes):
     E = Vector.zero
 
     for electrode in electrodes:
-        if electrode.FieldType() =="magnetic":
+        if electrode.FieldType() == "magnetic":
             B += electrode.GetField()
-        elif electrode.FieldType() =="electric":
+        elif electrode.FieldType() == "electric":
             E += electrode.GetField()
 
     return B, E
