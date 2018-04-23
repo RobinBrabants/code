@@ -14,41 +14,6 @@ from multiprocessing import pool
 import time
 
 
-def Get_Data_EWOS(d):
-    # function to get the data (list of electrode classes) for the main function
-    electrodes = []
-
-    i = 1
-    while "Msphere2_" + str(i) in d:
-        electrodes.append(Sphere("sphere_" + str(i) , d["Msphere2_" + str(i)], d["Rsphere2_" + str(i)], d["Vsphere2_" + str(i)]))
-        i += 1
-
-    i = 1
-    while "Pcylinder_" + str(i) in d:
-        electrodes.append(Cylinder(d["Pcylinder_" + str(i)], d["Qcylinder_" + str(i)], d["Rcylinder_" + str(i)],
-                                 d["Vcylinder_" + str(i)]))
-        i += 1
-
-    i = 1
-    while "Mcircdisc_" + str(i) in d:
-        electrodes.append(CircularDisk(d["Mcircdisc_" + str(i)], d["Rcircdisc_" + str(i)], d["Phicircdisc_" + str(i)],
-                                     d["Thetacircdisc_" + str(i)], d["Vcircdisc_" + str(i)]))
-        i += 1
-
-    i = 1
-    while "Mcircdisc4h_" + str(i) in d:
-        electrodes.append(
-            CircularDisk4Holes(d["Mcircdisc4h_" + str(i)], d["Mcircdisc4h1_" + str(i)], d["Mcircdisc4h2_" + str(i)],
-                               d["Mcircdisc4h3_" + str(i)], d["Mcircdisc4h4_" + str(i)], d["Rcircdisc4h_" + str(i)],
-                               d["Rcircdisc4h1_" + str(i)], d["Rcircdisc4h2_" + str(i)],
-                               d["Rcircdisc4h3_" + str(i)], d["Rcircdisc4h4_" + str(i)], d["Ncircdisc4h_" + str(i)],
-                               d["Vcircdisc4h_" + str(i)]))
-        i += 1
-
-
-    return electrodes
-
-
 def WalkOnSpheres_potential_slice(d, x, y, z):
     global V_inf, max_dist, maxsteps, space, iterations
     # constanten voor de potential_EWOS functie
@@ -413,7 +378,7 @@ def WalkOnSpheres(EWOS, P):
 
 
 
-
+"""
 
 def dist_sphere(P, M, R):
     from math import sqrt
@@ -632,3 +597,4 @@ def dist_surface(P, surface):
     radius = sqrt((x_1-x)**2+(y_1-y)**2+(z_1-z)**2)
 
     return radius
+"""

@@ -139,7 +139,7 @@ class Particle():
 
         return Trajectory
 
-    def WriteFile(self, E_analytic, B_analytic, Trajectory, d):
+    def WriteToFile(self, E_analytic, B_analytic, Trajectory, d):
         # function which writes all the data concerning the calculated trajectory to a file
 
         print("Writing data from the calculated trajectory of the particle to: " + d["FileName"])

@@ -19,23 +19,17 @@ electrodes, electrodes_WOS, particle, d = ReadXml()         # extract all the da
 B_analytic, E_analytic = ResultingField(electrodes)         # already calculates the analytical fields for those objects for which it is possible
                                                             # (some electrical fields will be calculated by the WOS method (see functions_WOS) in the particle class itself)
 
+if d["MagneticFieldPlot"] == "yes":                         # plot the magnetic field if enabled in the xml-file
+    Plotfield(B_analytic, "magnetic", d)
 
+if d["ElectricFieldPlot"] == "yes":                         # plot the electric field if enabled in the xml-file
+    Plotfield(E_analytic, "electric", d)
 
-data = ParticleMove(B, E, "EWOS", d)
-
+trajectory = particle.ParticleMove(B_analytic, E_analytic, electrodes, electrodes_WOS, d)               # calculate trajectory
 if d["WriteDataToFile"] == "yes":
-    WriteFile(B, data, d)
-
-if d["MagneticFieldPlot"] == "yes":
-    Plotfield(B_analytic, d)
-
-if d["ElectricFieldPlot"] == "yes":
-    Plotfield(E_analytic, d)
-
+    particle.WriteToFile(E_analytic, B_analytic, trajectory, d)                                         # write data concerning the trajectory of the particle to a file if enabled in the xml-file
 if d["TrajectoryPlot"] == "yes":
-    PlotTrajectory(data)
-
-
+    particle.PlotTrajectory(trajectory)                                                                 # plot the trajectory if enabled in the xml-file
 
 
 

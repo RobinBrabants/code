@@ -5,52 +5,6 @@ from sympy import sqrt
 from Lib.Functions import *
 import numpy as np
 
-def Sphere(M, R, Q):
-    x1 = M[0]
-    y1 = M[1]
-    z1 = M[2]
-
-    pi = math.pi
-    e = 8.854187817*10**(-12)
-
-    L = CoordSys3D('L')
-
-    x, y, z = sy.symbols('x y z')
-
-    distance = (x-x1)**2 + (y-y1)**2 + (z-z1)**2
-    r = (x-x1)*L.i + (y-y1)*L.j + (z-z1)*L.k
-    er = r.normalize()
-
-    E = Q/(4*pi*e*distance**2)*er
-
-    return E
-
-
-def Sphere2(M, R, V):
-
-    return "EvalWalkOnSpheres(function = sphere: {0}; {1}, potential = {2})".format(M, R, V)
-
-
-def Cylinder(P, Q, R, V):
-
-    return "EvalWalkOnSpheres(function = cylinder: {0}; {1}, radius = {2}, potential = {3})".format(P, Q, R, V)
-
-
-def CircularDisk(M, R, Phi, Theta, V):
-
-    return "EvalWalkOnSpheres(function = circulardisk: {0}; {1}, orientation = phi:{2}, theta:{3}, potential = {4})".format(M, R, Phi, Theta, V)
-
-
-def CircularDisk4Holes(M, M1, M2, M3, M4, R, R1, R2, R3, R4, N, V):
-
-    return "EvalWalkOnSpheres(function = circdisk4holes: {0}; {1}, orientation = {2}, holes: M1:{3}, R1:{4}; M2:{5}, R2:{6}; M3:{7}, R3:{8}; M4:{9}, R4:{10}, potential = {11})".format(M, R, N, M1, R1, M2, R2, M3, R3, M4, R4, V)
-
-
-def Surface(equation, V):
-    x, y = sy.symbols('x y')
-    return "EvalWalkOnSpheres(function = '{0}', potential = '{1}')".format(equation, V)
-
-
 def Line(S, T, Q):
     x_1 = S[0]
     y_1 = S[1]

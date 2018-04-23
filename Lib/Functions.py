@@ -202,6 +202,7 @@ def ReadXml():
 
         return object_list
 
+    #################################
 
     # ELECTRODES (electric and magnetic):
     class_names = [cls.__name__ for cls in vars()["Electrode"].__subclasses__()]  # get the class names derived from the electrode base class
@@ -237,6 +238,15 @@ def ReadXml():
     d["timelimit"] = eval(Trajectory.find("TimeLimit").text)                # determines the maximum execute time of Particle::ParticleMove
     d["interval"] = eval(Trajectory.find("Interval").text)                  # used in Object_3D::IsPointInObject which is used in Particle::ParticleMove
 
+
+
+    ######################################
+    # WOS
+
+
+
+
+
     Output = Setup.find("Output")
     d["WriteSetupToFile"] = Output.find("WriteSetupToFile").attrib["execute"]   # if execute = "yes" the file will be written with the name specified
     d["FileNameSetup"] = Output.find("WriteSetupToFile").text
@@ -245,13 +255,13 @@ def ReadXml():
 
     d["TrajectoryPlot"] = Output.find("TrajectoryPlot").attrib["execute"]       # if execute = "yes" the trajectory of the particle will be plotted
 
-    d["MagneticFieldPlot"] = Output.find("MagneticFieldPlot").attrib["execute"]
+    d["MagneticFieldPlot"] = Output.find("MagneticFieldPlot").attrib["execute"]                 # determines whether the magnetic field plot should be calculated and whether this should be a normalized plot or not
     d["NormalizeMagneticFieldPlot"] = Output.find("MagneticFieldPlot").attrib["normalize"]
-    d["ElectricFieldPlot"] = Output.find("ElectricFieldPlot").attrib["execute"]
+    d["ElectricFieldPlot"] = Output.find("ElectricFieldPlot").attrib["execute"]                 # determines whether the electric field plot should be calculated and whether this should be a normalized plot or not
     d["NormalizeElectricFieldPlot"] = Output.find("ElectricFieldPlot").attrib["normalize"]
 
     MagneticFieldPlot = Output.find("MagneticFieldPlot")
-    MagneticFieldBoundaries = MagneticFieldPlot.find("MagneticFieldBoundaries")
+    MagneticFieldBoundaries = MagneticFieldPlot.find("MagneticFieldBoundaries")                 # determines the box in which the magnetic field will be shown
     d["xmin1"] = eval(MagneticFieldBoundaries.find("xmin").text)
     d["xmax1"] = eval(MagneticFieldBoundaries.find("xmax").text)
     d["ymin1"] = eval(MagneticFieldBoundaries.find("ymin").text)
@@ -260,7 +270,7 @@ def ReadXml():
     d["zmax1"] = eval(MagneticFieldBoundaries.find("zmax").text)
 
     ElectricFieldPlot = Output.find("ElectricFieldPlot")
-    ElectricFieldBoundaries = ElectricFieldPlot.find("ElectricFieldBoundaries")
+    ElectricFieldBoundaries = ElectricFieldPlot.find("ElectricFieldBoundaries")                 # determines the box in which the electric field will be shown
     d["xmin2"] = eval(ElectricFieldBoundaries.find("xmin").text)
     d["xmax2"] = eval(ElectricFieldBoundaries.find("xmax").text)
     d["ymin2"] = eval(ElectricFieldBoundaries.find("ymin").text)
@@ -270,18 +280,30 @@ def ReadXml():
 
 
 
+    ##########################################################
+    # shows the enabled setup of electrodes, data concerning the particle in the xml-file and writes it to a file if enabled
+    # ask if the given setup is correct before proceeding
+
+    print("This is the enabled setup in the xml file: ")
+
+    print("electrodes:")
+
+    attributes = vars(electrodes)
+    print(attributes)
+
+    print("electrodes_WOS :")
+
+    print("particle:")
 
 
 
 
 
+    #d["WriteSetupToFile"]
 
-    # ask if given setup is correct before proceding EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+    #d["FileNameSetup"]
 
-
-
-
-
+    #sys.exit("ERROR: User needs to give the xml-file holding the data as an argument")
 
 
     return electrodes, electrodes_WOS, particle, d

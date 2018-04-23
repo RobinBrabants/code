@@ -10,12 +10,10 @@ from scipy.integrate import quad
 from sympy import sin, cos
 
 
-def Plotfield(B, d):
+def Plotfield(Field, FieldType, d):
     # funtion which plots the magnetic and electric fields which are able to be analytically evaluated
 
-    print("Plotting the trajectory of the particle")
-
-    print("Plotfield")
+    print("Plotting the " + FieldType + " field")
 
     Phi2, t = sy.symbols('Phi2 t')
 
@@ -29,27 +27,25 @@ def Plotfield(B, d):
 
     L = CoordSys3D('L')
 
-    x, y, z = np.meshgrid(np.arange(d["xmin1"], d["xmax1"], abs(d["xmax1"] - d["xmin1"]) / 10),
-                          np.arange(d["ymin1"], d["ymax1"], abs(d["ymax1"] - d["ymin1"]) / 10),
-                          np.arange(d["zmin1"], d["zmax1"], abs(d["zmax1"] - d["zmin1"]) / 10))
+    x, y, z = np.meshgrid(np.arange(d["xmin1"], d["xmax1"], abs(d["xmax1"] - d["xmin1"]) / 10), np.arange(d["ymin1"], d["ymax1"], abs(d["ymax1"] - d["ymin1"]) / 10), np.arange(d["zmin1"], d["zmax1"], abs(d["zmax1"] - d["zmin1"]) / 10))
 
-    Bcomponents = B.components
-    UpdateDictionary(Bcomponents)
+    Fieldcomponents = Field.components
+    UpdateDictionary(Fieldcomponents)
 
     for basis in [L.i, L.j, L.k]:
 
         sum_integrals = np.zeros(x.shape)
 
-        if str(Bcomponents[basis]).find("Integral(") != -1:
-            while str(str(Bcomponents[basis])).find("Integral(") != -1:
+        if str(Fieldcomponents[basis]).find("Integral(") != -1:
+            while str(str(Fieldcomponents[basis])).find("Integral(") != -1:
 
-                end1 = str(str(Bcomponents[basis])).find("Integral(")
+                end1 = str(str(Fieldcomponents[basis])).find("Integral(")
 
-                integrand = str(Bcomponents[basis])[str(Bcomponents[basis]).find("Integral(") + 9:str(Bcomponents[basis]).find(", ")]
+                integrand = str(Fieldcomponents[basis])[str(Fieldcomponents[basis]).find("Integral(") + 9:str(Fieldcomponents[basis]).find(", ")]
                 integrand = sy.sympify(integrand)
                 integrand = eval(str(integrand))
 
-                info1 = str(Bcomponents[basis])[str(Bcomponents[basis]).find(",") + 1:]
+                info1 = str(Fieldcomponents[basis])[str(Fieldcomponents[basis]).find(",") + 1:]
                 dx = info1[info1.find("(") + 1:info1.find(",")]
                 info2 = info1[info1.find(",") + 2:]
                 a = info2[:info2.find(",")]
@@ -66,22 +62,18 @@ def Plotfield(B, d):
                     for index, w in np.ndenumerate(integrand):
                         sum_integrals[index] += quad(lambda t: eval(str(w)), eval(a), eval(b))[0]
 
-                Bcomponents[basis] = str(Bcomponents[basis])[:end1] + info2[begin2 + 3:]
+                Fieldcomponents[basis] = str(Fieldcomponents[basis])[:end1] + info2[begin2 + 3:]
 
-            print("done")
+            Fieldcomponents[basis] = eval(Fieldcomponents[basis] + "0")
 
-            Bcomponents[basis] = eval(Bcomponents[basis] + "0")
-
-            Bcomponents[basis] = np.add(Bcomponents[basis], sum_integrals)
+            Fieldcomponents[basis] = np.add(Fieldcomponents[basis], sum_integrals)
 
         else:
-            Bcomponents[basis] = eval(str(Bcomponents[basis]))
+            Fieldcomponents[basis] = eval(str(Fieldcomponents[basis]))
 
-
-    print("almost")
-    u = Bcomponents[L.i]
-    v = Bcomponents[L.j]
-    w = Bcomponents[L.k]
+    u = Fieldcomponents[L.i]
+    v = Fieldcomponents[L.j]
+    w = Fieldcomponents[L.k]
 
     if d["NormalizeMagneticFieldPlot"] == "True":
         ax.quiver(x, y, z, u, v, w, length=3, arrow_length_ratio=0.4, pivot="middle", normalize=True)
@@ -91,7 +83,7 @@ def Plotfield(B, d):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-    fig.suptitle('field', fontsize=14, fontweight='bold')
+    fig.suptitle(FieldType + " field", fontsize=14, fontweight='bold')
 
     plt.show(block="False")
 
