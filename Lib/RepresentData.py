@@ -2,7 +2,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
 from sympy.vector import CoordSys3D
-from Lib.Functions import *
+
 import sympy as sy
 from numpy import sqrt
 import math
@@ -11,6 +11,7 @@ from sympy import sin, cos
 
 
 def Plotfield(Field, FieldType, d):
+    from Lib.Functions import UpdateDictionary
     # funtion which plots the magnetic and electric fields which are able to be analytically evaluated
 
     print("Plotting the " + FieldType + " field")

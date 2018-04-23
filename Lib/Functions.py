@@ -2,8 +2,6 @@
 
 from scipy.integrate import quad
 import xml.etree.ElementTree as ET
-from Lib.MagneticFieldComponents import *
-from Lib.ElectricFieldComponents import *
 from sympy import sqrt, diff, solve, nsolve
 from scipy.optimize import fsolve, fmin
 import numpy as np
@@ -11,12 +9,26 @@ import math
 from random import random
 from operator import itemgetter
 import multiprocessing as mp
-from Lib.Elements import *
-from Lib.Objects_3D import *
 from multiprocessing import pool
 import time
 import inspect
 import sys
+
+from Lib.Particle import *
+from Lib.RepresentData import *
+import numpy as np
+from Lib.Functions import *
+import time
+from random import random
+import datetime
+from Lib.Elements import *
+from Lib.Objects_3D import *
+from Lib.Particle import *
+import xml.etree.ElementTree as ET
+import inspect
+import sys
+
+
 
 
 def ConvertAnglesToVector(Theta, Phi):
@@ -163,6 +175,10 @@ def GetFields(Coordinates, Speed, B_analytic, E_analytic, electrodes_WOS):
 
 
 def ReadXml():
+    from Lib.Elements import Electrode
+    from Lib.Objects_3D import Object_3D
+
+
     # User needs to put a named xml file on the same level as the Main.py executable (so in the program folder)
     # The name of the file needs to be passed when executing the program from the command window, e.g.: python Main.py Datafile.xml
     # output is a list of objects which represent the electrodes(_WOS), a particle object and a dictionary holding information about the setup
@@ -179,6 +195,7 @@ def ReadXml():
     root = tree.getroot()
 
     def GetObjects(class_names, root):
+        from Lib.Particle import Particle
         # function which will generate an object list from the enabled elements in the xml-file
 
         object_list = []
@@ -198,7 +215,9 @@ def ReadXml():
                             input_parameters.append(eval(element.find(parameter).text))  # will find the other input parameters in the xml file and hold its values in a list
 
                         object_list.append(eval(cls)(*input_parameters))  # generates the correct class object with the extracted input parameters and appends it to the list
+
                         i += 1
+
 
         return object_list
 
@@ -209,7 +228,6 @@ def ReadXml():
 
     electrodes = GetObjects(class_names, root)  # list that holds all the specified electrodes as class objects
 
-
     # ELECTRODES_WOS (for the Walk on Spheres method, electric)
     class_names = [cls.__name__ + "_WOS" for cls in vars()["Object_3D"].__subclasses__()]  # get the class names derived from the Object_3D base class (and add _WOS)
 
@@ -218,7 +236,8 @@ def ReadXml():
 
     # PARTICLE:
     class_name = "Particle"
-    particle = GetObjects(class_name, root)
+    particle = GetObjects([class_name], root)
+
 
 
     # SETUP (works with dictionary instead of class objects)
@@ -288,7 +307,7 @@ def ReadXml():
 
     print("electrodes:")
 
-    attributes = vars(electrodes)
+    attributes = vars(electrodes[0])
     print(attributes)
 
     print("electrodes_WOS :")

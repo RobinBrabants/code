@@ -98,7 +98,7 @@ class StraightConductor(Electrode):
 #  electric field producing elements (potential on the surface is used):
 
 
-class Sphere(Electrode):
+class Sphere_Field(Electrode):
     def __init__(self, name, CoordinatesCenter, Radius, Potential):
         Electrode.__init__(self, name)
         self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of a sphere
@@ -106,6 +106,7 @@ class Sphere(Electrode):
         self.Potential = Potential                      # potential on the surface of the sphere
 
     def GetField(self):
+        from sympy import sqrt
         # law of Coulomb is used to calculate the electrical field
         pi = math.pi
         e0 = 8.854187817 * 10 ** (-12)      # permitivity of vacuum

@@ -182,20 +182,16 @@
 				<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
 			</CircularCoil>
 
-			<Sphere number="1" status="disabeld">
-				<CoordinatesCentre>
-					<x>1</x>
-					<y>1</y>
-					<z>1</z>
-				</CoordinatesCentre>
+			<Sphere_Field number="1" status="enabled">
+				<CoordinatesCenter>[1, 1, 1]</CoordinatesCenter>
 				<Radius>2</Radius>
-				<Charge>10**(-18)</Charge>
-			</Sphere>
+				<Potential>5</Potential>
+            </Sphere_Field>
 
 		</Elements>
 		<Elements_WOS>
 
-			<Sphere_WOS number="1" status="nabled">
+			<Sphere number="1" status="nabled">
 				<CoordinatesCentre>
 					<x>0</x>
 					<y>0</y>
@@ -203,8 +199,8 @@
 				</CoordinatesCentre>
 				<Radius>4</Radius>
 				<Potential>5</Potential>
-			</Sphere_WOS>
-			<Sphere_WOS number="2" status="abled">
+			</Sphere>
+			<Sphere number="2" status="abled">
 				<CoordinatesCentre>
 					<x>-10</x>
 					<y>10</y>
@@ -212,10 +208,10 @@
 				</CoordinatesCentre>
 				<Radius>4</Radius>
 				<Potential>5</Potential>
-			</Sphere_WOS>
+			</Sphere>
 
 
-			<Cylinder_WOS number="1" status="enabled">
+			<Cylinder number="1" status="abled">
 				<CoordinatesPoint1>
 					<x>0</x>
 					<y>0</y>
@@ -228,8 +224,8 @@
 				</CoordinatesPoint2>
 				<Radius>0.5</Radius>
 				<Potential>5</Potential>
-			</Cylinder_WOS>
-			<Cylinder_WOS number="2" status="nabled">
+			</Cylinder>
+			<Cylinder number="2" status="nabled">
 				<CoordinatesPoint1>
 					<x>1.25</x>
 					<y>1.25</y>
@@ -242,7 +238,7 @@
 				</CoordinatesPoint2>
 				<Radius>0.8</Radius>
 				<Potential>0</Potential>
-			</Cylinder_WOS>
+			</Cylinder>
 
 			<CircularDisc number="1" status="disabled">
 				<CoordinatesCentre>
@@ -304,7 +300,7 @@
 				<Potential>5</Potential>
 			</Surface>
 
-			<Line number="1" status="enabled">
+			<Line number="1" status="abled">
 				<CoordinatesPoint1>
 					<x>0</x>
 					<y>0</y>
@@ -321,7 +317,7 @@
 		</Elements_WOS>
 
 		<Particle number="1" status="enabled">>
-			<Type>proton</Type>							<!-- here the type of the particle needs to be specified (will be set as the name of the particle), if the name corresponds to a name in the particledictionary (currently holding electron and proton) the mass and charge will automatically be assigned and does not need to be specified -->
+			<Type>"proton"</Type>							<!-- here the type of the particle needs to be specified (will be set as the name of the particle), if the name corresponds to a name in the particledictionary (currently holding electron and proton) the mass and charge will automatically be assigned and does not need to be specified -->
 			<Mass>9.10938356*(10**(-31))</Mass>  		<!-- in kilograms -->
 			<Charge>-1.6021766208*(10**(-19))</Charge>	<!-- in coulombs -->
 			<Velocity>100</Velocity>					<!-- starting velocity of the particle in m/s -->
