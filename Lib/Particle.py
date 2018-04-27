@@ -1,10 +1,16 @@
 # Particle class with a few functions (see class itself)
 
 
-from Lib.Functions import *
+from Lib.Functions import UpdateDictionary, GetVector, GetFields
 from sympy.vector import CoordSys3D, Vector
 import sympy as sy
 import matplotlib.pyplot as plt
+import numpy as np
+import warnings
+import csv
+
+
+
 
 
 ParticleDictionary = {"electron": [9.10938356 * (10 ** (-31)), -1.6021766208 * (10 ** (-19))], "proton": [1.672621898 * (10 ** (-27)), 1.6021766208 * 10 ** (-19)]}
@@ -13,6 +19,8 @@ ParticleDictionary = {"electron": [9.10938356 * (10 ** (-31)), -1.6021766208 * (
 
 class Particle():
     def __init__(self, name, Type, Mass, Charge, Velocity, Theta1, Phi1, Acceleration, Theta2, Phi2, Position):
+
+
         self.name = name
         self.Type = Type        # the particle type (like electron, proton, muon...)
 
@@ -32,10 +40,11 @@ class Particle():
         self.Position = Position                # starting position particle
 
     def ParticleMove(self, B_analytic, E_analytic, electrodes, electrodes_WOS, d):
+        import time
         # calculates the trajectory of a particle in predetermined electric and magnetic fields
         # see the documentation on how the trajectory of the particle is determined (Beweging deeltje in magneetveld)
 
-        print("The trajectory of the particle is now being calculated")
+        print("\r\n\r\nThe trajectory of the particle is now being calculated...")
 
         L = CoordSys3D('L')
         x, y, z = sy.symbols('x y z')
@@ -47,7 +56,7 @@ class Particle():
         Acceleration = (self.Charge / self.Mass) * ((Speed.cross(B)) + E) + Acceleration_constant       # Step 3
         time = 0
 
-        Trajectory = {"t": ["time"], "x": ["x coord"], "y": ["y coord"], "z": ["z coord"], "v": ["velocity"], "a": ["acceleration"], "E": ["electric field"], "B": [" magneticfield"]}
+        Trajectory = {"t": [], "x": [], "y": [], "z": [], "v": [], "a": [], "E": [], "B": []}
         # Dictionary in which all the data about the calculated trajectory will be held
         Trajectory["t"].append(time)
         Trajectory["x"].append(Coordinates[0])
@@ -58,8 +67,29 @@ class Particle():
         Trajectory["E"].append(E)
         Trajectory["B"].append(B)
 
+        print('time: %f               coordinates: %s            ' % (time, Coordinates), end='\r')
+
+
         while time <= d["timelimit"]:           # maximum execute time cannot be exceeded
             # the testpoint is the first estimate of the next point which will later be corrected
+
+            # check if the particle is in an object or near one
+            stop = 0
+            for electrode in electrodes + electrodes_WOS:
+                if electrode.IsPointInObject(Coordinates, d["interval"]) != 0:
+                    print("The particle collided with: " + electrode.name+'                                                                                      ')
+                    Trajectory["collision"] = electrode
+                    stop = 1
+
+            if stop ==1:
+                break
+
+            # check whether particle goes out of the predetermined box
+            if Coordinates[0] < d["xmin"] or Coordinates[0] > d["xmax"] or Coordinates[1] < d["ymin"] or Coordinates[1] > d["ymax"] or Coordinates[2] < d["zmin"] or Coordinates[2] > d["zmax"]:
+                print("The particle went out of the predetermined box                                                                                            ")
+                break
+
+
 
             # Step 4
             vComponents = Speed.components
@@ -109,20 +139,9 @@ class Particle():
 
             Acceleration = Acceleration_nextpoint
 
-            time += d["t"]
+            time += d["timesteps"]
 
-
-
-            if Coordinates[0] < d["xmin"] or Coordinates[0] > d["xmax"] or Coordinates[1] < d["ymin"] or Coordinates[1] > d["ymax"] or Coordinates[2] < d["zmin"] or Coordinates[2] > d["zmax"]:
-                print("The particle went out of the predetermined box")
-                break
-
-
-            for electrode in electrodes, electrodes_WOS:
-                if electrode.IsPointInObject() != 0:
-                    print("The particle collided with: " + electrode.name)
-                    Trajectory["collision"] = electrode
-                    break
+            print('time: %f               coordinates: %s            ' % (time, str(Coordinates)), end='\r')
 
 
             Trajectory["t"].append(time)
@@ -134,43 +153,51 @@ class Particle():
             Trajectory["E"].append(E)
             Trajectory["B"].append(B)
 
-
-        print("The calculations for the trajectory of the particle have been successfully finished")
+        print("The calculations for the trajectory of the particle have been successfully finished\r\n")
 
         return Trajectory
 
     def WriteToFile(self, E_analytic, B_analytic, Trajectory, d):
-        # function which writes all the data concerning the calculated trajectory to a file
+        # function which writes all the data concerning the calculated trajectory to a csv file
 
-        print("Writing data from the calculated trajectory of the particle to: " + d["FileName"])
+        print("Writing data from the calculated trajectory of the particle to: " + d["FileName"] + "...")
 
-        f = open(d["FileName"], "wb")
+        f = open(d["FileName"], "w")
 
-        f.write("This file includes the data from the calculated trajectory of the particle: %s, %s" % (self.name, self.Type))
+        f.write("This file includes the data from the calculated trajectory of %s (%s)\r\n\r\n" % (self.name, self.Type))
 
-        f.write("Analytic formula for the resulting electric field:\r\n%s\r\n\r\n" % str(E_analytic))
-        f.write("Analytic formula for the resulting magnetic field:\r\n%s\r\n\r\n" % str(B_analytic))
+        f.write("Analytic formula for the resulting electric field:\r\n%s\r\n" % str(E_analytic))
         f.write("REMARK: This does not include the electric field produced by the WOS objects \r\n\r\n")
+        f.write("Analytic formula for the resulting magnetic field:\r\n%s\r\n\r\n" % str(B_analytic))
 
-        f.write("Data concerning the trajectory of the particle:\r\n")
+        f.write("Data concerning the trajectory of the particle (easily imported into excel matlab...):\r\n")
 
-        for val in zip( Trajectory["t"], Trajectory["x"], Trajectory["y"], Trajectory["z"], Trajectory["v"], Trajectory["a"], Trajectory["E"], Trajectory["B"]):
-            f.write('{}, {}, {}, {}, {}, {}, {}, {}\r\n'.format(val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7]))
+        writer = csv.writer(f, delimiter=';')
+
+        header = ["t", "x", "y", "z", "v", "a", "E", "B"]
+        rows = zip(*[Trajectory[col] for col in header])
+
+        writer.writerow(header)
+
+        for row in rows:
+            writer.writerow(row)
+
 
         if "collision" in Trajectory:
             electrode = Trajectory["collision"]
             f.write("Particle collided with: %s\r\n\r\n" % str(electrode.name))         # says if there was a collision
 
-        f.write("End of file\r\n")
 
         f.close()
 
-        print(d["FileName"] + "written")
+        print(d["FileName"] + " has been written\r\n")
 
     def PlotTrajectory(self, Trajectory):
         # funtion which plots the trajectory of the particle
 
-        print("Plotting the trajectory of the particle")
+        print("Plotting the trajectory of the particle...\r\n")
+
+        warnings.filterwarnings("ignore")
 
         fig = plt.figure()
         ax = fig.gca(projection='3d')
@@ -207,10 +234,21 @@ class Particle():
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-        fig.suptitle('trajectory of particle: ' + self.name + ', ' + self.Type, fontsize=14, fontweight='bold')
+
+
+        if "collision" in Trajectory:
+            electrode = Trajectory["collision"]
+            fig.suptitle('trajectory of ' + self.name + ' (' + self.Type + '), Particle collided with: ' + str(electrode.name) + '\r\n\r\n', fontsize=14, fontweight='bold')
+        else:
+            fig.suptitle('trajectory of ' + self.name + ' (' + self.Type + ')', fontsize=14, fontweight='bold')
+
         ax.set_title('time in seconds', style='italic', fontsize=8, bbox={'facecolor': 'red', 'alpha': 0.2, 'pad': 7})
 
-        plt.show(block="False")
+        # also remark if there was a clliison
+
+        plt.show(block=False)
+
+
 
 
 

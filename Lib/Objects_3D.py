@@ -37,7 +37,7 @@ class Object_3D(object):
         # 1 means particle is considered to be colliding with the object (near enough)
         # 2 means particle is inside object
 
-        distance = self.GetClosestDistanceToPoint(self, point)
+        distance = self.GetClosestDistanceToPoint(point)
 
         if distance > interval:
             return 0

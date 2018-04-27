@@ -13,11 +13,18 @@ import inspect
 import sys
 
 
-
 electrodes, electrodes_WOS, particles, d = ReadXml()         # extract all the data from the xml file
 
 B_analytic, E_analytic = ResultingField(electrodes)         # already calculates the analytical fields for those objects for which it is possible
                                                             # (some electrical fields will be calculated by the WOS method (see functions_WOS) in the particle class itself)
+
+for particle in particles:
+    trajectory = particle.ParticleMove(B_analytic, E_analytic, electrodes, electrodes_WOS, d)               # calculate trajectory
+    if d["WriteDataToFile"] == "yes":
+        particle.WriteToFile(E_analytic, B_analytic, trajectory, d)                                         # write data concerning the trajectory of the particle to a file if enabled in the xml-file
+    if d["TrajectoryPlot"] == "yes":
+        particle.PlotTrajectory(trajectory)                                                # plot the trajectory if enabled in the xml-file
+
 
 if d["MagneticFieldPlot"] == "yes":                         # plot the magnetic field if enabled in the xml-file
     Plotfield(B_analytic, "magnetic", d)
@@ -25,13 +32,10 @@ if d["MagneticFieldPlot"] == "yes":                         # plot the magnetic 
 if d["ElectricFieldPlot"] == "yes":                         # plot the electric field if enabled in the xml-file
     Plotfield(E_analytic, "electric", d)
 
-print(particles)
-for particle in particles:
-    trajectory = particle.ParticleMove(B_analytic, E_analytic, electrodes, electrodes_WOS, d)               # calculate trajectory
-    if d["WriteDataToFile"] == "yes":
-        particle.WriteToFile(E_analytic, B_analytic, trajectory, d)                                         # write data concerning the trajectory of the particle to a file if enabled in the xml-file
-    if d["TrajectoryPlot"] == "yes":
-        particle.PlotTrajectory(trajectory)                                                     # plot the trajectory if enabled in the xml-file
+input("Press Enter to end program and close all figures")
+
+
+
 
 
 
@@ -48,17 +52,20 @@ git add *
 git commit -m "ee"
 git push origin master
 """
-#username: RobinBrabants
+# username: RobinBrabants
 
-#http://chris35wills.github.io/conda_python_version/
+# http://chris35wills.github.io/conda_python_version/
 
-#https://pythonhosted.org/PyInstaller/usage.html
+# https://pythonhosted.org/PyInstaller/usage.html
 
 
-#packages:
+# packages:
 """
-python -m pip install scipy
-python -m pip install sympy
-python -m pip install matplotlib
-apt-get install python3-tk
+python3.6 -m pip install scipy
+python3.6 -m pip install sympy
+python3.6 -m pip install matplotlib
+apt-get install python3.6-tk
 """
+
+# run as:
+# python3.6 Main.py DataFile.xml

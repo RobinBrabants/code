@@ -152,6 +152,7 @@ def EvaluateAnalyticField(F, Coordinates):
     else:
         Feval = Vector.zero
 
+
     return Feval
 
 
@@ -185,11 +186,11 @@ def ReadXml():
 
     # Check if the correct argument is given:
     if len(sys.argv) == 1:
-        sys.exit("ERROR: User needs to give the xml-file holding the data as an argument")
+        sys.exit("ERROR: User needs to give the xml-file holding the data as an argument\r\n")
     elif len(sys.argv) > 2:
-        sys.exit("ERROR: Too many arguments given, please only give the data file as an argument")
+        sys.exit("ERROR: Too many arguments given, please only give the data file as an argument\r\n")
     else:
-        print("The data wil be read from: " + str(sys.argv[1]) + " ...")
+        print("The data wil be read from: " + str(sys.argv[1]) + " ...\r\n")
 
     tree = ET.parse(str(sys.argv[1]))  # Load the given xml-file passed as an argument
     root = tree.getroot()
@@ -229,15 +230,13 @@ def ReadXml():
     electrodes = GetObjects(class_names, root)  # list that holds all the specified electrodes as class objects
 
     # ELECTRODES_WOS (for the Walk on Spheres method, electric)
-    class_names = [cls.__name__ + "_WOS" for cls in vars()["Object_3D"].__subclasses__()]  # get the class names derived from the Object_3D base class (and add _WOS)
+    class_names = [cls.__name__ for cls in vars()["Object_3D"].__subclasses__()]  # get the class names derived from the Object_3D base class (and add _WOS)
 
     electrodes_WOS = GetObjects(class_names, root)  # list that holds all the specified electrodes_WOS as class objects
-
 
     # PARTICLE:
     class_name = "Particle"
     particle = GetObjects([class_name], root)
-
 
 
     # SETUP (works with dictionary instead of class objects)
@@ -303,26 +302,63 @@ def ReadXml():
     # shows the enabled setup of electrodes, data concerning the particle in the xml-file and writes it to a file if enabled
     # ask if the given setup is correct before proceeding
 
-    print("This is the enabled setup in the xml file: ")
+    print("This is the enabled setup in the xml file:\r\n")
 
-    print("electrodes:")
+    print("electrodes:\r\n")
 
-    attributes = vars(electrodes[0])
-    print(attributes)
+    for electrode in electrodes:
+        attributes = vars(electrode)
+        print(', '.join("%s: %s" % item for item in attributes.items()))
 
-    print("electrodes_WOS :")
+    print("\r\nelectrodes_WOS:\r\n")
 
-    print("particle:")
+    for electrode_WOS in electrodes_WOS:
+        attributes = vars(electrode_WOS)
+        print(', '.join("%s: %s" % item for item in attributes.items()))
+
+    print("\r\nparticle:\r\n")
+
+    attributes = vars(particle[0])
+    print(', '.join("%s: %s" % item for item in attributes.items()))
+
+    continue_program = input('\r\nIs the given setup correct and do you want to continue the program?   (type yes and then press Enter if so)\r\n')
+    if continue_program != "yes":
+        sys.exit("program terminated by user")
+
+    ##
+
+    if d["WriteSetupToFile"] == "yes":
+        print("\r\nWriting the setup to: " + d["FileNameSetup"] + "...")
+
+        f = open(d["FileNameSetup"], "w")
+
+        f.write("This is the enabled setup in the xml file:\r\n\r\n")
+
+        f.write("electrodes:\r\n\r\n")
+
+        for electrode in electrodes:
+            attributes = vars(electrode)
+            f.write(', '.join("%s: %s" % item for item in attributes.items()))
+            f.write("\r\n")
+
+        f.write("\r\n\r\nelectrodes_WOS:\r\n\r\n")
+
+        for electrode_WOS in electrodes_WOS:
+            attributes = vars(electrode_WOS)
+            f.write(', '.join("%s: %s" % item for item in attributes.items()))
+            f.write("\r\n")
+
+        f.write("\r\n\r\nparticle:\r\n\r\n")
+
+        attributes = vars(particle[0])
+        f.write(', '.join("%s: %s" % item for item in attributes.items()))
 
 
+        f.close()
+
+        print(d["FileNameSetup"] + " has been written\r\n")
 
 
-
-    #d["WriteSetupToFile"]
-
-    #d["FileNameSetup"]
-
-    #sys.exit("ERROR: User needs to give the xml-file holding the data as an argument")
 
 
     return electrodes, electrodes_WOS, particle, d

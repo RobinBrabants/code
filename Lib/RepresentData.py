@@ -8,13 +8,16 @@ from numpy import sqrt
 import math
 from scipy.integrate import quad
 from sympy import sin, cos
+import warnings
 
 
 def Plotfield(Field, FieldType, d):
     from Lib.Functions import UpdateDictionary
     # funtion which plots the magnetic and electric fields which are able to be analytically evaluated
 
-    print("Plotting the " + FieldType + " field")
+    print("Plotting the " + FieldType + " field...\r\n")
+
+    warnings.filterwarnings("ignore")
 
     Phi2, t = sy.symbols('Phi2 t')
 
@@ -28,7 +31,10 @@ def Plotfield(Field, FieldType, d):
 
     L = CoordSys3D('L')
 
-    x, y, z = np.meshgrid(np.arange(d["xmin1"], d["xmax1"], abs(d["xmax1"] - d["xmin1"]) / 10), np.arange(d["ymin1"], d["ymax1"], abs(d["ymax1"] - d["ymin1"]) / 10), np.arange(d["zmin1"], d["zmax1"], abs(d["zmax1"] - d["zmin1"]) / 10))
+    if FieldType == "magnetic":
+         x, y, z = np.meshgrid(np.arange(d["xmin1"], d["xmax1"], abs(d["xmax1"] - d["xmin1"]) / 10), np.arange(d["ymin1"], d["ymax1"], abs(d["ymax1"] - d["ymin1"]) / 10), np.arange(d["zmin1"], d["zmax1"], abs(d["zmax1"] - d["zmin1"]) / 10))
+    else:
+        x, y, z = np.meshgrid(np.arange(d["xmin2"], d["xmax2"], abs(d["xmax2"] - d["xmin2"]) / 10), np.arange(d["ymin2"], d["ymax2"], abs(d["ymax2"] - d["ymin2"]) / 10), np.arange(d["zmin2"], d["zmax2"], abs(d["zmax2"] - d["zmin2"]) / 10))
 
     Fieldcomponents = Field.components
     UpdateDictionary(Fieldcomponents)
@@ -78,13 +84,15 @@ def Plotfield(Field, FieldType, d):
 
     if d["NormalizeMagneticFieldPlot"] == "True":
         ax.quiver(x, y, z, u, v, w, length=3, arrow_length_ratio=0.4, pivot="middle", normalize=True)
+        fig.suptitle(FieldType + " field plot, normalized", fontsize=14, fontweight='bold')
     else:
         ax.quiver(x, y, z, u, v, w, length=int(factor), arrow_length_ratio=0.4, pivot="middle")
+        fig.suptitle(FieldType + " field plot", fontsize=14, fontweight='bold')
 
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-    fig.suptitle(FieldType + " field", fontsize=14, fontweight='bold')
 
-    plt.show(block="False")
+    plt.ion()
+    plt.show()
 

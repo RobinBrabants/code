@@ -6,12 +6,12 @@
 			<StraightConductor number="1" status="enabled">
 				<CoordinatesPoint1>[0,0,0]</CoordinatesPoint1>
 				<CoordinatesPoint2>[0,0,10]</CoordinatesPoint2>
-				<Current>1</Current>				<!-- conventional current goes standardly from point 1 to 2, to reverse make the Current negative -->
+				<Current>5</Current>				<!-- conventional current goes standardly from point 1 to 2, to reverse make the Current negative -->
 				<Radius>4</Radius>
 			</StraightConductor>
 			<StraightConductor number="2" status="enabled">
-				<CoordinatesPoint1>[1,5,0]</CoordinatesPoint1>
-				<CoordinatesPoint2>[0,0,10]</CoordinatesPoint2>
+				<CoordinatesPoint1>[5,5,0]</CoordinatesPoint1>
+				<CoordinatesPoint2>[5,5,10]</CoordinatesPoint2>
 				<Current>2</Current>
 				<Radius>2</Radius>
 			</StraightConductor>
@@ -183,7 +183,7 @@
 			</CircularCoil>
 
 			<Sphere_Field number="1" status="enabled">
-				<CoordinatesCenter>[1, 1, 1]</CoordinatesCenter>
+				<CoordinatesCenter>[-5, -5, 5]</CoordinatesCenter>
 				<Radius>2</Radius>
 				<Potential>5</Potential>
             </Sphere_Field>
@@ -317,7 +317,7 @@
 		</Elements_WOS>
 
 		<Particle number="1" status="enabled">>
-			<Type>"proton"</Type>							<!-- here the type of the particle needs to be specified (will be set as the name of the particle), if the name corresponds to a name in the particledictionary (currently holding electron and proton) the mass and charge will automatically be assigned and does not need to be specified -->
+			<Type>"proton"</Type>						<!-- here the type of the particle needs to be specified (will be set as the name of the particle), if the name corresponds to a name in the particledictionary (currently holding electron and proton) the mass and charge will automatically be assigned and does not need to be specified -->
 			<Mass>9.10938356*(10**(-31))</Mass>  		<!-- in kilograms -->
 			<Charge>-1.6021766208*(10**(-19))</Charge>	<!-- in coulombs -->
 			<Velocity>100</Velocity>					<!-- starting velocity of the particle in m/s -->
@@ -340,7 +340,7 @@
 					<zmin>-20</zmin>
 					<zmax>20</zmax>
 				</TrajectoryBoundaries>
-				<TimeSteps>0.0005</TimeSteps>			<!-- determines the time steps used in Particle::ParticleMove -->
+				<TimeSteps>0.00005</TimeSteps>			<!-- determines the time steps used in Particle::ParticleMove -->
 				<TimeLimit>1</TimeLimit>				<!-- determines the maximum execute time of Particle::ParticleMove -->
 				<Interval>0.2</Interval>				<!-- used in Object_3D::IsPointInObject which is used in Particle::ParticleMove -->
 			</Trajectory>
@@ -352,7 +352,7 @@
 			<Output>
 
 				<WriteSetupToFile execute="yes">Setup.txt</WriteSetupToFile>		<!-- if execute = "yes" the file will be written with the name specified -->
-				<WriteDataToFile execute="yes">Data.txt</WriteDataToFile>			<!-- if execute = "yes" the file will be written with the name specified -->
+				<WriteDataToFile execute="yes">Data.csv</WriteDataToFile>			<!-- if execute = "yes" the file will be written with the name specified -->
 
 				<TrajectoryPlot execute="yes"></TrajectoryPlot>						<!-- if execute = "yes" the trajectory of the particle will be plotted -->
 
