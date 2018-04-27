@@ -1,34 +1,14 @@
 # various utility functions which will be called in different parts of the program itself
 
+
 from scipy.integrate import quad
 import xml.etree.ElementTree as ET
-from sympy import sqrt, diff, solve, nsolve
-from scipy.optimize import fsolve, fmin
-import numpy as np
-import math
-from random import random
-from operator import itemgetter
-import multiprocessing as mp
-from multiprocessing import pool
-import time
-import inspect
-import sys
-
 from Lib.Particle import *
-from Lib.RepresentData import *
-import numpy as np
 from Lib.Functions import *
-import time
-from random import random
-import datetime
 from Lib.Elements import *
-from Lib.Objects_3D import *
-from Lib.Particle import *
-import xml.etree.ElementTree as ET
 import inspect
 import sys
-
-
+from sympy.vector import CoordSys3D, Vector
 
 
 def ConvertAnglesToVector(Theta, Phi):

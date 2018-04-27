@@ -1,16 +1,12 @@
 # Here all the electric and magnetic field producing elements will be represented by classes for which an analytical
 # field can be calculated
 
-import math
-from abc import ABCMeta, abstractmethod
-from sympy.vector import CoordSys3D, Vector
-import sympy as sy
-from sympy.vector import CoordSys3D, Vector
-from sympy import sqrt
-from Lib.Functions import *
-import numpy as np
-from Lib.Objects_3D import *
 
+import math
+from abc import abstractmethod
+from sympy.vector import CoordSys3D
+import sympy as sy
+from Lib.Objects_3D import *
 
 
 class Electrode(object):
@@ -106,8 +102,8 @@ class Sphere_Field(Electrode):
         self.Potential = Potential                      # potential on the surface of the sphere
 
     def GetField(self):
-        from sympy import sqrt
         # law of Coulomb is used to calculate the electrical field
+
         pi = math.pi
         e0 = 8.854187817 * 10 ** (-12)      # permitivity of vacuum
 
@@ -120,7 +116,7 @@ class Sphere_Field(Electrode):
 
         x, y, z = sy.symbols('x y z')
 
-        distance = sqrt((x - x1) ** 2 + (y - y1) ** 2 + (z - z1) ** 2)      # distance squared between center of sphere
+        distance = sy.sqrt((x - x1) ** 2 + (y - y1) ** 2 + (z - z1) ** 2)      # distance squared between center of sphere
                                                                             # and point in space
         r = (x - x1) * L.i + (y - y1) * L.j + (z - z1) * L.k
         er = r.normalize()                                      # gives correct direction of electrical field

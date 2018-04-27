@@ -8,15 +8,9 @@
 # functions_WOS file.
 
 
-import math
-from abc import ABCMeta, abstractmethod
-from sympy.vector import CoordSys3D, Vector
-import math
-import sympy as sy
-from sympy.vector import CoordSys3D, Vector
-from sympy import sqrt
-from Lib.Functions import *
-import numpy as np
+from math import sqrt
+from abc import abstractmethod
+from sympy.vector import CoordSys3D
 
 
 class Object_3D(object):
@@ -64,7 +58,6 @@ class Sphere(Object_3D):        # represents a 3D sphere surface
     def GetClosestDistanceToPoint(self, point):
         # self explanatory calculation of the minimal distance to a sphere
         # determines distance between a given point in space and the center of the sphere and then substracts the radius
-        from math import sqrt
 
         M = self.CoordinatesCenter
         x_1 = M[0]
@@ -91,6 +84,7 @@ class Cylinder(Object_3D):
 
 
     def GetClosestDistanceToPoint(self, point):
+        from Lib.Functions import UpdateDictionary
 
 
 
@@ -100,7 +94,7 @@ class Cylinder(Object_3D):
 
 
 
-        from Lib.Functions import UpdateDictionary
+
         from math import sqrt
 
         P = self.CoordinatesPoint1

@@ -1,16 +1,9 @@
 # main function from which everything in the Lib will be called and the program will be executed
 
+
 from Lib.Particle import *
 from Lib.RepresentData import *
-import numpy as np
 from Lib.Functions import *
-import time
-from random import random
-import datetime
-from Lib.Elements import *
-import xml.etree.ElementTree as ET
-import inspect
-import sys
 
 
 electrodes, electrodes_WOS, particles, d = ReadXml()         # extract all the data from the xml file

@@ -2,15 +2,12 @@
 
 
 from Lib.Functions import UpdateDictionary, GetVector, GetFields
-from sympy.vector import CoordSys3D, Vector
+from sympy.vector import CoordSys3D
 import sympy as sy
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
 import csv
-
-
-
 
 
 ParticleDictionary = {"electron": [9.10938356 * (10 ** (-31)), -1.6021766208 * (10 ** (-19))], "proton": [1.672621898 * (10 ** (-27)), 1.6021766208 * 10 ** (-19)]}
@@ -19,8 +16,6 @@ ParticleDictionary = {"electron": [9.10938356 * (10 ** (-31)), -1.6021766208 * (
 
 class Particle():
     def __init__(self, name, Type, Mass, Charge, Velocity, Theta1, Phi1, Acceleration, Theta2, Phi2, Position):
-
-
         self.name = name
         self.Type = Type        # the particle type (like electron, proton, muon...)
 
@@ -40,7 +35,6 @@ class Particle():
         self.Position = Position                # starting position particle
 
     def ParticleMove(self, B_analytic, E_analytic, electrodes, electrodes_WOS, d):
-        import time
         # calculates the trajectory of a particle in predetermined electric and magnetic fields
         # see the documentation on how the trajectory of the particle is determined (Beweging deeltje in magneetveld)
 
