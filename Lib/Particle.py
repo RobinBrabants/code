@@ -38,7 +38,7 @@ class Particle():
         # calculates the trajectory of a particle in predetermined electric and magnetic fields
         # see the documentation on how the trajectory of the particle is determined (Beweging deeltje in magneetveld)
 
-        print("\r\n\r\nThe trajectory of the particle is now being calculated...")
+        print("\r\n\r\nThe trajectory of %s (%s) is now being calculated... " % (self.name, self.Type))
 
         L = CoordSys3D('L')
         x, y, z = sy.symbols('x y z')
@@ -154,7 +154,7 @@ class Particle():
     def WriteToFile(self, E_analytic, B_analytic, Trajectory, d):
         # function which writes all the data concerning the calculated trajectory to a csv file
 
-        print("Writing data from the calculated trajectory of the particle to: " + d["FileName"] + "...")
+        print("Writing data from the calculated trajectory of %s (%s) to %s..." % (self.name, self.Type, d["FileName"]))
 
         f = open(d["FileName"], "w")
 
@@ -189,7 +189,7 @@ class Particle():
     def PlotTrajectory(self, Trajectory):
         # funtion which plots the trajectory of the particle
 
-        print("Plotting the trajectory of the particle...\r\n")
+        print("Plotting the trajectory of %s (%s)...\r\n" % (self.name, self.Type))
 
         warnings.filterwarnings("ignore")
 
@@ -237,8 +237,6 @@ class Particle():
             fig.suptitle('trajectory of ' + self.name + ' (' + self.Type + ')', fontsize=14, fontweight='bold')
 
         ax.set_title('time in seconds', style='italic', fontsize=8, bbox={'facecolor': 'red', 'alpha': 0.2, 'pad': 7})
-
-        # also remark if there was a clliison
 
         plt.show(block=False)
 

@@ -32,7 +32,7 @@ def Plotfield(Field, FieldType, d):
 
     L = CoordSys3D('L')
 
-    if FieldType == "magnetic":
+    if FieldType == "Magnetic":
          x, y, z = np.meshgrid(np.arange(d["xmin1"], d["xmax1"], abs(d["xmax1"] - d["xmin1"]) / 10), np.arange(d["ymin1"], d["ymax1"], abs(d["ymax1"] - d["ymin1"]) / 10), np.arange(d["zmin1"], d["zmax1"], abs(d["zmax1"] - d["zmin1"]) / 10))
     else:
         x, y, z = np.meshgrid(np.arange(d["xmin2"], d["xmax2"], abs(d["xmax2"] - d["xmin2"]) / 10), np.arange(d["ymin2"], d["ymax2"], abs(d["ymax2"] - d["ymin2"]) / 10), np.arange(d["zmin2"], d["zmax2"], abs(d["zmax2"] - d["zmin2"]) / 10))
@@ -83,7 +83,7 @@ def Plotfield(Field, FieldType, d):
     v = Fieldcomponents[L.j]
     w = Fieldcomponents[L.k]
 
-    if d["NormalizeMagneticFieldPlot"] == "True":
+    if d["Normalize" + FieldType + "FieldPlot"] == "True":
         ax.quiver(x, y, z, u, v, w, length=3, arrow_length_ratio=0.4, pivot="middle", normalize=True)
         fig.suptitle(FieldType + " field plot, normalized", fontsize=14, fontweight='bold')
     else:

@@ -2,15 +2,14 @@ This is the enabled setup in the xml file:
 
 electrodes:
 
-name: StraightConductor1, CoordinatesPoint1: [0, 0, 0], CoordinatesPoint2: [0, 0, 10], Current: 5, Radius: 4
-name: StraightConductor2, CoordinatesPoint1: [5, 5, 0], CoordinatesPoint2: [5, 5, 10], Current: 2, Radius: 2
-name: Sphere_Field1, CoordinatesCenter: [-5, -5, 5], Radius: 2, Potential: 5
+name: Sphere_Field1, CoordinatesCenter: [0, 0, 0], Radius: 2, Potential: 5
 
 
 electrodes_WOS:
 
+name: Sphere1, CoordinatesCenter: [0, 0, 0], Radius: 4, Potential: 5
 
 
 particle:
 
-name: Particle1, Type: proton, Mass: 1.672621898e-27, Charge: 1.6021766207999999e-19, Velocity: 100, Theta1: 45, Phi1: 45, Acceleration: 0, Theta2: 20, Phi2: 20, Position: [0, 0, 0]
+name: Particle1, Type: proton, Mass: 1.672621898e-27, Charge: 1.6021766207999999e-19, Velocity: 100, Theta1: 45, Phi1: 45, Acceleration: 0, Theta2: 20, Phi2: 20, Position: [0, 0, 5]

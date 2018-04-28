@@ -3,13 +3,13 @@
 	<Data>
 		<Elements>
 
-			<StraightConductor number="1" status="enabled">
-				<CoordinatesPoint1>[0,0,0]</CoordinatesPoint1>
-				<CoordinatesPoint2>[0,0,10]</CoordinatesPoint2>
+			<StraightConductor number="1" status="nabled">
+				<CoordinatesPoint1>[1,1,-5]</CoordinatesPoint1>
+				<CoordinatesPoint2>[1,1,5]</CoordinatesPoint2>
 				<Current>5</Current>				<!-- conventional current goes standardly from point 1 to 2, to reverse make the Current negative -->
 				<Radius>4</Radius>
 			</StraightConductor>
-			<StraightConductor number="2" status="enabled">
+			<StraightConductor number="2" status="nabled">
 				<CoordinatesPoint1>[5,5,0]</CoordinatesPoint1>
 				<CoordinatesPoint2>[5,5,10]</CoordinatesPoint2>
 				<Current>2</Current>
@@ -183,7 +183,7 @@
 			</CircularCoil>
 
 			<Sphere_Field number="1" status="enabled">
-				<CoordinatesCenter>[-5, -5, 5]</CoordinatesCenter>
+				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
 				<Radius>2</Radius>
 				<Potential>5</Potential>
             </Sphere_Field>
@@ -191,21 +191,13 @@
 		</Elements>
 		<Elements_WOS>
 
-			<Sphere number="1" status="nabled">
-				<CoordinatesCentre>
-					<x>0</x>
-					<y>0</y>
-					<z>0</z>
-				</CoordinatesCentre>
+			<Sphere number="1" status="enabled">
+				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
 				<Radius>4</Radius>
 				<Potential>5</Potential>
 			</Sphere>
-			<Sphere number="2" status="abled">
-				<CoordinatesCentre>
-					<x>-10</x>
-					<y>10</y>
-					<z>-10</z>
-				</CoordinatesCentre>
+			<Sphere number="2" status="nabled">
+				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
 				<Radius>4</Radius>
 				<Potential>5</Potential>
 			</Sphere>
@@ -326,7 +318,7 @@
 			<Acceleration>0</Acceleration>				<!-- acceleration of the particle which is the result of an external force and will all the time be added to the acceleration caused by the electric and magnetic fields (in m/s²) -->
 			<Phi2>20</Phi2>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the acceleration vector on the xy-plane (0-360 degree) -->
 			<Theta2>20</Theta2>							<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the acceleration vector (0-360 degree) -->
-			<Position>[0, 0, 0]</Position>				<!-- starting position particle -->
+			<Position>[0, 0, 5]</Position>				<!-- starting position particle -->
 		</Particle>
 
 		<Setup>
@@ -342,7 +334,7 @@
 				</TrajectoryBoundaries>
 				<TimeSteps>0.00005</TimeSteps>			<!-- determines the time steps used in Particle::ParticleMove -->
 				<TimeLimit>1</TimeLimit>				<!-- determines the maximum execute time of Particle::ParticleMove -->
-				<Interval>0.2</Interval>				<!-- used in Object_3D::IsPointInObject which is used in Particle::ParticleMove -->
+				<Interval>0.05</Interval>				<!-- used in Object_3D::IsPointInObject which is used in Particle::ParticleMove -->
 			</Trajectory>
 
 			<WOS>					<!-- Walk on spheres setup variables -->
@@ -356,7 +348,7 @@
 
 				<TrajectoryPlot execute="yes"></TrajectoryPlot>						<!-- if execute = "yes" the trajectory of the particle will be plotted -->
 
-				<MagneticFieldPlot execute="yes" normalize="True">					<!-- determines whether the magnetic field plot should be calculated and whether this should be a normalized plot or not -->
+				<MagneticFieldPlot execute="yes" normalize="True">					<!-- determines whether the magnetic field plot should be calculated and whether this should be a normalized plot or not (True/False)-->
 					<MagneticFieldBoundaries>										<!-- determines the box in which the magnetic field will be shown -->
 						<xmin>-20</xmin>
 						<xmax>20</xmax>
@@ -367,7 +359,7 @@
 					</MagneticFieldBoundaries>
 				</MagneticFieldPlot>
 
-				<ElectricFieldPlot execute="yes" normalize="True">					<!-- determines whether the electric field plot should be calculated and whether this should be a normalized plot or not -->
+				<ElectricFieldPlot execute="yes" normalize="True">					<!-- determines whether the electric field plot should be calculated and whether this should be a normalized plot or not  (True/False)-->
 					<ElectricFieldBoundaries>										<!-- determines the box in which the electric field will be shown -->
 						<xmin>-20</xmin>
 						<xmax>20</xmax>

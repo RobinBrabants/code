@@ -41,7 +41,7 @@ def ConvertAnglesToVector(Theta, Phi):
 
 
 def GetVector(length, Theta, Phi):
-    # Function which converts given angles in radians into a vector with a certain length
+    # Function which converts given angles in degrees into a vector with a certain length
 
     eI = ConvertAnglesToVector(math.radians(Theta), math.radians(Phi))
 
@@ -209,10 +209,12 @@ def ReadXml():
 
     electrodes = GetObjects(class_names, root)  # list that holds all the specified electrodes as class objects
 
+
     # ELECTRODES_WOS (for the Walk on Spheres method, electric)
     class_names = [cls.__name__ for cls in vars()["Object_3D"].__subclasses__()]  # get the class names derived from the Object_3D base class (and add _WOS)
 
     electrodes_WOS = GetObjects(class_names, root)  # list that holds all the specified electrodes_WOS as class objects
+
 
     # PARTICLE:
     class_name = "Particle"

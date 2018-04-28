@@ -68,7 +68,7 @@ class Sphere(Object_3D):        # represents a 3D sphere surface
         y = point[1]
         z = point[2]
 
-        distance = abs(sqrt((x_1 - x) ** 2 + (y_1 - y) ** 2 + (z_1 - z) ** 2) - self.Radius)
+        distance = abs(sqrt((x_1 - x) ** 2 + (y_1 - y) ** 2 + (z_1 - z) ** 2)) - self.Radius
 
         return distance
 
