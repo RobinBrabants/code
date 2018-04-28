@@ -182,7 +182,7 @@
 				<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
 			</CircularCoil>
 
-			<Sphere_Field number="1" status="enabled">
+			<Sphere_Field number="1" status="nabled">
 				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
 				<Radius>2</Radius>
 				<Potential>5</Potential>
@@ -193,7 +193,7 @@
 
 			<Sphere number="1" status="enabled">
 				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
-				<Radius>4</Radius>
+				<Radius>5</Radius>
 				<Potential>5</Potential>
 			</Sphere>
 			<Sphere number="2" status="nabled">

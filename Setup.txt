@@ -2,12 +2,11 @@ This is the enabled setup in the xml file:
 
 electrodes:
 
-name: Sphere_Field1, CoordinatesCenter: [0, 0, 0], Radius: 2, Potential: 5
 
 
 electrodes_WOS:
 
-name: Sphere1, CoordinatesCenter: [0, 0, 0], Radius: 4, Potential: 5
+name: Sphere1, CoordinatesCenter: [0, 0, 0], Radius: 5, Potential: 5
 
 
 particle:

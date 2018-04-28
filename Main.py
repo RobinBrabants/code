@@ -7,7 +7,13 @@ from Lib.Functions import *
 import sys
 
 
+from Lib.Functions_WOS import potential_WOS
+Point = [0, 0, 50000]
 electrodes, electrodes_WOS, particles, d = ReadXml()        # extract all the data from the xml file
+
+print(potential_WOS(electrodes_WOS, Point))
+
+"""electrodes, electrodes_WOS, particles, d = ReadXml()        # extract all the data from the xml file
 
 for particle in particles:
     # check whether the starting position of the particle lies out of the predetermined box
@@ -35,7 +41,7 @@ if d["ElectricFieldPlot"] == "yes":                         # plot the electric 
 if d["MagneticFieldPlot"] == "yes":                         # plot the magnetic field if enabled in the xml-file
     Plotfield(B_analytic, "Magnetic", d)
 
-input("Press Enter to end program and close all figures")
+input("Press Enter to end program and close all figures")"""
 
 
 
