@@ -4,7 +4,7 @@
 
 import math
 from abc import abstractmethod
-from sympy.vector import CoordSys3D
+from sympy.vector import CoordSys3D, Vector
 import sympy as sy
 from Lib.Objects_3D import *
 
@@ -37,7 +37,9 @@ class Electrode(object):
 #######################################################################################################################
 #  magnetic field producing elements (watch out: conventional current directions are used):
 
+
 class StraightConductor(Electrode):
+    # a straight line conductor
     def __init__(self, name, CoordinatesPoint1, CoordinatesPoint2, Current, Radius):
         Electrode.__init__(self, name)
         self.CoordinatesPoint1 = CoordinatesPoint1      # starting point straight conductor
@@ -90,11 +92,142 @@ class StraightConductor(Electrode):
         return 'magnetic'
 
 
+class StraightConductorCollection(Electrode):
+    # an assembly of straight line conductors
+    def __init__(self, name, Current, Radius, Points):
+        Electrode.__init__(self, name)
+        self.Current = Current                          # current
+        self.Radius = Radius                            # radius of the straightconductors (represented as a cylinders)
+        self.Points = Points                            # starting and end points of the seperate straight line conductors
+                                                        # these points will all be connected by straight conductors to form a collection of straight conductors
+
+        # Conventional current direction goes from point 1 to point 2, unless otherwise specified (see example xml-file)
+
+    def GetField(self):
+        B = Vector.zero
+
+        # initialize separate straight conductors and add their vector fields to get the total magnetic field:
+        for i in range(0, len(self.Points) - 1):
+            straightconductor = StraightConductor("name", self.Points[i], self.Points[i+1], self.Current, self.Radius)
+            B += straightconductor.GetField()
+        return B
+
+    def IsPointInObject(self, point, interval):
+        return 0
+
+    def FieldType(self):
+        return 'magnetic'
+
+
+class RectangularCoil(Electrode):
+    # a rectangular coil existing of straight line conductors
+    def __init__(self, name, Current, Radius, Phi, Theta, Psi, Length, Width, Heigth, StartingPoint, Windings, ClockWise):
+        Electrode.__init__(self, name)
+        self.Current = Current                          # current
+        self.Radius = Radius                            # radius of the straightconductors (represented as a cylinders)
+        self.Phi = Phi                                  # these are the three Euler Angles to define the orientation of the coil (in degrees) (see documentation)
+        self.Theta = Theta
+        self.Psi = Psi
+        self.Length = Length                            # dimension coil in e_1 direction
+        self.Width = Width                              # dimension coil in e_2 direction
+        self.Heigth = Heigth                            # dimension coil in e_3 direction
+        self.StartingPoint                              # origin of the axial system of the coil
+        self.Windings = Windings                        # number of windings (is counted in quarters of windings, e.g. 21.75 windings would be a valid argument)
+        self.ClockWise = ClockWise                      # whether the windings of the coil should start clockwise (argument = True --> clockwise, argument = False --> anti-clockwise)
+
+        # Conventional current direction goes from point 1 to point 2, unless otherwise specified (see example xml-file)
+
+    def GetField(self):
+        # see the documentation on how the field is calculated (Magnetisch veld rechthoekige spoel)
+        from Lib.Functions import UpdateDictionary
+        from math import sin, cos
+
+        L = CoordSys3D('L')
+
+        Phi = math.radians(self.Phi)
+        Theta = math.radians(self.Theta)
+        Psi = math.radians(self.Psi)
+
+        L = CoordSys3D('L')
+
+        e_1 = (cos(Phi) * cos(Psi) - sin(Phi) * sin(Psi) * cos(Theta)) * L.i + (sin(Phi) * cos(Psi) + cos(Phi) * sin(Psi) * cos(Theta)) * L.j + sin(Theta) * sin(Psi) * L.k
+        e_2 = (-cos(Phi) * sin(Psi) - sin(Phi) * cos(Psi) * cos(Theta)) * L.i + (-sin(Phi) * sin(Psi) + cos(Phi) * cos(Psi) * cos(Theta)) * L.j + sin(Theta) * cos(Psi) * L.k
+        e_3 = (sin(Phi) * sin(Theta)) * L.i + (-cos(Phi) * sin(Theta)) * L.j + cos(Theta) * L.k
+
+        a_1 = self.Length * e_1
+        a_2 = self.Width * e_2
+        a_3_1 = ((self.Length / (2 * self.Width + 2 * self.Length)) * (self.Heigth / self.Windings)) * e_3
+        a_3_2 = ((self.Width / (2 * self.Width + 2 * self.Length)) * (self.Heigth / self.Windings)) * e_3
+
+
+        a_1 = a_1.components
+        UpdateDictionary(a_1)
+        a_2 = a_2.components
+        UpdateDictionary(a_2)
+        a_3_1 = a_3_1.components
+        UpdateDictionary(a_3_1)
+        a_3_2 = a_3_2.components
+        UpdateDictionary(a_3_2)
+
+        new_point = self.StartingPoint
+        windings = 0
+        list = []
+        list.extend(self.StartingPoint)
+
+        while windings < self.Windings:
+            new_point[0] += a_1[L.i] + a_3_1[L.i]
+            new_point[1] += a_1[L.j] + a_3_1[L.j]
+            new_point[2] += a_1[L.k] + a_3_1[L.k]
+            list.extend(new_point)
+            windings += 0.25
+
+            if windings >= self.Windings:
+                break
+
+            new_point[0] += a_2[L.i] + a_3_2[L.i]
+            new_point[1] += a_2[L.j] + a_3_2[L.j]
+            new_point[2] += a_2[L.k] + a_3_2[L.k]
+            list.extend(new_point)
+            windings += 0.25
+
+            if windings >= self.Windings:
+                break
+
+            new_point[0] += -a_1[L.i] + a_3_1[L.i]
+            new_point[1] += -a_1[L.j] + a_3_1[L.j]
+            new_point[2] += -a_1[L.k] + a_3_1[L.k]
+            list.extend(new_point)
+            windings += 0.25
+
+            if windings >= self.Windings:
+                break
+
+            new_point[0] += -a_2[L.i] + a_3_2[L.i]
+            new_point[1] += -a_2[L.j] + a_3_2[L.j]
+            new_point[2] += -a_2[L.k] + a_3_2[L.k]
+            list.extend(new_point)
+            windings += 0.25
+
+        collection = StraightConductorCollection("name", self.Current, self.Radius, *list)
+
+        B = collection.GetField()
+
+        return B
+
+    def IsPointInObject(self, point, interval):
+        return 0
+
+    def FieldType(self):
+        return 'magnetic'
+
+
+
 #######################################################################################################################
 #  electric field producing elements (potential on the surface is used):
 
 
 class Sphere_Field(Electrode):
+    # a sphere on which a potential is applied
     def __init__(self, name, CoordinatesCenter, Radius, Potential):
         Electrode.__init__(self, name)
         self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of a sphere

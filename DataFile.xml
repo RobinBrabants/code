@@ -16,79 +16,24 @@
 				<Radius>2</Radius>
 			</StraightConductor>
 
-			<StraightConductorCollection number="1" amount="5" status="disabled">
-				<CoordinatesPoint1>
-					<x>-10</x>
-					<y>-10</y>
-					<z>0</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>10</x>
-					<y>-10</y>
-					<z>0</z>
-				</CoordinatesPoint2>
-				<CoordinatesPoint3>
-					<x>-10</x>
-					<y>10</y>
-					<z>0</z>
-				</CoordinatesPoint3>
-				<CoordinatesPoint4>
-					<x>10</x>
-					<y>10</y>
-					<z>0</z>
-				</CoordinatesPoint4>
-				<CoordinatesPoint5>
-					<x>-10</x>
-					<y>-10</y>
-					<z>0</z>
-				</CoordinatesPoint5>
-				<Current>0</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
-			</StraightConductorCollection>
-			<StraightConductorCollection number="2" amount="2" status="disabled">
-				<CoordinatesPoint1>
-					<x>0</x>
-					<y>0</y>
-					<z>-20</z>
-				</CoordinatesPoint1>
-				<CoordinatesPoint2>
-					<x>0</x>
-					<y>0</y>
-					<z>20</z>
-				</CoordinatesPoint2>
-				<Current>0</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+			<StraightConductorCollection number="1" amount="5" status="nabled">
+				<Current>5</Current>				<!-- conventional current goes standardly from point 1 to 2, to reverse make the Current negative -->
+				<Radius>4</Radius>
+				<Points>[10,10,10], [-10,-10,10], [-10,-10,-20]</Points>	<!-- starting and end points of the seperate straight line conductors, these points will all be connected by straight conductors to form a collection of straight conductors -->
 			</StraightConductorCollection>
 
-			<RectangularCoil number="1" status="nabled">
-				<Width>5</Width>
-				<Length>5</Length>
-				<Heigth>10</Heigth>
-				<Windings>20</Windings>
-				<StartingPoint>
-					<x>-2.5</x>
-					<y>-2.5</y>
-					<z>-5</z>
-				</StartingPoint>
-				<Phi>0</Phi>
+			<RectangularCoil number="1" status="enabled">
+				<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+				<Radius>0.5</Radius>				<!-- radius of the straightconductors (represented as a cylinders) -->
+				<Phi>0</Phi>						<!-- these are the three Euler Angles to define the orientation of the coil (in degrees) (see documentation)-->
 				<Theta>0</Theta>
 				<Psi>0</Psi>
-				<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
-				<begin>"l"</begin>
-			</RectangularCoil>
-			<RectangularCoil number="2" status="disabled">
-				<Width>8</Width>
-				<Length>7</Length>
-				<Heigth>1</Heigth>
-				<Windings>2</Windings>
-				<StartingPoint>
-					<x>-1.5</x>
-					<y>6</y>
-					<z>5</z>
-				</StartingPoint>
-				<Phi>4</Phi>
-				<Theta>65</Theta>
-				<Psi>7</Psi>
-				<Current>0</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
-				<begin>"w"</begin>
+				<Length>5</Length>					<!-- dimension coil in e_1 direction -->
+				<Width>5</Width>					<!-- dimension coil in e_2 direction -->
+				<Heigth>10</Heigth>					<!-- dimension coil in e_3 direction -->
+				<StartingPoint>[0,0,0]</StartingPoint>				<!-- origin of the axial system of the coil -->
+				<Windings>20</Windings>				<!-- number of windings (is counted in quarters of windings, e.g. 21.75 windings would be a valid argument) -->
+				<Clockwise>"True"</Clockwise>		<!-- whether the windings of the coil should start clockwise (argument = "True" -> clockwise, argument = "False" -> anti-clockwise) -->
 			</RectangularCoil>
 
 			<CircularConductor number="1" status="disabled">
@@ -184,23 +129,49 @@
 
 			<Sphere_Field number="1" status="nabled">
 				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
-				<Radius>2</Radius>
+				<Radius>5</Radius>
 				<Potential>5</Potential>
             </Sphere_Field>
+            <Sphere_Field number="2" status="nabled">
+				<CoordinatesCenter>[10, 0, 0]</CoordinatesCenter>
+				<Radius>3</Radius>
+				<Potential>7</Potential>
+            </Sphere_Field>
+            <Sphere_Field number="3" status="nabled">
+				<CoordinatesCenter>[-10, 0, 0]</CoordinatesCenter>
+				<Radius>3</Radius>
+				<Potential>7</Potential>
+            </Sphere_Field>
+            <Sphere_Field number="4" status="nabled">
+				<CoordinatesCenter>[1, 1, 15]</CoordinatesCenter>
+				<Radius>3</Radius>
+				<Potential>10</Potential>
+			</Sphere_Field>
 
 		</Elements>
 		<Elements_WOS>
 
-			<Sphere number="1" status="enabled">
+			<Sphere number="1" status="nabled">
 				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
 				<Radius>5</Radius>
 				<Potential>5</Potential>
 			</Sphere>
 			<Sphere number="2" status="nabled">
-				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
-				<Radius>4</Radius>
-				<Potential>5</Potential>
+				<CoordinatesCenter>[10, 0, 0]</CoordinatesCenter>
+				<Radius>3</Radius>
+				<Potential>7</Potential>
 			</Sphere>
+            <Sphere number="3" status="nabled">
+				<CoordinatesCenter>[-10, 0, 0]</CoordinatesCenter>
+				<Radius>3</Radius>
+				<Potential>7</Potential>
+			</Sphere>
+            <Sphere number="4" status="nabled">
+				<CoordinatesCenter>[1, 1, 15]</CoordinatesCenter>
+				<Radius>3</Radius>
+				<Potential>10</Potential>
+			</Sphere>
+
 
 
 			<Cylinder number="1" status="abled">
@@ -318,7 +289,7 @@
 			<Acceleration>0</Acceleration>				<!-- acceleration of the particle which is the result of an external force and will all the time be added to the acceleration caused by the electric and magnetic fields (in m/s²) -->
 			<Phi2>20</Phi2>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the acceleration vector on the xy-plane (0-360 degree) -->
 			<Theta2>20</Theta2>							<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the acceleration vector (0-360 degree) -->
-			<Position>[0, 0, 5]</Position>				<!-- starting position particle -->
+			<Position>[0, 0, 2]</Position>				<!-- starting position particle -->
 		</Particle>
 
 		<Setup>

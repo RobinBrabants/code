@@ -7,13 +7,25 @@ from Lib.Functions import *
 import sys
 
 
-from Lib.Functions_WOS import potential_WOS
-Point = [0, 0, 50000]
+
+
+"""from Lib.Functions_WOS import *
+
+Point = [0, 0, 10]
+
 electrodes, electrodes_WOS, particles, d = ReadXml()        # extract all the data from the xml file
+print(electrodes)
+print(electrodes_WOS)
 
-print(potential_WOS(electrodes_WOS, Point))
+B_analytic, E_analytic = ResultingField(electrodes)
+E, B = GetFields(Point, Vector.zero, B_analytic, E_analytic, electrodes_WOS)
 
-"""electrodes, electrodes_WOS, particles, d = ReadXml()        # extract all the data from the xml file
+print("\r\nanalytical: " + str(E))
+print("WOS: " + str(ElectricalField_WOS(electrodes_WOS, Point)))"""
+
+
+
+electrodes, electrodes_WOS, particles, d = ReadXml()        # extract all the data from the xml file
 
 for particle in particles:
     # check whether the starting position of the particle lies out of the predetermined box
@@ -28,12 +40,12 @@ for particle in particles:
 
 B_analytic, E_analytic = ResultingField(electrodes)         # already calculates the analytical fields for those objects for which it is possible
 
-for particle in particles:
+"""for particle in particles:
     trajectory = particle.ParticleMove(B_analytic, E_analytic, electrodes, electrodes_WOS, d)               # calculate trajectory
     if d["WriteDataToFile"] == "yes":
         particle.WriteToFile(E_analytic, B_analytic, trajectory, d)                                         # write data concerning the trajectory of the particle to a file if enabled in the xml-file
     if d["TrajectoryPlot"] == "yes":
-        particle.PlotTrajectory(trajectory)                                                # plot the trajectory if enabled in the xml-file
+        particle.PlotTrajectory(trajectory)"""                                           # plot the trajectory if enabled in the xml-file
 
 if d["ElectricFieldPlot"] == "yes":                         # plot the electric field if enabled in the xml-file
     Plotfield(E_analytic, "Electric", d)
@@ -41,7 +53,7 @@ if d["ElectricFieldPlot"] == "yes":                         # plot the electric 
 if d["MagneticFieldPlot"] == "yes":                         # plot the magnetic field if enabled in the xml-file
     Plotfield(B_analytic, "Magnetic", d)
 
-input("Press Enter to end program and close all figures")"""
+input("Press Enter to end program and close all figures")
 
 
 

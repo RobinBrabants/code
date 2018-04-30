@@ -47,7 +47,8 @@ class Object_3D(object):
 #####################################################################################################################
 
 
-class Sphere(Object_3D):        # represents a 3D sphere surface
+class Sphere(Object_3D):
+    # represents a 3D sphere surface
     def __init__(self, name, CoordinatesCenter, Radius, Potential):
         Object_3D.__init__(self, name)
         self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of a sphere
@@ -75,6 +76,7 @@ class Sphere(Object_3D):        # represents a 3D sphere surface
 
 
 class Cylinder(Object_3D):
+    # represents a 3D cylinder
     def __init__(self, name, CoordinatesPoint1, CoordinatesPoint2, Radius, Potential):
         Object_3D.__init__(self, name)
         self.CoordinatesPoint1 = CoordinatesPoint1      # starting point cylinder
