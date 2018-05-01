@@ -40,9 +40,6 @@ class Particle():
 
         print("\r\n\r\nThe trajectory of %s (%s) is now being calculated... " % (self.name, self.Type))
 
-        L = CoordSys3D('L')
-        x, y, z = sy.symbols('x y z')
-
         Coordinates = self.Position
         Speed = GetVector(self.Velocity, self.Theta1,  self.Phi1)
         Acceleration_constant = GetVector(self.Acceleration, self.Theta2, self.Phi2)
@@ -65,6 +62,7 @@ class Particle():
 
 
         while time <= d["timelimit"]:           # maximum execute time cannot be exceeded
+            from math import sqrt
             # the testpoint is the first estimate of the next point which will later be corrected
 
             # check if the particle is in an object or near one
@@ -83,18 +81,19 @@ class Particle():
                 print("The particle went out of the predetermined box                                                                                            ")
                 break
 
-
-
+            L = CoordSys3D('L')
+            x, y, z = sy.symbols('x y z')
             # Step 4
             vComponents = Speed.components
             UpdateDictionary(vComponents)
-            Coordinates_testpoint = [Coordinates[0] + vComponents[L.i] * d["timesteps"], Coordinates[1] + vComponents[L.j] * d["timesteps"], Coordinates[2] + vComponents[L.k] * d["timesteps"]]
+            Coordinates_testpoint = [float(Coordinates[0] + vComponents[L.i] * d["timesteps"]), float(Coordinates[1] + vComponents[L.j] * d["timesteps"]), float(Coordinates[2] + vComponents[L.k] * d["timesteps"])]
 
             # Step 5
             aComponents = Acceleration.components
             UpdateDictionary(aComponents)
             Speed_testpoint = (vComponents[L.i] + aComponents[L.i] * d["timesteps"]) * L.i + (vComponents[L.j] + aComponents[L.j] * d["timesteps"]) * L.j + (vComponents[L.k] + aComponents[L.k] * d["timesteps"]) * L.k
             # best estimate for the speed at the testpoint available
+
             E_testpoint, B_testpoint = GetFields(Coordinates_testpoint, Speed_testpoint, B_analytic, E_analytic, electrodes_WOS)
             Acceleration_testpoint = (self.Charge / self.Mass) * ((Speed_testpoint.cross(B_testpoint)) + E_testpoint) + Acceleration_constant
 
@@ -113,7 +112,7 @@ class Particle():
             # Step 9
             vComponents_testpoint_average = Speed_testpoint_average.components
             UpdateDictionary(vComponents_testpoint_average)
-            Coordinates = [Coordinates[0] + vComponents_testpoint_average[L.i] * d["timesteps"], Coordinates[1] + vComponents_testpoint_average[L.j] * d["timesteps"], Coordinates[2] + vComponents_testpoint_average[L.k] * d["timesteps"]]
+            Coordinates = [float(Coordinates[0] + vComponents_testpoint_average[L.i] * d["timesteps"]), float(Coordinates[1] + vComponents_testpoint_average[L.j] * d["timesteps"]), float(Coordinates[2] + vComponents_testpoint_average[L.k] * d["timesteps"])]
 
             # Step 10, 11
             E, B = GetFields(Coordinates, Speed_testpoint, B_analytic, E_analytic, electrodes_WOS)

@@ -2,7 +2,7 @@ This is the enabled setup in the xml file:
 
 electrodes:
 
-name: StraightConductorCollection1, Current: 5, Radius: 4, Points: ([10, 10, 10], [-10, -10, 10], [-10, -10, -20])
+name: RectangularCoil1, Current: 1, Radius: 0.5, Phi: 0, Theta: 0, Psi: 0, Length: 5, Width: 5, Heigth: 20, StartingPoint: [-2.5, -2.5, -10], Windings: 1, ClockWise: False
 
 
 electrodes_WOS:

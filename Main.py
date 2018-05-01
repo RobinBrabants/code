@@ -6,6 +6,8 @@ from Lib.RepresentData import *
 from Lib.Functions import *
 import sys
 
+from sympy.vector import CoordSys3D
+import sympy as sy
 
 
 
@@ -38,14 +40,16 @@ for particle in particles:
             sys.exit("ERROR: The Starting position of %s (%s) lies inside %s, check your xml-file\n" % (particle.name, particle.Type, electrode.name))
 
 
+
+print("calculating analytical fields...")
 B_analytic, E_analytic = ResultingField(electrodes)         # already calculates the analytical fields for those objects for which it is possible
 
-"""for particle in particles:
+for particle in particles:
     trajectory = particle.ParticleMove(B_analytic, E_analytic, electrodes, electrodes_WOS, d)               # calculate trajectory
     if d["WriteDataToFile"] == "yes":
         particle.WriteToFile(E_analytic, B_analytic, trajectory, d)                                         # write data concerning the trajectory of the particle to a file if enabled in the xml-file
     if d["TrajectoryPlot"] == "yes":
-        particle.PlotTrajectory(trajectory)"""                                           # plot the trajectory if enabled in the xml-file
+        particle.PlotTrajectory(trajectory)                                     # plot the trajectory if enabled in the xml-file
 
 if d["ElectricFieldPlot"] == "yes":                         # plot the electric field if enabled in the xml-file
     Plotfield(E_analytic, "Electric", d)
@@ -54,9 +58,6 @@ if d["MagneticFieldPlot"] == "yes":                         # plot the magnetic 
     Plotfield(B_analytic, "Magnetic", d)
 
 input("Press Enter to end program and close all figures")
-
-
-
 
 
 

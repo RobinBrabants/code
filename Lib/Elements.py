@@ -131,7 +131,7 @@ class RectangularCoil(Electrode):
         self.Length = Length                            # dimension coil in e_1 direction
         self.Width = Width                              # dimension coil in e_2 direction
         self.Heigth = Heigth                            # dimension coil in e_3 direction
-        self.StartingPoint                              # origin of the axial system of the coil
+        self.StartingPoint = StartingPoint              # origin of the axial system of the coil
         self.Windings = Windings                        # number of windings (is counted in quarters of windings, e.g. 21.75 windings would be a valid argument)
         self.ClockWise = ClockWise                      # whether the windings of the coil should start clockwise (argument = True --> clockwise, argument = False --> anti-clockwise)
 
@@ -154,11 +154,17 @@ class RectangularCoil(Electrode):
         e_2 = (-cos(Phi) * sin(Psi) - sin(Phi) * cos(Psi) * cos(Theta)) * L.i + (-sin(Phi) * sin(Psi) + cos(Phi) * cos(Psi) * cos(Theta)) * L.j + sin(Theta) * cos(Psi) * L.k
         e_3 = (sin(Phi) * sin(Theta)) * L.i + (-cos(Phi) * sin(Theta)) * L.j + cos(Theta) * L.k
 
-        a_1 = self.Length * e_1
-        a_2 = self.Width * e_2
-        a_3_1 = ((self.Length / (2 * self.Width + 2 * self.Length)) * (self.Heigth / self.Windings)) * e_3
-        a_3_2 = ((self.Width / (2 * self.Width + 2 * self.Length)) * (self.Heigth / self.Windings)) * e_3
 
+        if self.ClockWise == "True":
+            a_1 = self.Width * e_1
+            a_2 = self.Length * e_2
+            a_3_1 = ((self.Width / (2 * self.Width + 2 * self.Length)) * (self.Heigth / self.Windings)) * e_3
+            a_3_2 = ((self.Length / (2 * self.Width + 2 * self.Length)) * (self.Heigth / self.Windings)) * e_3
+        else:
+            a_1 = self.Length * e_1
+            a_2 = self.Width * e_2
+            a_3_1 = ((self.Length / (2 * self.Width + 2 * self.Length)) * (self.Heigth / self.Windings)) * e_3
+            a_3_2 = ((self.Width / (2 * self.Width + 2 * self.Length)) * (self.Heigth / self.Windings)) * e_3
 
         a_1 = a_1.components
         UpdateDictionary(a_1)
@@ -172,13 +178,13 @@ class RectangularCoil(Electrode):
         new_point = self.StartingPoint
         windings = 0
         list = []
-        list.extend(self.StartingPoint)
+        list.append(self.StartingPoint[:])
 
         while windings < self.Windings:
             new_point[0] += a_1[L.i] + a_3_1[L.i]
             new_point[1] += a_1[L.j] + a_3_1[L.j]
             new_point[2] += a_1[L.k] + a_3_1[L.k]
-            list.extend(new_point)
+            list.append(new_point[:])
             windings += 0.25
 
             if windings >= self.Windings:
@@ -187,7 +193,7 @@ class RectangularCoil(Electrode):
             new_point[0] += a_2[L.i] + a_3_2[L.i]
             new_point[1] += a_2[L.j] + a_3_2[L.j]
             new_point[2] += a_2[L.k] + a_3_2[L.k]
-            list.extend(new_point)
+            list.append(new_point[:])
             windings += 0.25
 
             if windings >= self.Windings:
@@ -196,7 +202,7 @@ class RectangularCoil(Electrode):
             new_point[0] += -a_1[L.i] + a_3_1[L.i]
             new_point[1] += -a_1[L.j] + a_3_1[L.j]
             new_point[2] += -a_1[L.k] + a_3_1[L.k]
-            list.extend(new_point)
+            list.append(new_point[:])
             windings += 0.25
 
             if windings >= self.Windings:
@@ -205,10 +211,11 @@ class RectangularCoil(Electrode):
             new_point[0] += -a_2[L.i] + a_3_2[L.i]
             new_point[1] += -a_2[L.j] + a_3_2[L.j]
             new_point[2] += -a_2[L.k] + a_3_2[L.k]
-            list.extend(new_point)
+            list.append(new_point[:])
             windings += 0.25
 
-        collection = StraightConductorCollection("name", self.Current, self.Radius, *list)
+        collection = StraightConductorCollection("name", self.Current, self.Radius, list)
+
 
         B = collection.GetField()
 

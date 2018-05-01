@@ -10,6 +10,8 @@ import inspect
 import sys
 from sympy.vector import CoordSys3D, Vector
 
+import numpy as np
+
 
 def ConvertAnglesToVector(Theta, Phi):
     # Function which converts given angles in radians into a normalised vector (see documentation for more info: Vector aanmaken a.d.h.v. 2 hoeken)
@@ -95,11 +97,12 @@ def EvaluateAnalyticField(F, Coordinates):
 
         if str(Fcomponents[basis]).find("Integral(") != -1:
             while str(str(Fcomponents[basis])).find("Integral(") != -1:
-                str(F)   # This somehow solved the problem that F would change throughout the process
+                str(F)  # This somehow solved the problem that F would change throughout the process
 
                 end1 = str(str(Fcomponents[basis])).find("Integral(")
 
-                integrand = str(Fcomponents[basis])[str(Fcomponents[basis]).find("Integral(") + 9:str(Fcomponents[basis]).find(", ")]
+                integrand = str(Fcomponents[basis])[
+                            str(Fcomponents[basis]).find("Integral(") + 9:str(Fcomponents[basis]).find(", ")]
                 integrand = sy.sympify(integrand)
                 integrand = integrand.subs([(x, Coordinates[0]), (y, Coordinates[1]), (z, Coordinates[2])])
 
@@ -111,11 +114,10 @@ def EvaluateAnalyticField(F, Coordinates):
 
                 begin2 = info2.find("))")
 
-
                 if dx == "Phi2":
                     sum_integrals += quad(lambda Phi2: eval(str(integrand)), eval(a), eval(b))[0]
                 if dx == "t":
-                    sum_integrals += sy.integrate(eval(str(integrand)), (t,  eval(a), eval(b)))
+                    sum_integrals += sy.integrate(eval(str(integrand)), (t, eval(a), eval(b)))
 
                 Fcomponents[basis] = str(Fcomponents[basis])[:end1] + info2[begin2 + 3:]
 
@@ -124,14 +126,65 @@ def EvaluateAnalyticField(F, Coordinates):
 
             Fcomponents[basis] = eval(Fcomponents[basis])
 
-
-    Fdic = Fcomponents[L.i]*L.i + Fcomponents[L.j]*L.j + Fcomponents[L.k]*L.k
+    Fdic = Fcomponents[L.i] * L.i + Fcomponents[L.j] * L.j + Fcomponents[L.k] * L.k
 
     if Fdic != Vector.zero:
         Feval = Fdic.evalf(subs={x: Coordinates[0], y: Coordinates[1], z: Coordinates[2]})
     else:
         Feval = Vector.zero
 
+    """L = CoordSys3D('L')
+
+    Fieldcomponents = F.components
+    UpdateDictionary(Fieldcomponents)
+
+    str(F)
+
+    x = Coordinates[0]
+    y = Coordinates[1]
+    z = Coordinates[2]
+
+    for basis in [L.i, L.j, L.k]:
+
+        sum_integrals = 0
+
+        if str(Fieldcomponents[basis]).find("Integral(") != -1:
+            while str(str(Fieldcomponents[basis])).find("Integral(") != -1:
+
+                end1 = str(str(Fieldcomponents[basis])).find("Integral(")
+
+                integrand = str(Fieldcomponents[basis])[
+                            str(Fieldcomponents[basis]).find("Integral(") + 9:str(Fieldcomponents[basis]).find(", ")]
+                integrand = sy.sympify(integrand)
+                integrand = eval(str(integrand))
+
+                info1 = str(Fieldcomponents[basis])[str(Fieldcomponents[basis]).find(",") + 1:]
+                dx = info1[info1.find("(") + 1:info1.find(",")]
+                info2 = info1[info1.find(",") + 2:]
+                a = info2[:info2.find(",")]
+                b = info2[info2.find(",") + 2:info2.find("))")]
+
+                begin2 = info2.find("))")
+
+                print("caculating...")
+
+                if dx == "Phi2":
+                    for index, w in np.ndenumerate(integrand):
+                        sum_integrals[index] += quad(lambda Phi2: eval(str(w)), eval(a), eval(b))[0]
+                if dx == "t":
+                    for index, w in np.ndenumerate(integrand):
+                        sum_integrals[index] += quad(lambda t: eval(str(w)), eval(a), eval(b))[0]
+
+                Fieldcomponents[basis] = str(Fieldcomponents[basis])[:end1] + info2[begin2 + 3:]
+
+            Fieldcomponents[basis] = eval(Fieldcomponents[basis] + "0")
+
+            Fieldcomponents[basis] = np.add(Fieldcomponents[basis], sum_integrals)
+
+        else:
+            Fieldcomponents[basis] = eval(str(Fieldcomponents[basis]))
+
+    Feval = Fieldcomponents[L.i]*L.i + Fieldcomponents[L.j]*L.j + Fieldcomponents[L.k]*L.k"""
 
     return Feval
 

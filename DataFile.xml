@@ -19,7 +19,7 @@
 			<StraightConductorCollection number="1" amount="5" status="nabled">
 				<Current>5</Current>				<!-- conventional current goes standardly from point 1 to 2, to reverse make the Current negative -->
 				<Radius>4</Radius>
-				<Points>[10,10,10], [-10,-10,10], [-10,-10,-20]</Points>	<!-- starting and end points of the seperate straight line conductors, these points will all be connected by straight conductors to form a collection of straight conductors -->
+				<Points>[[10,10,10], [-10,-10,10], [-10,-10,-20]]</Points>	<!-- starting and end points of the seperate straight line conductors, these points will all be connected by straight conductors to form a collection of straight conductors -->
 			</StraightConductorCollection>
 
 			<RectangularCoil number="1" status="enabled">
@@ -30,10 +30,10 @@
 				<Psi>0</Psi>
 				<Length>5</Length>					<!-- dimension coil in e_1 direction -->
 				<Width>5</Width>					<!-- dimension coil in e_2 direction -->
-				<Heigth>10</Heigth>					<!-- dimension coil in e_3 direction -->
-				<StartingPoint>[0,0,0]</StartingPoint>				<!-- origin of the axial system of the coil -->
-				<Windings>20</Windings>				<!-- number of windings (is counted in quarters of windings, e.g. 21.75 windings would be a valid argument) -->
-				<Clockwise>"True"</Clockwise>		<!-- whether the windings of the coil should start clockwise (argument = "True" -> clockwise, argument = "False" -> anti-clockwise) -->
+				<Heigth>20</Heigth>					<!-- dimension coil in e_3 direction -->
+				<StartingPoint>[-2.5,-2.5,-10]</StartingPoint>				<!-- origin of the axial system of the coil -->
+				<Windings>1</Windings>				<!-- number of windings (is counted in quarters of windings, e.g. 21.75 windings would be a valid argument) -->
+				<ClockWise>"False"</ClockWise>		<!-- whether the windings of the coil should start clockwise (argument = "True" -> clockwise, argument = "False" -> anti-clockwise) -->
 			</RectangularCoil>
 
 			<CircularConductor number="1" status="disabled">
@@ -303,7 +303,7 @@
 					<zmin>-20</zmin>
 					<zmax>20</zmax>
 				</TrajectoryBoundaries>
-				<TimeSteps>0.00005</TimeSteps>			<!-- determines the time steps used in Particle::ParticleMove -->
+				<TimeSteps>0.005</TimeSteps>			<!-- determines the time steps used in Particle::ParticleMove -->
 				<TimeLimit>1</TimeLimit>				<!-- determines the maximum execute time of Particle::ParticleMove -->
 				<Interval>0.05</Interval>				<!-- used in Object_3D::IsPointInObject which is used in Particle::ParticleMove -->
 			</Trajectory>
