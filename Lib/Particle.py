@@ -146,16 +146,18 @@ class Particle():
             Trajectory["E"].append(E)
             Trajectory["B"].append(B)
 
-        print("The calculations for the trajectory of the particle have been successfully finished\r\n")
+        self.Trajectory = Trajectory
+
+        print("The calculations for the trajectory of the particle have been successfully finished                                                   \r\n")
 
         return Trajectory
 
     def WriteToFile(self, E_analytic, B_analytic, Trajectory, d):
         # function which writes all the data concerning the calculated trajectory to a csv file
 
-        print("Writing data from the calculated trajectory of %s (%s) to %s..." % (self.name, self.Type, d["FileName"]))
+        print("Writing data from the calculated trajectory of %s (%s) to %s_%s.csv ..." % (self.name, self.Type, d["FileName"],self.name))
 
-        f = open(d["FileName"], "w")
+        f = open("%s_%s.csv" % (d["FileName"],self.name), "w")
 
         f.write("This file includes the data from the calculated trajectory of %s (%s)\r\n\r\n" % (self.name, self.Type))
 
@@ -183,7 +185,7 @@ class Particle():
 
         f.close()
 
-        print(d["FileName"] + " has been written\r\n")
+        print("%s_%s.csv has been written\r\n" % (d["FileName"],self.name))
 
     def PlotTrajectory(self, Trajectory):
         # funtion which plots the trajectory of the particle

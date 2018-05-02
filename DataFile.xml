@@ -3,13 +3,13 @@
 	<Data>
 		<Elements>
 
-			<StraightConductor number="1" status="nabled">
+			<StraightConductor number="1" status="enabled">
 				<CoordinatesPoint1>[1,1,-5]</CoordinatesPoint1>
 				<CoordinatesPoint2>[1,1,5]</CoordinatesPoint2>
 				<Current>5</Current>				<!-- conventional current goes standardly from point 1 to 2, to reverse make the Current negative -->
 				<Radius>4</Radius>
 			</StraightConductor>
-			<StraightConductor number="2" status="nabled">
+			<StraightConductor number="2" status="enabled">
 				<CoordinatesPoint1>[5,5,0]</CoordinatesPoint1>
 				<CoordinatesPoint2>[5,5,10]</CoordinatesPoint2>
 				<Current>2</Current>
@@ -292,6 +292,19 @@
 			<Position>[0, 0, 2]</Position>				<!-- starting position particle -->
 		</Particle>
 
+		<Particle number="2" status="enabled">>
+			<Type>"proton"</Type>						<!-- here the type of the particle needs to be specified (will be set as the name of the particle), if the name corresponds to a name in the particledictionary (currently holding electron and proton) the mass and charge will automatically be assigned and does not need to be specified -->
+			<Mass>9.10938356*(10**(-31))</Mass>  		<!-- in kilograms -->
+			<Charge>-1.6021766208*(10**(-19))</Charge>	<!-- in coulombs -->
+			<Velocity>100</Velocity>					<!-- starting velocity of the particle in m/s -->
+			<Phi1>45</Phi1>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the velocity vector on the xy-plane (0-360 degree) -->
+			<Theta1>45</Theta1>							<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the velocity vector (0-360 degree) -->
+			<Acceleration>0</Acceleration>				<!-- acceleration of the particle which is the result of an external force and will all the time be added to the acceleration caused by the electric and magnetic fields (in m/s²) -->
+			<Phi2>20</Phi2>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the acceleration vector on the xy-plane (0-360 degree) -->
+			<Theta2>20</Theta2>							<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the acceleration vector (0-360 degree) -->
+			<Position>[4, 4, -2]</Position>				<!-- starting position particle -->
+		</Particle>
+
 		<Setup>
 
 			<Trajectory>
@@ -304,7 +317,7 @@
 					<zmax>20</zmax>
 				</TrajectoryBoundaries>
 				<TimeSteps>0.005</TimeSteps>			<!-- determines the time steps used in Particle::ParticleMove -->
-				<TimeLimit>1</TimeLimit>				<!-- determines the maximum execute time of Particle::ParticleMove -->
+				<TimeLimit>0.05</TimeLimit>				<!-- determines the maximum execute time of Particle::ParticleMove -->
 				<Interval>0.05</Interval>				<!-- used in Object_3D::IsPointInObject which is used in Particle::ParticleMove -->
 			</Trajectory>
 
@@ -315,7 +328,7 @@
 			<Output>
 
 				<WriteSetupToFile execute="yes">Setup.txt</WriteSetupToFile>		<!-- if execute = "yes" the file will be written with the name specified -->
-				<WriteDataToFile execute="yes">Data.csv</WriteDataToFile>			<!-- if execute = "yes" the file will be written with the name specified -->
+				<WriteDataToFile execute="yes">Data</WriteDataToFile>			<!-- if execute = "yes" the file will be written with the name specified -->
 
 				<TrajectoryPlot execute="yes"></TrajectoryPlot>						<!-- if execute = "yes" the trajectory of the particle will be plotted -->
 

@@ -2,6 +2,8 @@ This is the enabled setup in the xml file:
 
 electrodes:
 
+name: StraightConductor1, CoordinatesPoint1: [1, 1, -5], CoordinatesPoint2: [1, 1, 5], Current: 5, Radius: 4
+name: StraightConductor2, CoordinatesPoint1: [5, 5, 0], CoordinatesPoint2: [5, 5, 10], Current: 2, Radius: 2
 name: RectangularCoil1, Current: 1, Radius: 0.5, Phi: 0, Theta: 0, Psi: 0, Length: 5, Width: 5, Heigth: 20, StartingPoint: [-2.5, -2.5, -10], Windings: 1, ClockWise: False
 
 

@@ -9,6 +9,7 @@ from Lib.Elements import *
 import inspect
 import sys
 from sympy.vector import CoordSys3D, Vector
+from Lib.Functions_WOS import ElectricalField_WOS
 
 import numpy as np
 
@@ -195,8 +196,12 @@ def GetFields(Coordinates, Speed, B_analytic, E_analytic, electrodes_WOS):
     B = EvaluateAnalyticField(B_analytic, Coordinates)
     E_analytic = EvaluateAnalyticField(E_analytic, Coordinates)
 
-    # E_WOS = electrodes_WOS
-    E = E_analytic
+    if electrodes_WOS:
+        E_WOS = ElectricalField_WOS(electrodes_WOS, Coordinates)
+        E = E_analytic + E_WOS
+    else:
+        E = E_analytic
+
 
     # relativistic correction:
     c = 299792458
@@ -208,113 +213,72 @@ def GetFields(Coordinates, Speed, B_analytic, E_analytic, electrodes_WOS):
     return E_particle, B_particle
 
 
-def ReadXml():
-    from Lib.Elements import Electrode
-    from Lib.Objects_3D import Object_3D
+def GetObjects(class_names, root):
+    # function which will generate an object list from the enabled elements in the xml-file
+
+    from Lib.Particle import Particle
+
+    object_list = []
+
+    for cls in class_names:
+        if root.find('.//' + cls) is not None:  # checks if there are any elements in the xml-file which have the same name as the classes
+            input_parameters_names = list(inspect.signature(eval(cls)).parameters)  # the input parameters needed as input to generate an object from a specific class
+            input_parameters_names.remove('name')
+
+            i = 1
+            for element in root.iter(cls):  # if there are multiple elements from the same type, there will be iterated over these elements
+                if element.attrib["status"] == "enabled":  # will only make an object if the status is enabled in the xml file
+                    input_parameters = [cls + str(i)]  # first input parameter is the object name
+                    for parameter in input_parameters_names:
+                        if element.find(parameter) is None:  # error message to warn for misspelling or forgetting to specify certain input parameters
+                            sys.exit("ERROR: the input parameter " + str(parameter) + " for the element: " + str(cls) + " has not been specified or has been misspelled in the xml-file, please correct this and execute the program again")
+                        input_parameters.append(eval(element.find(parameter).text))  # will find the other input parameters in the xml file and hold its values in a list
+
+                    object_list.append(eval(cls)(*input_parameters))  # generates the correct class object with the extracted input parameters and appends it to the list
+
+                    i += 1
 
 
-    # User needs to put a named xml file on the same level as the Main.py executable (so in the program folder)
-    # The name of the file needs to be passed when executing the program from the command window, e.g.: python Main.py Datafile.xml
-    # output is a list of objects which represent the electrodes(_WOS), a particle object and a dictionary holding information about the setup
-
-    # Check if the correct argument is given:
-    if len(sys.argv) == 1:
-        sys.exit("ERROR: User needs to give the xml-file holding the data as an argument\r\n")
-    elif len(sys.argv) > 2:
-        sys.exit("ERROR: Too many arguments given, please only give the data file as an argument\r\n")
-    else:
-        print("The data wil be read from: " + str(sys.argv[1]) + " ...\r\n")
-
-    tree = ET.parse(str(sys.argv[1]))  # Load the given xml-file passed as an argument
-    root = tree.getroot()
-
-    def GetObjects(class_names, root):
-        from Lib.Particle import Particle
-        # function which will generate an object list from the enabled elements in the xml-file
-
-        object_list = []
-
-        for cls in class_names:
-            if root.find('.//' + cls) is not None:  # checks if there are any elements in the xml-file which have the same name as the classes
-                input_parameters_names = list(inspect.signature(eval(cls)).parameters)  # the input parameters needed as input to generate an object from a specific class
-                input_parameters_names.remove('name')
-
-                i = 1
-                for element in root.iter(cls):  # if there are multiple elements from the same type, there will be iterated over these elements
-                    if element.attrib["status"] == "enabled":  # will only make an object if the status is enabled in the xml file
-                        input_parameters = [cls + str(i)]  # first input parameter is the object name
-                        for parameter in input_parameters_names:
-                            if element.find(parameter) is None:  # error message to warn for misspelling or forgetting to specify certain input parameters
-                                sys.exit("ERROR: the input parameter " + str(parameter) + " for the element: " + str(cls) + " has not been specified or has been misspelled in the xml-file, please correct this and execute the program again")
-                            input_parameters.append(eval(element.find(parameter).text))  # will find the other input parameters in the xml file and hold its values in a list
-
-                        object_list.append(eval(cls)(*input_parameters))  # generates the correct class object with the extracted input parameters and appends it to the list
-
-                        i += 1
+    return object_list
 
 
-        return object_list
+def GetSetup(root):
+    # function which generates a dictionary with info about the setup specified in the xml-file
 
-    #################################
-
-    # ELECTRODES (electric and magnetic):
-    class_names = [cls.__name__ for cls in vars()["Electrode"].__subclasses__()]  # get the class names derived from the electrode base class
-
-    electrodes = GetObjects(class_names, root)  # list that holds all the specified electrodes as class objects
-
-
-    # ELECTRODES_WOS (for the Walk on Spheres method, electric)
-    class_names = [cls.__name__ for cls in vars()["Object_3D"].__subclasses__()]  # get the class names derived from the Object_3D base class (and add _WOS)
-
-    electrodes_WOS = GetObjects(class_names, root)  # list that holds all the specified electrodes_WOS as class objects
-
-
-    # PARTICLE:
-    class_name = "Particle"
-    particle = GetObjects([class_name], root)
-
-
-    # SETUP (works with dictionary instead of class objects)
-    d = {}          # empty dictionary to which names will be appended which will later be used in different classes/functions
+    d = {}  # empty dictionary to which names will be appended which will later be used in different classes/functions
 
     Setup = root.find("Setup")
 
     Trajectory = Setup.find("Trajectory")
-    TrajectoryBoundaries = Trajectory.find("TrajectoryBoundaries")          # determines the box in which the trajectory for the particle will be calculated (See Particle::ParticleMove)
+    TrajectoryBoundaries = Trajectory.find("TrajectoryBoundaries")  # determines the box in which the trajectory for the particle will be calculated (See Particle::ParticleMove)
     d["xmin"] = eval(TrajectoryBoundaries.find("xmin").text)
     d["xmax"] = eval(TrajectoryBoundaries.find("xmax").text)
     d["ymin"] = eval(TrajectoryBoundaries.find("ymin").text)
     d["ymax"] = eval(TrajectoryBoundaries.find("ymax").text)
     d["zmin"] = eval(TrajectoryBoundaries.find("zmin").text)
     d["zmax"] = eval(TrajectoryBoundaries.find("zmax").text)
-    d["timesteps"] = eval(Trajectory.find("TimeSteps").text)                # determines the time steps used in Particle::ParticleMove
-    d["timelimit"] = eval(Trajectory.find("TimeLimit").text)                # determines the maximum execute time of Particle::ParticleMove
-    d["interval"] = eval(Trajectory.find("Interval").text)                  # used in Object_3D::IsPointInObject which is used in Particle::ParticleMove
-
-
+    d["timesteps"] = eval(Trajectory.find("TimeSteps").text)    # determines the time steps used in Particle::ParticleMove
+    d["timelimit"] = eval(Trajectory.find("TimeLimit").text)    # determines the maximum execute time of Particle::ParticleMove
+    d["interval"] = eval(Trajectory.find("Interval").text)      # used in Object_3D::IsPointInObject which is used in Particle::ParticleMove
 
     ######################################
     # WOS
 
-
-
-
-
     Output = Setup.find("Output")
-    d["WriteSetupToFile"] = Output.find("WriteSetupToFile").attrib["execute"]   # if execute = "yes" the file will be written with the name specified
+    d["WriteSetupToFile"] = Output.find("WriteSetupToFile").attrib["execute"]  # if execute = "yes" the file will be written with the name specified
     d["FileNameSetup"] = Output.find("WriteSetupToFile").text
-    d["WriteDataToFile"] = Output.find("WriteDataToFile").attrib["execute"]     # if execute = "yes" the file will be written with the name specified
+    d["WriteDataToFile"] = Output.find("WriteDataToFile").attrib["execute"]  # if execute = "yes" the file will be written with the name specified
     d["FileName"] = Output.find("WriteDataToFile").text
 
-    d["TrajectoryPlot"] = Output.find("TrajectoryPlot").attrib["execute"]       # if execute = "yes" the trajectory of the particle will be plotted
+    d["TrajectoryPlot"] = Output.find("TrajectoryPlot").attrib["execute"]  # if execute = "yes" the trajectory of the particle will be plotted
 
-    d["MagneticFieldPlot"] = Output.find("MagneticFieldPlot").attrib["execute"]                 # determines whether the magnetic field plot should be calculated and whether this should be a normalized plot or not
+    d["MagneticFieldPlot"] = Output.find("MagneticFieldPlot").attrib["execute"]  # determines whether the magnetic field plot should be calculated and whether this should be a normalized plot or not
     d["NormalizeMagneticFieldPlot"] = Output.find("MagneticFieldPlot").attrib["normalize"]
-    d["ElectricFieldPlot"] = Output.find("ElectricFieldPlot").attrib["execute"]                 # determines whether the electric field plot should be calculated and whether this should be a normalized plot or not
+    d["ElectricFieldPlot"] = Output.find("ElectricFieldPlot").attrib["execute"]  # determines whether the electric field plot should be calculated and whether this should be a normalized plot or not
     d["NormalizeElectricFieldPlot"] = Output.find("ElectricFieldPlot").attrib["normalize"]
 
     MagneticFieldPlot = Output.find("MagneticFieldPlot")
-    MagneticFieldBoundaries = MagneticFieldPlot.find("MagneticFieldBoundaries")                 # determines the box in which the magnetic field will be shown
+    MagneticFieldBoundaries = MagneticFieldPlot.find("MagneticFieldBoundaries")  # determines the box in which the magnetic field will be shown
     d["xmin1"] = eval(MagneticFieldBoundaries.find("xmin").text)
     d["xmax1"] = eval(MagneticFieldBoundaries.find("xmax").text)
     d["ymin1"] = eval(MagneticFieldBoundaries.find("ymin").text)
@@ -323,7 +287,7 @@ def ReadXml():
     d["zmax1"] = eval(MagneticFieldBoundaries.find("zmax").text)
 
     ElectricFieldPlot = Output.find("ElectricFieldPlot")
-    ElectricFieldBoundaries = ElectricFieldPlot.find("ElectricFieldBoundaries")                 # determines the box in which the electric field will be shown
+    ElectricFieldBoundaries = ElectricFieldPlot.find("ElectricFieldBoundaries")  # determines the box in which the electric field will be shown
     d["xmin2"] = eval(ElectricFieldBoundaries.find("xmin").text)
     d["xmax2"] = eval(ElectricFieldBoundaries.find("xmax").text)
     d["ymin2"] = eval(ElectricFieldBoundaries.find("ymin").text)
@@ -331,9 +295,10 @@ def ReadXml():
     d["zmin2"] = eval(ElectricFieldBoundaries.find("zmin").text)
     d["zmax2"] = eval(ElectricFieldBoundaries.find("zmax").text)
 
+    return d
 
 
-    ##########################################################
+def OutputSetup(electrodes, electrodes_WOS, particle, d):
     # shows the enabled setup of electrodes, data concerning the particle in the xml-file and writes it to a file if enabled
     # ask if the given setup is correct before proceeding
 
@@ -351,12 +316,14 @@ def ReadXml():
         attributes = vars(electrode_WOS)
         print(', '.join("%s: %s" % item for item in attributes.items()))
 
-    print("\r\nparticle:\r\n")
+    print("\r\nparticles:\r\n")
 
-    attributes = vars(particle[0])
-    print(', '.join("%s: %s" % item for item in attributes.items()))
+    for prtcl in particle:
+        attributes = vars(prtcl)
+        print(', '.join("%s: %s" % item for item in attributes.items()))
 
-    continue_program = input('\r\nIs the given setup correct and do you want to continue the program?   (type yes and then press Enter if so)\r\n')
+    continue_program = input(
+        '\r\nIs the given setup correct and do you want to continue the program?   (type yes and then press Enter if so)\r\n')
     if continue_program != "yes":
         sys.exit("program terminated by user")
 
@@ -388,17 +355,60 @@ def ReadXml():
         attributes = vars(particle[0])
         f.write(', '.join("%s: %s" % item for item in attributes.items()))
 
-
         f.close()
 
         print(d["FileNameSetup"] + " has been written\r\n")
 
 
+def ReadXml():
+    # User needs to put a named xml file on the same level as the Main.py executable (so in the program folder)
+    # The name of the file needs to be passed when executing the program from the command window, e.g.: python Main.py Datafile.xml
+    # output is a list of objects which represent the electrodes(_WOS), a particle object and a dictionary holding information about the setup
 
+    from Lib.Elements import FieldSource
+    from Lib.Objects_3D import Object_3D
+
+    # Check if the correct argument is given:
+    if len(sys.argv) == 1:
+        sys.exit("ERROR: User needs to give the xml-file holding the data as an argument\r\n")
+    elif len(sys.argv) > 2:
+        sys.exit("ERROR: Too many arguments given, please only give the data file as an argument\r\n")
+    else:
+        print("The data wil be read from: " + str(sys.argv[1]) + " ...\r\n")
+
+    tree = ET.parse(str(sys.argv[1]))  # Load the given xml-file passed as an argument
+    root = tree.getroot()
+
+
+    #################################
+
+    # ELECTRODES (magnetic):
+    class_names = [cls.__name__ for cls in vars()["FieldSource"].__subclasses__()]  # get the class names derived from the electrode base class
+
+    electrodes = GetObjects(class_names, root)  # list that holds all the specified electrodes as class objects
+
+
+    # ELECTRODES_WOS (for the Walk on Spheres method, electric)
+    class_names = [cls.__name__ for cls in vars()["Object_3D"].__subclasses__()]  # get the class names derived from the Object_3D base class (and add _WOS)
+
+    electrodes_WOS = GetObjects(class_names, root)  # list that holds all the specified electrodes_WOS as class objects
+
+
+    # PARTICLE:
+    class_name = "Particle"
+    particle = GetObjects([class_name], root)
+
+
+    # SETUP (works with dictionary instead of class objects)
+    d = GetSetup(root)
+
+    ##########################################################
+
+    # shows the enabled setup of electrodes, data concerning the particle in the xml-file and writes it to a file if enabled
+    # ask if the given setup is correct before proceeding
+    OutputSetup(electrodes, electrodes_WOS, particle, d)
 
     return electrodes, electrodes_WOS, particle, d
-
-
 
 
 def ResultingField(electrodes):

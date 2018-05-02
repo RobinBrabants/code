@@ -36,7 +36,7 @@ def potential_WOS(electrodes_WOS, Coordinates):
             distances = []
 
             for electrode in electrodes_WOS:
-                distances.append(electrode.GetClosestDistanceToPoint(Point))
+                distances.append(electrode.DistanceToObject(Point))
 
             index, distance = min(enumerate(distances), key=itemgetter(1))
 
@@ -97,7 +97,7 @@ def ElectricalField_WOS(electrodes_WOS, Coordinates):
     max_iter = 400          # if the number of iterations for reaching an electrode surface becomes bigger than max_iter, this step in the numerical method will be skipped
     space = 10 ** (-2)      # can be chosen accordingly to the dimensions of the electrode setup
     # maximum distance of the point from a certain iteration to the surface of an electrode for which the potential of this surface will be taken for that iteration
-    iterations = 2000        # number of times the WOS method should be executed before assigning a potential to a point
+    iterations = 200        # number of times the WOS method should be executed before assigning a potential to a point
 
     # starting values:
     ElectricalField = Vector.zero
@@ -116,7 +116,7 @@ def ElectricalField_WOS(electrodes_WOS, Coordinates):
             distances = []
 
             for electrode in electrodes_WOS:
-                distances.append(electrode.GetClosestDistanceToPoint(Point))
+                distances.append(electrode.DistanceToObject(Point))
 
             index, distance = min(enumerate(distances), key=itemgetter(1))
 
@@ -132,10 +132,14 @@ def ElectricalField_WOS(electrodes_WOS, Coordinates):
                 Potential = electrodes_WOS[index].Potential
 
 
-                r = (Coordinates[0] - Point_Circle[0])*L.i + (Coordinates[1] - Point_Circle[1])*L.j + (Coordinates[2] - Point_Circle[2])*L.k
-                er = r.normalize()
+                r1 = (Coordinates[0] - Point_Circle[0])*L.i + (Coordinates[1] - Point_Circle[1])*L.j + (Coordinates[2] - Point_Circle[2])*L.k
+                r2 = (Coordinates[0] - Point[0]) * L.i + (Coordinates[1] - Point[1]) * L.j + (Coordinates[2] - Point[2]) * L.k
 
-                ElectricalField += (3/(r.magnitude()))*Potential*er
+                # Point_Cirlce or Point itself dunno
+
+                er = r1.normalize()
+
+                ElectricalField += (3/(r1.magnitude()))*Potential*er
 
                 values += 1
 

@@ -4,7 +4,7 @@
 # classes from Elements will only use the IsPointInObject function to determine in the ParticleMove function from the
 # Particle class whether a particle had a collision with an object.
 
-# The GetClosestDistanceToPoint function will be used for the Walk On Spheres method. This is explained in the
+# The DistanceToObject function will be used for the Walk On Spheres method. This is explained in the
 # functions_WOS file.
 
 
@@ -19,7 +19,7 @@ class Object_3D(object):
         self.name = name                        # give up a name for the object
 
     @abstractmethod
-    def GetClosestDistanceToPoint(self, point): # get closest distance from a point to this object (negative distance
+    def DistanceToObject(self, point): # get closest distance from a point to this object (negative distance
                                                 # means the point is inside the object), used in function IsPointInObject
         pass
 
@@ -31,7 +31,7 @@ class Object_3D(object):
         # 1 means particle is considered to be colliding with the object (near enough)
         # 2 means particle is inside object
 
-        distance = self.GetClosestDistanceToPoint(point)
+        distance = self.DistanceToObject(point)
 
         if distance > interval:
             return 0
@@ -56,7 +56,7 @@ class Sphere(Object_3D):
         self.Potential = Potential                      # potential on the surface of the sphere
 
 
-    def GetClosestDistanceToPoint(self, point):
+    def DistanceToObject(self, point):
         # self explanatory calculation of the minimal distance to a sphere
         # determines distance between a given point in space and the center of the sphere and then substracts the radius
 
@@ -85,7 +85,7 @@ class Cylinder(Object_3D):
         self.Potential = Potential                      # potential on the surface of the cylinder
 
 
-    def GetClosestDistanceToPoint(self, point):
+    def DistanceToObject(self, point):
         from Lib.Functions import UpdateDictionary
 
 

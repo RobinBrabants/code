@@ -5,10 +5,7 @@ from Lib.Particle import *
 from Lib.RepresentData import *
 from Lib.Functions import *
 import sys
-
-from sympy.vector import CoordSys3D
-import sympy as sy
-
+import matplotlib.pyplot as plt
 
 
 """from Lib.Functions_WOS import *
@@ -24,6 +21,65 @@ E, B = GetFields(Point, Vector.zero, B_analytic, E_analytic, electrodes_WOS)
 
 print("\r\nanalytical: " + str(E))
 print("WOS: " + str(ElectricalField_WOS(electrodes_WOS, Point)))"""
+
+
+def PlotTrajectorys(particles):
+    # funtion which plots the trajectory of the particle
+
+    print("Plotting all of the trajectorys on 1 figure")
+
+    warnings.filterwarnings("ignore")
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+
+    for particle in particles:
+
+        x = particle.Trajectory["x"]
+        y = particle.Trajectory["y"]
+        z = particle.Trajectory["z"]
+        t = particle.Trajectory["t"]
+
+        xs = np.array(x)
+        ys = np.array(y)
+        zs = np.array(z)
+        ts = np.array(t)
+
+        ax.plot(x, y, z, label="%s (%s)" % (particle.name, particle.Type))
+        # ax.scatter maybe also good
+
+        len_t = len(t) - 1
+        ind_pos = []
+
+        for i in range(0, 11):
+            ind_pos.append(0 + i * (int(len_t / 10)))  # time labels
+
+        xx = (xs[ind_pos])
+        yy = (ys[ind_pos])
+        zz = (zs[ind_pos])
+        tt = (ts[ind_pos])
+
+        for t, x, y, z in zip(tt, xx, yy, zz):
+            label = '%s' % t
+            ax.text(x, y, z, label)
+            ax.scatter(x, y, z, c="red")
+
+        if "collision" in particle.Trajectory:
+            electrode = particle.Trajectory["collision"]
+            fig.suptitle('trajectory of ' + particle.name + ' (' + particle.Type + '), Particle collided with: ' + str(
+                electrode.name) + '\r\n\r\n', fontsize=14, fontweight='bold')
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    ax.legend()
+
+    fig.suptitle('trajectory of all particles', fontsize=14, fontweight='bold')
+
+    ax.set_title('time in seconds', style='italic', fontsize=8, bbox={'facecolor': 'red', 'alpha': 0.2, 'pad': 7})
+
+    plt.show(block=False)
 
 
 
@@ -50,6 +106,8 @@ for particle in particles:
         particle.WriteToFile(E_analytic, B_analytic, trajectory, d)                                         # write data concerning the trajectory of the particle to a file if enabled in the xml-file
     if d["TrajectoryPlot"] == "yes":
         particle.PlotTrajectory(trajectory)                                     # plot the trajectory if enabled in the xml-file
+
+PlotTrajectorys(particles)
 
 if d["ElectricFieldPlot"] == "yes":                         # plot the electric field if enabled in the xml-file
     Plotfield(E_analytic, "Electric", d)

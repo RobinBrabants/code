@@ -6,11 +6,20 @@ The program will in most cases calculate analytical formulas for the fields depe
 
 The program can be run in its folder from a terminal, e.g.:
 
-python Main.py Datafile.xml
+python3.6 Main.py Datafile.xml
 
 Main.py is the program file itself and DataFile.xml is the name of the file in which the information about the elements is stored.
 
 
 
 For more info: check the included pdf and the comments in the code itself
+
+
+
+packages dependies can be installed on your system as follows:
+
+python3.6 -m pip install scipy
+python3.6 -m pip install sympy
+python3.6 -m pip install matplotlib
+apt-get install python3.6-tk
 

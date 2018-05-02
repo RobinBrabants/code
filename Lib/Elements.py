@@ -1,4 +1,4 @@
-# Here all the electric and magnetic field producing elements will be represented by classes for which an analytical
+# Here all the magnetic field producing elements will be represented by classes for which an analytical
 # field can be calculated
 
 
@@ -9,13 +9,10 @@ import sympy as sy
 from Lib.Objects_3D import *
 
 
-class Electrode(object):
+class FieldSource(object):
     # a class to represent all electrodes from which to derive the actual shaped objects later
     def __init__(self, name):
         self.name = name                        # give up a name for the object
-
-    def PrintName(self):                        # output name and some info on the object
-        print('name: ', self.name);             # everything needs to be implemented
 
     @abstractmethod
     def GetField(self):                         # get the magnetic or electric field vector as a function of the
@@ -38,10 +35,10 @@ class Electrode(object):
 #  magnetic field producing elements (watch out: conventional current directions are used):
 
 
-class StraightConductor(Electrode):
+class StraightConductor(FieldSource):
     # a straight line conductor
     def __init__(self, name, CoordinatesPoint1, CoordinatesPoint2, Current, Radius):
-        Electrode.__init__(self, name)
+        FieldSource.__init__(self, name)
         self.CoordinatesPoint1 = CoordinatesPoint1      # starting point straight conductor
         self.CoordinatesPoint2 = CoordinatesPoint2      # ending point straight conductor
         self.Current = Current                          # current
@@ -92,10 +89,11 @@ class StraightConductor(Electrode):
         return 'magnetic'
 
 
-class StraightConductorCollection(Electrode):
+class StraightConductorCollection(FieldSource):
+    # (a.k.a. piecewise linear)s
     # an assembly of straight line conductors
     def __init__(self, name, Current, Radius, Points):
-        Electrode.__init__(self, name)
+        FieldSource.__init__(self, name)
         self.Current = Current                          # current
         self.Radius = Radius                            # radius of the straightconductors (represented as a cylinders)
         self.Points = Points                            # starting and end points of the seperate straight line conductors
@@ -119,10 +117,10 @@ class StraightConductorCollection(Electrode):
         return 'magnetic'
 
 
-class RectangularCoil(Electrode):
+class RectangularCoil(FieldSource):
     # a rectangular coil existing of straight line conductors
     def __init__(self, name, Current, Radius, Phi, Theta, Psi, Length, Width, Heigth, StartingPoint, Windings, ClockWise):
-        Electrode.__init__(self, name)
+        FieldSource.__init__(self, name)
         self.Current = Current                          # current
         self.Radius = Radius                            # radius of the straightconductors (represented as a cylinders)
         self.Phi = Phi                                  # these are the three Euler Angles to define the orientation of the coil (in degrees) (see documentation)
@@ -231,12 +229,13 @@ class RectangularCoil(Electrode):
 
 #######################################################################################################################
 #  electric field producing elements (potential on the surface is used):
+# This is just a test function for the Walk On Spheres method
 
 
-class Sphere_Field(Electrode):
+class Sphere_Field(FieldSource):
     # a sphere on which a potential is applied
     def __init__(self, name, CoordinatesCenter, Radius, Potential):
-        Electrode.__init__(self, name)
+        FieldSource.__init__(self, name)
         self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of a sphere
         self.Radius = Radius                            # radius of the sphere
         self.Potential = Potential                      # potential on the surface of the sphere
