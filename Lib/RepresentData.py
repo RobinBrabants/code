@@ -10,6 +10,7 @@ from numpy import sqrt
 import math
 from scipy.integrate import quad
 import warnings
+from sympy import sin, cos
 
 
 def Plotfield(Field, FieldType, d):
@@ -65,6 +66,7 @@ def Plotfield(Field, FieldType, d):
 
                 if dx == "Phi2":
                     for index, w in np.ndenumerate(integrand):
+                        from sympy import sin, cos
                         sum_integrals[index] += quad(lambda Phi2: eval(str(w)), eval(a), eval(b))[0]
                 if dx == "t":
                     for index, w in np.ndenumerate(integrand):
@@ -96,4 +98,63 @@ def Plotfield(Field, FieldType, d):
 
     plt.ion()
     plt.show()
+
+
+def PlotTrajectorys(particles):
+    # funtion which plots all the trajectorys of the particles in a single figure
+
+    print("Plotting all of the trajectorys in 1 figure...\r\n")
+
+    warnings.filterwarnings("ignore")
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+
+    for particle in particles:
+
+        x = particle.Trajectory["x"]
+        y = particle.Trajectory["y"]
+        z = particle.Trajectory["z"]
+        t = particle.Trajectory["t"]
+
+        xs = np.array(x)
+        ys = np.array(y)
+        zs = np.array(z)
+        ts = np.array(t)
+
+        ax.plot(x, y, z, label="%s (%s)" % (particle.name, particle.Type))
+        # ax.scatter maybe also good
+
+        len_t = len(t) - 1
+        ind_pos = []
+
+        for i in range(0, 11):
+            ind_pos.append(0 + i * (int(len_t / 10)))  # time labels
+
+        xx = (xs[ind_pos])
+        yy = (ys[ind_pos])
+        zz = (zs[ind_pos])
+        tt = (ts[ind_pos])
+
+        for t, x, y, z in zip(tt, xx, yy, zz):
+            label = '%s' % round(t,4)
+            ax.text(x, y, z, label)
+            ax.scatter(x, y, z, c="red")
+
+        if "collision" in particle.Trajectory:
+            electrode = particle.Trajectory["collision"]
+            fig.suptitle('trajectory of ' + particle.name + ' (' + particle.Type + '), Particle collided with: ' + str(
+                electrode.name) + '\r\n\r\n', fontsize=14, fontweight='bold')
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    ax.legend()
+
+    fig.suptitle('trajectory of all particles', fontsize=14, fontweight='bold')
+
+    ax.set_title('time in seconds', style='italic', fontsize=8, bbox={'facecolor': 'red', 'alpha': 0.2, 'pad': 7})
+
+    plt.show(block=False)
 

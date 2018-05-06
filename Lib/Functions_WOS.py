@@ -9,17 +9,11 @@ from sympy.vector import CoordSys3D, Vector
 import math
 
 
-def potential_WOS(electrodes_WOS, Coordinates):
+def potential_WOS(electrodes_WOS, Coordinates, d):
     # see the documentation on how the Walk On Spheres method works (Walk On Spheres)
 
-    max_dist = 10 ** 4  # can be chosen accordingly to the dimensions of the electrode setup
-    # If the calculated minimal distance to an electrode exceeds max_dist, it results in choosing a potential equal to V_inf for that iteration
-    # Because the chance of reaching an electrode surface then will be too small
+
     V_inf = 0               # potential on infinity
-    max_iter = 400          # if the number of iterations for reaching an electrode surface becomes bigger than max_iter, this step in the numerical method will be skipped
-    space = 10 ** (-2)      # can be chosen accordingly to the dimensions of the electrode setup
-    # maximum distance of the point from a certain iteration to the surface of an electrode for which the potential of this surface will be taken for that iteration
-    iterations = 2000        # number of times the WOS method should be executed before assigning a potential to a point
 
     # starting values:
     Potential = 0
@@ -27,11 +21,11 @@ def potential_WOS(electrodes_WOS, Coordinates):
     values = 0          # keeps track on how many times the WOS method was successfully executed to calculate the average potential in a later stage
 
 
-    while iteration < iterations:
+    while iteration < d["Iterations"]:
         iter = 0
         Point = Coordinates[:]
 
-        while iter < max_iter:
+        while iter < d["MaximumIterations"]:
 
             distances = []
 
@@ -40,15 +34,15 @@ def potential_WOS(electrodes_WOS, Coordinates):
 
             index, distance = min(enumerate(distances), key=itemgetter(1))
 
-            if distance >= max_dist:
-                # if the minimal distance to an electrode surface exceeds max_dist, an infinity potential will be chosen for that iteration:
+            if distance >= d["MaximumDistance"]:
+                # if the minimal distance to an electrode surface exceeds d["MaximumDistance"], an infinity potential will be chosen for that iteration:
                 Potential += V_inf
 
                 values += 1
 
                 break
 
-            elif distance <= space:
+            elif distance <= d["Gap"]:
                 Potential += electrodes_WOS[index].Potential
 
                 values += 1
@@ -72,7 +66,7 @@ def potential_WOS(electrodes_WOS, Coordinates):
 
             iter += 1
 
-        print('%f %%  completed' % (100*(iteration / iterations)), end='\r')
+        print('%f %%  completed' % (100*(iteration / d["Iterations"])), end='\r')
 
         iteration += 1
 
@@ -84,34 +78,25 @@ def potential_WOS(electrodes_WOS, Coordinates):
     return Potential
 
 
-def ElectricalField_WOS(electrodes_WOS, Coordinates):
+def ElectricalField_WOS(electrodes_WOS, Coordinates, d):
     # see the documentation on how the Walk On Spheres method works (Walk On Spheres)
 
     L = CoordSys3D('L')
-    pi = math.pi
 
-    max_dist = 10 ** 4  # can be chosen accordingly to the dimensions of the electrode setup
-    # If the calculated minimal distance to an electrode exceeds max_dist, it results in choosing an electrical field vector equal to E_inf for that iteration
-    # Because the chance of reaching an electrode surface then will be too small
-    E_inf = Vector.zero     # electrical field on infinity
-    max_iter = 400          # if the number of iterations for reaching an electrode surface becomes bigger than max_iter, this step in the numerical method will be skipped
-    space = 10 ** (-2)      # can be chosen accordingly to the dimensions of the electrode setup
-    # maximum distance of the point from a certain iteration to the surface of an electrode for which the potential of this surface will be taken for that iteration
-    iterations = 200        # number of times the WOS method should be executed before assigning a potential to a point
+    E_inf = Vector.zero             # electrical field on infinity
 
     # starting values:
     ElectricalField = Vector.zero
     iteration = 0
-    values = 0  # keeps track on how many times the WOS method was successfully executed to calculate the average potential in a later stage
-
+    values = 0                      # keeps track on how many times the WOS method was successfully executed to calculate the average electrical field in a later stage
     Point_Circle = [0, 0, 0]
 
-    while iteration < iterations:
+    while iteration < d["Iterations"]:
         iter = 0
         Point = Coordinates[:]
 
 
-        while iter < max_iter:
+        while iter < d["MaximumIterations"]:
 
             distances = []
 
@@ -120,15 +105,15 @@ def ElectricalField_WOS(electrodes_WOS, Coordinates):
 
             index, distance = min(enumerate(distances), key=itemgetter(1))
 
-            if distance >= max_dist:
-                # if the minimal distance to an electrode surface exceeds max_dist, an infinity electrical field vector will be chosen for that iteration:
+            if distance >= d["MaximumDistance"]:
+                # if the minimal distance to an electrode surface exceeds d["MaximumDistance"], an infinity electrical field vector will be chosen for that iteration:
                 ElectricalField += E_inf
 
                 values += 1
 
                 break
 
-            elif distance <= space:
+            elif distance <= d["Gap"]:
                 Potential = electrodes_WOS[index].Potential
 
 
@@ -137,9 +122,10 @@ def ElectricalField_WOS(electrodes_WOS, Coordinates):
 
                 # Point_Cirlce or Point itself dunno
 
-                er = r1.normalize()
+                er = r2.normalize()
 
-                ElectricalField += (3/(r1.magnitude()))*Potential*er
+                #ElectricalField += (3/(r2.magnitude()))*Potential*er
+                ElectricalField += (3/(r1.magnitude()))*Potential * er
 
                 values += 1
 
@@ -169,13 +155,13 @@ def ElectricalField_WOS(electrodes_WOS, Coordinates):
 
 
 
-        print('%f %%  completed' % (100*(iteration / iterations)), end='\r')
+        #print('%f %%  completed' % (100*(iteration / d["Iterations"])), end='\r')
 
         iteration += 1
 
     # Take the average
     ElectricalField = ElectricalField / values
 
-    print("\r\n")
+    #print("\r\n")
 
     return ElectricalField

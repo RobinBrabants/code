@@ -3,13 +3,13 @@
 	<Data>
 		<Elements>
 
-			<StraightConductor number="1" status="enabled">
+			<StraightConductor number="1" status="nabled">
 				<CoordinatesPoint1>[1,1,-5]</CoordinatesPoint1>
 				<CoordinatesPoint2>[1,1,5]</CoordinatesPoint2>
 				<Current>5</Current>				<!-- conventional current goes standardly from point 1 to 2, to reverse make the Current negative -->
 				<Radius>4</Radius>
 			</StraightConductor>
-			<StraightConductor number="2" status="enabled">
+			<StraightConductor number="2" status="nabled">
 				<CoordinatesPoint1>[5,5,0]</CoordinatesPoint1>
 				<CoordinatesPoint2>[5,5,10]</CoordinatesPoint2>
 				<Current>2</Current>
@@ -22,7 +22,7 @@
 				<Points>[[10,10,10], [-10,-10,10], [-10,-10,-20]]</Points>	<!-- starting and end points of the seperate straight line conductors, these points will all be connected by straight conductors to form a collection of straight conductors -->
 			</StraightConductorCollection>
 
-			<RectangularCoil number="1" status="enabled">
+			<RectangularCoil number="1" status="nabled">
 				<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
 				<Radius>0.5</Radius>				<!-- radius of the straightconductors (represented as a cylinders) -->
 				<Phi>0</Phi>						<!-- these are the three Euler Angles to define the orientation of the coil (in degrees) (see documentation)-->
@@ -36,117 +36,44 @@
 				<ClockWise>"False"</ClockWise>		<!-- whether the windings of the coil should start clockwise (argument = "True" -> clockwise, argument = "False" -> anti-clockwise) -->
 			</RectangularCoil>
 
-			<CircularConductor number="1" status="disabled">
-				<CoordinatesCentre>
-					<x>0</x>
-					<y>0</y>
-					<z>0</z>
-				</CoordinatesCentre>
-				<Radius>7</Radius>
-				<Orientation>
-					<Phi>0</Phi>
-					<Theta>0</Theta>
-				</Orientation>
-				<Current>1</Current>
-			</CircularConductor>
-			<CircularConductor number="2" status="disabled">
-				<CoordinatesCentre>
-					<x>0</x>
-					<y>0</y>
-					<z>0</z>
-				</CoordinatesCentre>
-				<Radius>1</Radius>
-				<Orientation>
-					<Phi>0</Phi>
-					<Theta>0</Theta>
-				</Orientation>
-				<Current>0</Current>
-			</CircularConductor>
-
-			<BentConductor number="1" status="disabled">
-				<CoordinatesCentre>
-					<x>0</x>
-					<y>0</y>
-					<z>0</z>
-				</CoordinatesCentre>
-				<Radius>7</Radius>
-				<Orientation>
-					<Phi>0</Phi>
-					<Theta>0</Theta>
-				</Orientation>
-				<Interval>
-					<from>0</from>				<!-- hoek begint te tellen van een loodrechte vector op de richtingsvector evenwijdig met het xy-vlak (kloksgewijs) -->
-					<to>180</to>
-				</Interval>
-				<Current>1</Current>
-			</BentConductor>
-			<BentConductor number="2" status="disabled">
-				<CoordinatesCentre>
-					<x>0</x>
-					<y>0</y>
-					<z>0</z>
-				</CoordinatesCentre>
-				<Radius>7</Radius>
-				<Orientation>
-					<Phi>0</Phi>
-					<Theta>0</Theta>
-				</Orientation>
-				<Interval>
-					<from>0</from>
-					<to>180</to>
-				</Interval>
-				<Current>0</Current>
+			<BentConductor number="1" status="nabled">
+				<CoordinatesCenter>[0,0,0]</CoordinatesCenter>
+				<CurvatureRadius>12</CurvatureRadius>
+				<Theta>0</Theta>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the normal circle vector on the xy-plane (0-180 degree) -->
+				<Phi>90</Phi>									<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the normal circle vector (0-180 degree) -->
+				<Interval>[0, 90]</Interval>					<!-- angle starts counting from a perpendicular vector on the normal circle vector parallel to the xy-plane -->
+				<Current>5</Current>							<!-- The current in the conductor flows as if the normal circle vector were its rotation vector, to reverse make the Current negative -->
+				<Radius>2</Radius>
 			</BentConductor>
 
-			<CircularCoil number="1" status="nabled">
-				<Heigth>4</Heigth>
-				<Windings>3</Windings>
-				<CoordinatesCentre>
-					<x>0</x>
-					<y>0</y>
-					<z>-5</z>
-				</CoordinatesCentre>
-				<Radius>5</Radius>
-				<Phi>0</Phi>
-				<Theta>0</Theta>
-				<begin>20</begin>
-				<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
+			<CircularConductor number="1" status="nabled">
+				<CoordinatesCenter>[0,0,0]</CoordinatesCenter>
+				<CurvatureRadius>12</CurvatureRadius>
+				<Theta>45</Theta>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the normal circle vector on the xy-plane (0-180 degree) -->
+				<Phi>45</Phi>									<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the normal circle vector (0-180 degree) -->
+				<Current>20</Current>							<!-- The current in the conductor flows as if the normal circle vector were its rotation vector, to reverse make the Current negative -->
+				<Radius>2</Radius>
+			</CircularConductor>
+
+			<CircularCoil number="1" status="enabled">
+				<CoordinatesCenter>[0,0,0]</CoordinatesCenter>		<!-- coordinates of the center of the bottom of the coil -->
+				<CurvatureRadius>12</CurvatureRadius>				<!-- radius of curvature of the coil itself, not its windings -->
+				<Theta>0</Theta>									<!-- measured from the x-axis in anti-clockwise direction until the projection of the coil orientation vector on the xy-plane (0-180 degree) -->
+				<Phi>90</Phi>										<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the coil orientation vector (0-180 degree) -->
+				<Heigth>5</Heigth>									<!-- heigth of the coil -->
+				<Windings>4</Windings>								<!-- number of windings (is counted in halves of windings, e.g. 21.5 windings would be a valid argument) -->
+				<BeginAngle>20</BeginAngle>							<!-- angle starts counting from a perpendicular vector on the normal circle vector parallel to the xy-plane, this is for the first winding -->
+				<Current>1</Current>								<!-- current -->
+				<Radius>0.5</Radius>								<!-- radius, thickness of the bent conductors -->
 			</CircularCoil>
-			<CircularCoil number="2" status="disabled">
-				<Heigth>4</Heigth>
-				<Windings>1</Windings>
-				<CoordinatesCentre>
-					<x>0</x>
-					<y>0</y>
-					<z>0</z>
-				</CoordinatesCentre>
-				<Radius>4</Radius>
-				<Phi>45</Phi>
-				<Theta>45</Theta>
-				<begin>20</begin>
-				<Current>1</Current>				<!-- current goes standardly from point 1 to 2, to reverse make I negative -->
-			</CircularCoil>
+
 
 			<Sphere_Field number="1" status="nabled">
 				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
 				<Radius>5</Radius>
-				<Potential>5</Potential>
+				<Potential>40</Potential>
             </Sphere_Field>
-            <Sphere_Field number="2" status="nabled">
-				<CoordinatesCenter>[10, 0, 0]</CoordinatesCenter>
-				<Radius>3</Radius>
-				<Potential>7</Potential>
-            </Sphere_Field>
-            <Sphere_Field number="3" status="nabled">
-				<CoordinatesCenter>[-10, 0, 0]</CoordinatesCenter>
-				<Radius>3</Radius>
-				<Potential>7</Potential>
-            </Sphere_Field>
-            <Sphere_Field number="4" status="nabled">
-				<CoordinatesCenter>[1, 1, 15]</CoordinatesCenter>
-				<Radius>3</Radius>
-				<Potential>10</Potential>
-			</Sphere_Field>
+
 
 		</Elements>
 		<Elements_WOS>
@@ -154,7 +81,7 @@
 			<Sphere number="1" status="nabled">
 				<CoordinatesCenter>[0, 0, 0]</CoordinatesCenter>
 				<Radius>5</Radius>
-				<Potential>5</Potential>
+				<Potential>40</Potential>
 			</Sphere>
 			<Sphere number="2" status="nabled">
 				<CoordinatesCenter>[10, 0, 0]</CoordinatesCenter>
@@ -284,26 +211,14 @@
 			<Mass>9.10938356*(10**(-31))</Mass>  		<!-- in kilograms -->
 			<Charge>-1.6021766208*(10**(-19))</Charge>	<!-- in coulombs -->
 			<Velocity>100</Velocity>					<!-- starting velocity of the particle in m/s -->
-			<Phi1>45</Phi1>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the velocity vector on the xy-plane (0-360 degree) -->
-			<Theta1>45</Theta1>							<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the velocity vector (0-360 degree) -->
+			<Theta1>50</Theta1>							<!-- measured from the x-axis in anti-clockwise direction until the projection of the velocity vector on the xy-plane (0-360 degree) -->
+			<Phi1>50</Phi1>								<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the velocity vector (0-360 degree) -->
 			<Acceleration>0</Acceleration>				<!-- acceleration of the particle which is the result of an external force and will all the time be added to the acceleration caused by the electric and magnetic fields (in m/s²) -->
-			<Phi2>20</Phi2>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the acceleration vector on the xy-plane (0-360 degree) -->
-			<Theta2>20</Theta2>							<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the acceleration vector (0-360 degree) -->
-			<Position>[0, 0, 2]</Position>				<!-- starting position particle -->
+			<Theta2>20</Theta2>							<!-- measured from the x-axis in anti-clockwise direction until the projection of the acceleration vector on the xy-plane (0-360 degree) -->
+			<Phi2>20</Phi2>								<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the acceleration vector (0-360 degree) -->
+			<Position>[0, 0, 10]</Position>				<!-- starting position particle -->
 		</Particle>
 
-		<Particle number="2" status="enabled">>
-			<Type>"proton"</Type>						<!-- here the type of the particle needs to be specified (will be set as the name of the particle), if the name corresponds to a name in the particledictionary (currently holding electron and proton) the mass and charge will automatically be assigned and does not need to be specified -->
-			<Mass>9.10938356*(10**(-31))</Mass>  		<!-- in kilograms -->
-			<Charge>-1.6021766208*(10**(-19))</Charge>	<!-- in coulombs -->
-			<Velocity>100</Velocity>					<!-- starting velocity of the particle in m/s -->
-			<Phi1>45</Phi1>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the velocity vector on the xy-plane (0-360 degree) -->
-			<Theta1>45</Theta1>							<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the velocity vector (0-360 degree) -->
-			<Acceleration>0</Acceleration>				<!-- acceleration of the particle which is the result of an external force and will all the time be added to the acceleration caused by the electric and magnetic fields (in m/s²) -->
-			<Phi2>20</Phi2>								<!-- measured from the x-axis in anti-clockwise direction until the projection of the acceleration vector on the xy-plane (0-360 degree) -->
-			<Theta2>20</Theta2>							<!-- measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the acceleration vector (0-360 degree) -->
-			<Position>[4, 4, -2]</Position>				<!-- starting position particle -->
-		</Particle>
 
 		<Setup>
 
@@ -317,18 +232,24 @@
 					<zmax>20</zmax>
 				</TrajectoryBoundaries>
 				<TimeSteps>0.005</TimeSteps>			<!-- determines the time steps used in Particle::ParticleMove -->
-				<TimeLimit>0.05</TimeLimit>				<!-- determines the maximum execute time of Particle::ParticleMove -->
+				<TimeLimit>1</TimeLimit>				<!-- determines the maximum execute time of Particle::ParticleMove -->
 				<Interval>0.05</Interval>				<!-- used in Object_3D::IsPointInObject which is used in Particle::ParticleMove -->
 			</Trajectory>
 
 			<WOS>					<!-- Walk on spheres setup variables -->
-
+				<MaximumDistance>10**4</MaximumDistance>		<!-- Can be chosen accordingly to the dimensions of the electrode setup.
+				 If the calculated minimal distance to an electrode exceeds MaximumDistance, it results in choosing an electrical field vector equal to E_inf for that iteration.
+    			 Because the chance of reaching an electrode surface then will be too small. -->
+				<MaximumIterations>400</MaximumIterations>		<!-- If the number of iterations for reaching an electrode surface becomes bigger than MaximumIterations, this step in the numerical method will be skipped. -->
+				<Gap>10**(-2)</Gap>								<!-- Can be chosen accordingly to the dimensions of the electrode setup.
+				Maximum distance of the point from a certain iteration to the surface of an electrode for which the potential of this surface will be taken for that iteration. -->
+				<Iterations>100</Iterations>					<!-- Number of times the WOS method should be executed before assigning a potential to a point. -->
 			</WOS>
 
 			<Output>
 
 				<WriteSetupToFile execute="yes">Setup.txt</WriteSetupToFile>		<!-- if execute = "yes" the file will be written with the name specified -->
-				<WriteDataToFile execute="yes">Data</WriteDataToFile>			<!-- if execute = "yes" the file will be written with the name specified -->
+				<WriteDataToFile execute="yes">Data</WriteDataToFile>				<!-- if execute = "yes" the file will be written with the name specified -->
 
 				<TrajectoryPlot execute="yes"></TrajectoryPlot>						<!-- if execute = "yes" the trajectory of the particle will be plotted -->
 

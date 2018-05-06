@@ -2,9 +2,7 @@ This is the enabled setup in the xml file:
 
 electrodes:
 
-name: StraightConductor1, CoordinatesPoint1: [1, 1, -5], CoordinatesPoint2: [1, 1, 5], Current: 5, Radius: 4
-name: StraightConductor2, CoordinatesPoint1: [5, 5, 0], CoordinatesPoint2: [5, 5, 10], Current: 2, Radius: 2
-name: RectangularCoil1, Current: 1, Radius: 0.5, Phi: 0, Theta: 0, Psi: 0, Length: 5, Width: 5, Heigth: 20, StartingPoint: [-2.5, -2.5, -10], Windings: 1, ClockWise: False
+name: CircularCoil1, CoordinatesCenter: [0, 0, 0], CurvatureRadius: 12, Theta: 0, Phi: 90, Heigth: 5, Windings: 4, BeginAngle: 20, Current: 1, Radius: 0.5
 
 
 electrodes_WOS:
@@ -13,4 +11,4 @@ electrodes_WOS:
 
 particle:
 
-name: Particle1, Type: proton, Mass: 1.672621898e-27, Charge: 1.6021766207999999e-19, Velocity: 100, Theta1: 45, Phi1: 45, Acceleration: 0, Theta2: 20, Phi2: 20, Position: [0, 0, 2]
+name: Particle1, Type: proton, Mass: 1.672621898e-27, Charge: 1.6021766207999999e-19, Velocity: 100, Theta1: 50, Phi1: 50, Acceleration: 0, Theta2: 20, Phi2: 20, Position: [0, 0, 10]

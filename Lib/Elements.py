@@ -226,6 +226,204 @@ class RectangularCoil(FieldSource):
         return 'magnetic'
 
 
+class BentConductor(FieldSource):
+    # a bent conductor
+    def __init__(self, name, CoordinatesCenter, CurvatureRadius, Theta, Phi, Interval, Current, Radius):
+        FieldSource.__init__(self, name)
+        self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of the bent conductor
+        self.CurvatureRadius = CurvatureRadius          # radius of curvature
+        self.Theta = Theta                              # measured from the x-axis in anti-clockwise direction until the projection of the normal circle vector on the xy-plane (0-360 degree)
+        self.Phi = Phi                                  # measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the normal circle vector (0-360 degree)
+        self.Interval = Interval                        # angle starts counting from a perpendicular vector on the normal circle vector parallel to the xy-plane
+        self.Current = Current                          # current
+        self.Radius = Radius                            # radius, thickness of the bent conductor
+
+        # The current in the conductor flows as if the normal circle vector were its rotation vector, to reverse make the Current negative
+
+    def GetField(self):
+        # see the documentation on how the field is calculated (Magnetisch veld cirkelvormige geleider)
+
+        pi = math.pi
+        mu = 4 * pi * 10 ** (-7)
+
+        M = self.CoordinatesCenter
+        R = self.CurvatureRadius
+
+        x1 = M[0]
+        y1 = M[1]
+        z1 = M[2]
+
+        Theta = pi/2 - math.radians(self.Phi)
+        Phi = math.radians(self.Theta)
+
+        L = CoordSys3D('L')
+
+        x, y, z, Phi2 = sy.symbols('x y z Phi2')
+
+        dl = R * (sy.sin(Phi2) * sy.sin(Phi) + sy.cos(Phi2) * sy.cos(Theta) * sy.cos(Phi)) * L.i + R * (-sy.sin(Phi2) * sy.cos(Phi) + sy.cos(Phi2) * sy.cos(Theta) * sy.sin(Phi)) * L.j + R * (-sy.cos(Phi2) * sy.sin(Theta)) * L.k
+
+        r = (x - x1 + R * sy.cos(Phi2) * sy.sin(Phi) - R * sy.sin(Phi2) * sy.cos(Theta) * sy.cos(Phi)) * L.i + (y - y1 - R * sy.cos(Phi2) * sy.cos(Phi) - R * sy.sin(Phi2) * sy.cos(Theta) * sy.sin(Phi)) * L.j + (z - z1 + R * sy.sin(Phi2) * sy.sin(Theta)) * L.k
+
+        b = ((mu * self.Current) / (4 * pi)) * ((dl.cross(r)) / (r.magnitude() ** 3))
+
+        B = sy.integrate(-b, (Phi2, math.radians(self.Interval[0]), math.radians(self.Interval[1])))
+
+        return B
+
+    def IsPointInObject(self, point, interval):
+        return 0
+
+    def FieldType(self):
+        return 'magnetic'
+
+
+class CircularConductor(FieldSource):
+    # a circular conductor
+    def __init__(self, name, CoordinatesCenter, CurvatureRadius, Theta, Phi, Current, Radius):
+        FieldSource.__init__(self, name)
+        self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of the bent conductor
+        self.CurvatureRadius = CurvatureRadius          # radius of curvature
+        self.Theta = Theta                              # measured from the x-axis in anti-clockwise direction until the projection of the normal circle vector on the xy-plane (0-360 degree)
+        self.Phi = Phi                                  # measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the normal circle vector (0-360 degree)
+        self.Current = Current                          # current
+        self.Radius = Radius                            # radius, thickness of the bent conductor
+
+        # The current in the conductor flows as if the normal circle vector were its rotation vector, to reverse make the Current negative
+
+    def GetField(self):
+        # see the documentation on how the field is calculated (Magnetisch veld cirkelvormige geleider)
+
+        circle = BentConductor("name", self.CoordinatesCenter, self.CurvatureRadius, self.Theta, self.Phi, [0, 360], self.Current, self.Radius)
+
+        return circle.GetField()
+
+    def IsPointInObject(self, point, interval):
+        return 0
+
+    def FieldType(self):
+        return 'magnetic'
+
+
+class CircularCoil(FieldSource):
+    # a circular conductor
+    def __init__(self, name, CoordinatesCenter, CurvatureRadius, Theta, Phi, Heigth, Windings, BeginAngle, Current, Radius):
+        FieldSource.__init__(self, name)
+        self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of the bottom of the coil
+        self.CurvatureRadius = CurvatureRadius          # radius of curvature of the coil itself, not its windings
+        self.Theta = Theta                              # measured from the x-axis in anti-clockwise direction until the projection of the coil orientation vector on the xy-plane (0-180 degree)
+        self.Phi = Phi                                  # measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the coil orientation vector (0-180 degree)
+        self.Heigth = Heigth                            # heigth of the coil
+        self.Windings = Windings                        # number of windings (is counted in halves of windings, e.g. 21.5 windings would be a valid argument)
+        self.BeginAngle = BeginAngle                    # angle starts counting from a perpendicular vector on the normal circle vector parallel to the xy-plane, this is for the first winding
+        self.Current = Current                          # current
+        self.Radius = Radius                            # radius, thickness of the bent conductors
+
+        # Conventional current direction goes from point 1 to point 2, unless otherwise specified (see example xml-file)
+
+    def GetField(self):
+        # see the documentation on how the field is calculated (Magnetisch veld cirkelvormige geleider)
+
+        from Lib.Functions import UpdateDictionary, ConvertAnglesToVector, ConvertVectorToAngles
+        from sympy import solve_poly_system
+
+        Theta = math.radians(self.Theta)
+        Phi = math.radians(self.Phi)
+        M = self.CoordinatesCenter
+
+        pi = math.pi
+        mu = 4 * pi * 10 ** (-7)
+
+        h = 0.25 * (self.Heigth / self.Windings)
+
+        L = CoordSys3D('L')
+
+        n = ConvertAnglesToVector(Theta, Phi)
+
+        M = M[0] * L.i + M[1] * L.j + M[2] * L.k
+        M = M + h * n
+
+        Mcomponents = M.components
+        UpdateDictionary(Mcomponents)
+
+        M = [Mcomponents[L.i], Mcomponents[L.j], Mcomponents[L.k]]
+
+        ncomponents = n.components
+        UpdateDictionary(ncomponents)
+
+        nx = ncomponents[L.i]
+        ny = ncomponents[L.j]
+        nz = ncomponents[L.k]
+
+        kx, ky = sy.symbols('kx ky')
+
+        if nx != 0 and ny != 0:
+            k = solve_poly_system([kx * nx + ky * ny, kx ** 2 + ky ** 2 - 1], kx, ky)
+            kx = k[0][0]
+            ky = k[0][1]
+        else:
+            kx = 0
+            ky = 1
+
+        tan_alpha = h / self.CurvatureRadius
+
+        dnx, dny, dnz = sy.symbols('dnx, dny, dnz')
+
+        dn = solve_poly_system([nx * dnx + ny * dny + nz * dnz, dnx ** 2 + dny ** 2 + dnz ** 2 - tan_alpha ** 2,(kx / tan_alpha) * dnx + (ky / tan_alpha) * dny - math.cos(self.BeginAngle)], dnx, dny, dnz)
+
+        if len(dn) >= 2:
+            dnx = dn[1][0]
+            dny = dn[1][1]
+            dnz = dn[1][2]
+        else:
+            dnx = dn[0][0]
+            dny = dn[0][1]
+            dnz = dn[0][2]
+
+        dn = dnx * L.i + dny * L.j + dnz * L.k
+
+        r = n + dn
+
+        r = r.normalize()
+
+        Phi, Theta = ConvertVectorToAngles(r)
+
+        alpha = math.atan(tan_alpha)
+
+        R = self.CurvatureRadius / math.cos(alpha)
+
+        B = Vector.zero
+        windings = 0
+
+        begin = self.BeginAngle
+
+        while windings < self.Windings:
+            bentconductor = BentConductor("name", M, R, Theta, Phi, [begin, begin + 180], self.Current, self.Radius)
+            B += bentconductor.GetField()
+
+            M = M[0] * L.i + M[1] * L.j + M[2] * L.k
+            M = M + 2 * h * n
+            Mcomponents = M.components
+            UpdateDictionary(Mcomponents)
+            M = [Mcomponents[L.i], Mcomponents[L.j], Mcomponents[L.k]]
+
+            dn = -dn
+            r = n + dn
+            r = r.normalize()
+            Theta, Phi = ConvertVectorToAngles(r)
+
+            begin = begin + 180
+
+            windings += 0.5
+
+        return B
+
+    def IsPointInObject(self, point, interval):
+        return 0
+
+    def FieldType(self):
+        return 'magnetic'
+
+
 
 #######################################################################################################################
 #  electric field producing elements (potential on the surface is used):

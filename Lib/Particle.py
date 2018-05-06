@@ -43,7 +43,7 @@ class Particle():
         Coordinates = self.Position
         Speed = GetVector(self.Velocity, self.Theta1,  self.Phi1)
         Acceleration_constant = GetVector(self.Acceleration, self.Theta2, self.Phi2)
-        E, B = GetFields(Coordinates, Speed, B_analytic, E_analytic, electrodes_WOS)                    # Step 1, 2
+        E, B = GetFields(Coordinates, Speed, B_analytic, E_analytic, electrodes_WOS, d)                    # Step 1, 2
         Acceleration = (self.Charge / self.Mass) * ((Speed.cross(B)) + E) + Acceleration_constant       # Step 3
         time = 0
 
@@ -94,7 +94,7 @@ class Particle():
             Speed_testpoint = (vComponents[L.i] + aComponents[L.i] * d["timesteps"]) * L.i + (vComponents[L.j] + aComponents[L.j] * d["timesteps"]) * L.j + (vComponents[L.k] + aComponents[L.k] * d["timesteps"]) * L.k
             # best estimate for the speed at the testpoint available
 
-            E_testpoint, B_testpoint = GetFields(Coordinates_testpoint, Speed_testpoint, B_analytic, E_analytic, electrodes_WOS)
+            E_testpoint, B_testpoint = GetFields(Coordinates_testpoint, Speed_testpoint, B_analytic, E_analytic, electrodes_WOS, d)
             Acceleration_testpoint = (self.Charge / self.Mass) * ((Speed_testpoint.cross(B_testpoint)) + E_testpoint) + Acceleration_constant
 
             # Step 6
@@ -115,7 +115,7 @@ class Particle():
             Coordinates = [float(Coordinates[0] + vComponents_testpoint_average[L.i] * d["timesteps"]), float(Coordinates[1] + vComponents_testpoint_average[L.j] * d["timesteps"]), float(Coordinates[2] + vComponents_testpoint_average[L.k] * d["timesteps"])]
 
             # Step 10, 11
-            E, B = GetFields(Coordinates, Speed_testpoint, B_analytic, E_analytic, electrodes_WOS)
+            E, B = GetFields(Coordinates, Speed_testpoint, B_analytic, E_analytic, electrodes_WOS, d)
             # Speed_testpoint is a decent estimate for the speed at the next point
 
             # Step 12
@@ -222,7 +222,7 @@ class Particle():
         tt = (ts[ind_pos])
 
         for t, x, y, z in zip(tt, xx, yy, zz):
-            label = '%s' % t
+            label = '%s' % round(t,4)
             ax.text(x, y, z, label)
             ax.scatter(x, y, z, c="red")
 

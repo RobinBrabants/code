@@ -11,7 +11,7 @@ import sys
 from sympy.vector import CoordSys3D, Vector
 from Lib.Functions_WOS import ElectricalField_WOS
 
-import numpy as np
+from sympy import sin, cos
 
 
 def ConvertAnglesToVector(Theta, Phi):
@@ -84,6 +84,7 @@ def UpdateDictionary(Dict):
 
 def EvaluateAnalyticField(F, Coordinates):
     # Functions which evaluates an analytical field (Field, Coordinates)
+    from math import sin, cos
 
     x, y, z, Phi2, t = sy.symbols('x y z Phi2 t')
     L = CoordSys3D('L')
@@ -102,8 +103,7 @@ def EvaluateAnalyticField(F, Coordinates):
 
                 end1 = str(str(Fcomponents[basis])).find("Integral(")
 
-                integrand = str(Fcomponents[basis])[
-                            str(Fcomponents[basis]).find("Integral(") + 9:str(Fcomponents[basis]).find(", ")]
+                integrand = str(Fcomponents[basis])[str(Fcomponents[basis]).find("Integral(") + 9:str(Fcomponents[basis]).find(", ")]
                 integrand = sy.sympify(integrand)
                 integrand = integrand.subs([(x, Coordinates[0]), (y, Coordinates[1]), (z, Coordinates[2])])
 
@@ -190,14 +190,14 @@ def EvaluateAnalyticField(F, Coordinates):
     return Feval
 
 
-def GetFields(Coordinates, Speed, B_analytic, E_analytic, electrodes_WOS):
+def GetFields(Coordinates, Speed, B_analytic, E_analytic, electrodes_WOS, d):
     # evaluates and transforms the electric and magnetic fields to the reference frame of the particle (see documentation for more info: Beweging deeltje in magneetveld)
 
     B = EvaluateAnalyticField(B_analytic, Coordinates)
     E_analytic = EvaluateAnalyticField(E_analytic, Coordinates)
 
     if electrodes_WOS:
-        E_WOS = ElectricalField_WOS(electrodes_WOS, Coordinates)
+        E_WOS = ElectricalField_WOS(electrodes_WOS, Coordinates, d)
         E = E_analytic + E_WOS
     else:
         E = E_analytic
@@ -261,8 +261,22 @@ def GetSetup(root):
     d["timelimit"] = eval(Trajectory.find("TimeLimit").text)    # determines the maximum execute time of Particle::ParticleMove
     d["interval"] = eval(Trajectory.find("Interval").text)      # used in Object_3D::IsPointInObject which is used in Particle::ParticleMove
 
-    ######################################
-    # WOS
+
+    WOS = Setup.find("WOS")
+    d["MaximumDistance"] = eval(WOS.find("MaximumDistance").text)
+    # Can be chosen accordingly to the dimensions of the electrode setup.
+    # If the calculated minimal distance to an electrode exceeds MaximumDistance, it results in choosing an electrical field vector equal to E_inf for that iteration.
+    # Because the chance of reaching an electrode surface then will be too small.
+
+    d["MaximumIterations"] = eval(WOS.find("MaximumIterations").text)
+    # If the number of iterations for reaching an electrode surface becomes bigger than MaximumIterations, this step in the numerical method will be skipped.
+
+    d["Gap"] = eval(WOS.find("Gap").text)
+    # Can be chosen accordingly to the dimensions of the electrode setup.
+    # Maximum distance of the point from a certain iteration to the surface of an electrode for which the potential of this surface will be taken for that iteration.
+
+    d["Iterations"] = eval(WOS.find("Iterations").text)
+    # Number of times the WOS method should be executed before assigning a potential to a point.
 
     Output = Setup.find("Output")
     d["WriteSetupToFile"] = Output.find("WriteSetupToFile").attrib["execute"]  # if execute = "yes" the file will be written with the name specified
