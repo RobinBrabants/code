@@ -82,6 +82,21 @@ def UpdateDictionary(Dict):
         Dict.setdefault(L.k, 0)
 
 
+def ResultingField(electrodes):
+    # function which iterates over the objects initialised by the ReadXml function in order to get an analytic expression for the magnetic and electric vectorfield
+
+    B = Vector.zero
+    E = Vector.zero
+
+    for electrode in electrodes:
+        if electrode.FieldType() == "magnetic":
+            B += electrode.GetField()
+        elif electrode.FieldType() == "electric":
+            E += electrode.GetField()
+
+    return B, E
+
+
 def EvaluateAnalyticField(F, Coordinates):
     # Functions which evaluates an analytical field (Field, Coordinates)
     from math import sin, cos
@@ -92,6 +107,8 @@ def EvaluateAnalyticField(F, Coordinates):
     Fcomponents = F.components
     UpdateDictionary(Fcomponents)
 
+
+    str(F)
     for basis in [L.i, L.j, L.k]:
         # For loop which checks whether there are any integrals which need to be numerically evaluated
 
@@ -116,6 +133,8 @@ def EvaluateAnalyticField(F, Coordinates):
                 begin2 = info2.find("))")
 
                 if dx == "Phi2":
+                    #print(integrand)
+                    #print(quad(lambda Phi2: eval(str(integrand)), eval(a), eval(b))[0])
                     sum_integrals += quad(lambda Phi2: eval(str(integrand)), eval(a), eval(b))[0]
                 if dx == "t":
                     sum_integrals += sy.integrate(eval(str(integrand)), (t, eval(a), eval(b)))
@@ -134,58 +153,9 @@ def EvaluateAnalyticField(F, Coordinates):
     else:
         Feval = Vector.zero
 
-    """L = CoordSys3D('L')
-
-    Fieldcomponents = F.components
-    UpdateDictionary(Fieldcomponents)
+    #print(Feval)
 
     str(F)
-
-    x = Coordinates[0]
-    y = Coordinates[1]
-    z = Coordinates[2]
-
-    for basis in [L.i, L.j, L.k]:
-
-        sum_integrals = 0
-
-        if str(Fieldcomponents[basis]).find("Integral(") != -1:
-            while str(str(Fieldcomponents[basis])).find("Integral(") != -1:
-
-                end1 = str(str(Fieldcomponents[basis])).find("Integral(")
-
-                integrand = str(Fieldcomponents[basis])[
-                            str(Fieldcomponents[basis]).find("Integral(") + 9:str(Fieldcomponents[basis]).find(", ")]
-                integrand = sy.sympify(integrand)
-                integrand = eval(str(integrand))
-
-                info1 = str(Fieldcomponents[basis])[str(Fieldcomponents[basis]).find(",") + 1:]
-                dx = info1[info1.find("(") + 1:info1.find(",")]
-                info2 = info1[info1.find(",") + 2:]
-                a = info2[:info2.find(",")]
-                b = info2[info2.find(",") + 2:info2.find("))")]
-
-                begin2 = info2.find("))")
-
-                print("caculating...")
-
-                if dx == "Phi2":
-                    for index, w in np.ndenumerate(integrand):
-                        sum_integrals[index] += quad(lambda Phi2: eval(str(w)), eval(a), eval(b))[0]
-                if dx == "t":
-                    for index, w in np.ndenumerate(integrand):
-                        sum_integrals[index] += quad(lambda t: eval(str(w)), eval(a), eval(b))[0]
-
-                Fieldcomponents[basis] = str(Fieldcomponents[basis])[:end1] + info2[begin2 + 3:]
-
-            Fieldcomponents[basis] = eval(Fieldcomponents[basis] + "0")
-
-            Fieldcomponents[basis] = np.add(Fieldcomponents[basis], sum_integrals)
-
-        else:
-            Fieldcomponents[basis] = eval(str(Fieldcomponents[basis]))
-
-    Feval = Fieldcomponents[L.i]*L.i + Fieldcomponents[L.j]*L.j + Fieldcomponents[L.k]*L.k"""
 
     return Feval
 
@@ -205,7 +175,7 @@ def GetFields(Coordinates, Speed, B_analytic, E_analytic, electrodes_WOS, d):
 
     # relativistic correction:
     c = 299792458
-    gamma = 1 / (1 - Speed.magnitude() ** 2 / c ** 2)
+    gamma = 1 / sqrt(1 - Speed.magnitude() ** 2 / c ** 2)
 
     E_particle = gamma * (E + Speed.cross(B)) - (gamma - 1) * (E.dot(Speed.normalize())) * Speed.normalize()
     B_particle = gamma * (B - (Speed.cross(E)) / c ** 2) - (gamma - 1) * (B.dot(Speed.normalize())) * Speed.normalize()
@@ -366,8 +336,10 @@ def OutputSetup(electrodes, electrodes_WOS, particle, d):
 
         f.write("\r\n\r\nparticle:\r\n\r\n")
 
-        attributes = vars(particle[0])
-        f.write(', '.join("%s: %s" % item for item in attributes.items()))
+        for prtcl in particle:
+            attributes = vars(prtcl)
+            f.write(', '.join("%s: %s" % item for item in attributes.items()))
+            f.write("\r\n")
 
         f.close()
 
@@ -425,16 +397,4 @@ def ReadXml():
     return electrodes, electrodes_WOS, particle, d
 
 
-def ResultingField(electrodes):
-    # function which iterates over the objects initialised by the ReadXml function in order to get an analytic expression for the magnetic and electric vectorfield
 
-    B = Vector.zero
-    E = Vector.zero
-
-    for electrode in electrodes:
-        if electrode.FieldType() == "magnetic":
-            B += electrode.GetField()
-        elif electrode.FieldType() == "electric":
-            E += electrode.GetField()
-
-    return B, E

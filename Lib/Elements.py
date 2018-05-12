@@ -19,7 +19,7 @@ class FieldSource(object):
         pass                                    # 3D coordinate points x, y and z
 
     @abstractmethod
-    def IsPointInObject(self, point):           # see whether a point is inside an object
+    def IsPointInObject(self, point, interval):           # see whether a point is inside an object
         pass
 
     @abstractmethod
@@ -83,6 +83,7 @@ class StraightConductor(FieldSource):
         return B
 
     def IsPointInObject(self, point, interval):
+
         return 0
 
     def FieldType(self):
@@ -347,6 +348,12 @@ class CircularCoil(FieldSource):
 
         M = [Mcomponents[L.i], Mcomponents[L.j], Mcomponents[L.k]]
 
+        tan_alpha = h / self.CurvatureRadius
+
+        alpha = math.atan(tan_alpha)
+
+        R = self.CurvatureRadius / math.cos(alpha)
+
         ncomponents = n.components
         UpdateDictionary(ncomponents)
 
@@ -364,7 +371,7 @@ class CircularCoil(FieldSource):
             kx = 0
             ky = 1
 
-        tan_alpha = h / self.CurvatureRadius
+
 
         dnx, dny, dnz = sy.symbols('dnx, dny, dnz')
 
@@ -387,9 +394,7 @@ class CircularCoil(FieldSource):
 
         Phi, Theta = ConvertVectorToAngles(r)
 
-        alpha = math.atan(tan_alpha)
 
-        R = self.CurvatureRadius / math.cos(alpha)
 
         B = Vector.zero
         windings = 0

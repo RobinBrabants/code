@@ -152,7 +152,7 @@ class Particle():
 
         return Trajectory
 
-    def WriteToFile(self, E_analytic, B_analytic, Trajectory, d):
+    def WriteToFile(self, E_analytic, B_analytic, d):
         # function which writes all the data concerning the calculated trajectory to a csv file
 
         print("Writing data from the calculated trajectory of %s (%s) to %s_%s.csv ..." % (self.name, self.Type, d["FileName"],self.name))
@@ -170,7 +170,7 @@ class Particle():
         writer = csv.writer(f, delimiter=';')
 
         header = ["t", "x", "y", "z", "v", "a", "E", "B"]
-        rows = zip(*[Trajectory[col] for col in header])
+        rows = zip(*[self.Trajectory[col] for col in header])
 
         writer.writerow(header)
 
@@ -178,8 +178,8 @@ class Particle():
             writer.writerow(row)
 
 
-        if "collision" in Trajectory:
-            electrode = Trajectory["collision"]
+        if "collision" in self.Trajectory:
+            electrode = self.Trajectory["collision"]
             f.write("Particle collided with: %s\r\n\r\n" % str(electrode.name))         # says if there was a collision
 
 
@@ -187,7 +187,7 @@ class Particle():
 
         print("%s_%s.csv has been written\r\n" % (d["FileName"],self.name))
 
-    def PlotTrajectory(self, Trajectory):
+    def PlotTrajectory(self):
         # funtion which plots the trajectory of the particle
 
         print("Plotting the trajectory of %s (%s)...\r\n" % (self.name, self.Type))
@@ -197,10 +197,10 @@ class Particle():
         fig = plt.figure()
         ax = fig.gca(projection='3d')
 
-        x = Trajectory["x"]
-        y = Trajectory["y"]
-        z = Trajectory["z"]
-        t = Trajectory["t"]
+        x = self.Trajectory["x"]
+        y = self.Trajectory["y"]
+        z = self.Trajectory["z"]
+        t = self.Trajectory["t"]
 
         xs = np.array(x)
         ys = np.array(y)
@@ -231,8 +231,8 @@ class Particle():
         ax.set_zlabel('Z')
 
 
-        if "collision" in Trajectory:
-            electrode = Trajectory["collision"]
+        if "collision" in self.Trajectory:
+            electrode = self.Trajectory["collision"]
             fig.suptitle('trajectory of ' + self.name + ' (' + self.Type + '), Particle collided with: ' + str(electrode.name) + '\r\n\r\n', fontsize=14, fontweight='bold')
         else:
             fig.suptitle('trajectory of ' + self.name + ' (' + self.Type + ')', fontsize=14, fontweight='bold')

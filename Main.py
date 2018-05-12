@@ -6,8 +6,13 @@ from Lib.RepresentData import *
 from Lib.Functions import *
 import sys
 
+import time
+import multiprocessing as mp
 
-"""from Lib.Functions_WOS import *
+
+
+""""# TEST WOS:
+from Lib.Functions_WOS import *
 from sympy.vector import CoordSys3D
 import sympy as sy
 
@@ -29,7 +34,9 @@ print("WOS: " + str(E_WOS))
 
 E = E.components
 E_WOS = E_WOS.components
+print("WOS/analytical:")
 print(E_WOS[L.i]/E[L.i], E_WOS[L.j]/E[L.j], E_WOS[L.k]/E[L.k])"""
+
 
 
 electrodes, electrodes_WOS, particles, d = ReadXml()        # extract all the data from the xml file
@@ -50,16 +57,54 @@ print("calculating analytical fields...")
 B_analytic, E_analytic = ResultingField(electrodes)         # already calculates the analytical fields for those objects for which it is possible
 
 
-"""for particle in particles:
+
+
+
+
+
+for particle in particles:
+    B_analytic, E_analytic = ResultingField(electrodes)
+    str(B_analytic)
+    #print(B_analytic)
+    trajectory = particle.ParticleMove(B_analytic, E_analytic, electrodes, electrodes_WOS, d)               # calculate trajectory
+
+    if d["WriteDataToFile"] == "yes":
+        particle.WriteToFile(E_analytic, B_analytic, d)                                         # write data concerning the trajectory of the particle to a file if enabled in the xml-file
+    if d["TrajectoryPlot"] == "yes":
+        particle.PlotTrajectory()                                   # plot the trajectory if enabled in the xml-file
+
+
+
+
+
+"""# multiprocess test:
+def multiprocess(particle):
+    B_analytic, E_analytic = ResultingField(electrodes)
     trajectory = particle.ParticleMove(B_analytic, E_analytic, electrodes, electrodes_WOS, d)               # calculate trajectory
     if d["WriteDataToFile"] == "yes":
-        particle.WriteToFile(E_analytic, B_analytic, trajectory, d)                                         # write data concerning the trajectory of the particle to a file if enabled in the xml-file
-    if d["TrajectoryPlot"] == "yes":
-        particle.PlotTrajectory(trajectory)                                     # plot the trajectory if enabled in the xml-file
+        particle.WriteToFile(E_analytic, B_analytic, d)                                         # write data concerning the trajectory of the particle to a file if enabled in the xml-file
+    return particle
+
+pool = mp.Pool(processes=3)
+results = [pool.apply_async(multiprocess, args=(particle, )) for particle in particles]
+output = [p.get() for p in results]
+print(output)
+
 
 
 if len(particles) > 1:                  # if there are multiple particles, all of their trajectorys will also be plotted in a single figure
-    PlotTrajectorys(particles)"""
+    PlotTrajectorys(output)"""
+
+
+
+
+
+
+
+
+
+if len(particles) > 1:                  # if there are multiple particles, all of their trajectorys will also be plotted in a single figure
+    PlotTrajectorys(particles)
 
 
 if d["ElectricFieldPlot"] == "yes":                         # plot the electric field if enabled in the xml-file
@@ -79,17 +124,14 @@ input("Press Enter to end program and close all figures")
 
 
 """
+Github:
+# username: RobinBrabants
 https://www.howtoforge.com/tutorial/install-git-and-github-on-ubuntu-14.04/
 cd /home/robin/Documents/code
 git add *
 git commit -m "ee"
 git push origin master
 """
-# username: RobinBrabants
-
-# http://chris35wills.github.io/conda_python_version/
-
-# https://pythonhosted.org/PyInstaller/usage.html
 
 
 # packages:
@@ -102,33 +144,3 @@ apt-get install python3.6-tk
 
 # run as:
 # python3.6 Main.py DataFile.xml
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""from Lib.Objects_3D import *
-
-CoordinatesCenter = [0, 0, 0]
-Radius = 5
-Potential =4
-sphere = Sphere("test", CoordinatesCenter, Radius, Potential)
-point = [6.1, 0, 0]
-print(sphere.GetClosestDistanceToPoint(point))
-print(sphere.IsPointInObject(point,1))"""

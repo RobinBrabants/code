@@ -8,6 +8,7 @@
 # functions_WOS file.
 
 
+import math
 from math import sqrt
 from abc import abstractmethod
 from sympy.vector import CoordSys3D
@@ -74,9 +75,53 @@ class Sphere(Object_3D):
         return distance
 
 
+class CircularDisk(Object_3D):
+    # represents a 3D infinitely small circular disk
+    def __init__(self, name, CoordinatesCenter, Radius, Theta, Phi, Potential):
+        Object_3D.__init__(self, name)
+        self.CoordinatesCenter = CoordinatesCenter      # coordinates of the center of the disk
+        self.Radius = Radius                            # radius of the disk
+        self.Theta = Theta                              # measured from the x-axis in anti-clockwise direction until the projection of the normal circle vector on the xy-plane (0-360 degree)
+        self.Phi = Phi                                  # measured from the projection of the velocity vector on the xy-plane in anti-clockwise direction until the normal circle vector (0-360 degree)
+        self.Potential = Potential                      # potential on the surface of the disk
+
+
+    def DistanceToObject(self, point):
+        # see the documentation on how the distance is calculated (Afstand tot een cirkelschijf)
+        from Lib.Functions import ConvertAnglesToVector, UpdateDictionary
+
+        Phi = math.radians(self.Phi)
+        Theta = math.radians(self.Theta)
+        N = ConvertAnglesToVector(Theta, Phi)           #  normal circle vector
+
+        M = self.CoordinatesCenter
+        x_1 = M[0]
+        y_1 = M[1]
+        z_1 = M[2]
+
+        x = point[0]
+        y = point[1]
+        z = point[2]
+
+        L = CoordSys3D('L')
+
+        delta = (x - x_1) * L.i + (y - y_1) * L.j + (z - z_1) * L.k
+
+        P = (x) * L.i + (y) * L.j + (z) * L.k
+        C =  (x_1) * L.i + (y_1) * L.j + (z_1) * L.k
+        Q = delta - (N.dot(delta))*N + C
+        D = Q-C
+
+        if D.magnitude() <= self.Radius:
+            distance = (P - Q).magnitude()
+        else:
+            distance = sqrt((N.dot(delta)) ** 2 + (abs((N.cross(delta)).magnitude()) - self.Radius) ** 2)
+
+        return distance
+
 
 class Cylinder(Object_3D):
-    # represents a 3D cylinder
+    # represents a 3D cylinder closed at the bottom and top
     def __init__(self, name, CoordinatesPoint1, CoordinatesPoint2, Radius, Potential):
         Object_3D.__init__(self, name)
         self.CoordinatesPoint1 = CoordinatesPoint1      # starting point cylinder
@@ -88,23 +133,13 @@ class Cylinder(Object_3D):
     def DistanceToObject(self, point):
         from Lib.Functions import UpdateDictionary
 
-
-
-
-        # STILL WORKING ON THIS ONE
-
-
-
-
-
-        from math import sqrt
-
         P = self.CoordinatesPoint1
         Q = self.CoordinatesPoint2
 
         x_1 = P[0]
         y_1 = P[1]
         z_1 = P[2]
+
         x_2 = Q[0]
         y_2 = Q[1]
         z_2 = Q[2]
@@ -133,7 +168,7 @@ class Cylinder(Object_3D):
                 x_c = x_1 + t * (x_2 - x_1)
                 y_c = y_1 + t * (y_2 - y_1)
                 z_c = z_1 + t * (z_2 - z_1)
-                distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2) - self.Radius)
+                distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2)) - self.Radius
             elif z > (1 / c) * (a * x_2 + b * y_2 + c * z_2 - a * x - b * y):
                 delta = (x - x_2) * L.i + (y - y_2) * L.j + (z - z_2) * L.k
                 distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
@@ -149,7 +184,7 @@ class Cylinder(Object_3D):
                     x_c = x_1 + t * (x_2 - x_1)
                     y_c = y_1 + t * (y_2 - y_1)
                     z_c = z_1 + t * (z_2 - z_1)
-                    distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2) - self.Radius)
+                    distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2)) - self.Radius
                 elif y > (1 / b) * (a * x_2 + b * y_2 + c * z_2 - a * x - c * z):
                     delta = (x - x_2) * L.i + (y - y_2) * L.j + (z - z_2) * L.k
                     distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)
@@ -164,7 +199,7 @@ class Cylinder(Object_3D):
                     x_c = x_1 + t * (x_2 - x_1)
                     y_c = y_1 + t * (y_2 - y_1)
                     z_c = z_1 + t * (z_2 - z_1)
-                    distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2) - self.Radius)
+                    distance = abs(sqrt((x - x_c) ** 2 + (y - y_c) ** 2 + (z - z_c) ** 2)) - self.Radius
                 elif x > (1 / a) * (a * x_2 + b * y_2 + c * z_2 - b * y - c * z):
                     delta = (x - x_2) * L.i + (y - y_2) * L.j + (z - z_2) * L.k
                     distance = sqrt((e_v.dot(delta)) ** 2 + (abs((e_v.cross(delta)).magnitude()) - self.Radius) ** 2)

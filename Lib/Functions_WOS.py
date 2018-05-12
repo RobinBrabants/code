@@ -116,7 +116,7 @@ def ElectricalField_WOS(electrodes_WOS, Coordinates, d):
             elif distance <= d["Gap"]:
                 Potential = electrodes_WOS[index].Potential
 
-
+                # test WOS:
                 r1 = (Coordinates[0] - Point_Circle[0])*L.i + (Coordinates[1] - Point_Circle[1])*L.j + (Coordinates[2] - Point_Circle[2])*L.k
                 r2 = (Coordinates[0] - Point[0]) * L.i + (Coordinates[1] - Point[1]) * L.j + (Coordinates[2] - Point[2]) * L.k
 
@@ -124,8 +124,8 @@ def ElectricalField_WOS(electrodes_WOS, Coordinates, d):
 
                 er = r2.normalize()
 
-                #ElectricalField += (3/(r2.magnitude()))*Potential*er
-                ElectricalField += (3/(r1.magnitude()))*Potential * er
+                ElectricalField += (1/(r2.magnitude()))*Potential*er
+                #ElectricalField += Potential * er
 
                 values += 1
 
@@ -133,18 +133,16 @@ def ElectricalField_WOS(electrodes_WOS, Coordinates, d):
 
             else:
                 # make random vector and update the next point of the iteration:
-                x = random()-0.5
-                y = random()-0.5
-                z = random()-0.5
+                u = random()
+                v = random()
 
-                length = sqrt(x**2+y**2+z**2)
-                vector_x = x / length
-                vector_y = y / length
-                vector_z = z / length
+                theta = 2* math.pi * u
+                phi = math.acos(2*v-1)
 
-                Point[0] += vector_x*distance
-                Point[1] += vector_y*distance
-                Point[2] += vector_z*distance
+
+                Point[0] += distance*math.cos(theta)*math.sin(phi)
+                Point[1] += distance*math.sin(theta)*math.sin(phi)
+                Point[2] += distance*math.cos(phi)
 
                 if iter == 0:
                     Point_Circle[0] = Point[0]

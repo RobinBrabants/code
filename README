@@ -16,7 +16,7 @@ For more info: check the included pdf and the comments in the code itself
 
 
 
-packages dependies can be installed on your system as follows:
+packages dependies can be installed on your system as follows (for Linux users), make sure to use the latest version of python:
 
 python3.6 -m pip install scipy
 python3.6 -m pip install sympy
